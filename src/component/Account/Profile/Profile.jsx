@@ -286,7 +286,7 @@ const Profile = () => {
                 </div>
               )}
 
-              {editMode && (
+              {/* {editMode && (
                 <div className="avatar-upload">
                   <label htmlFor="avatar-upload" className="upload-button">
                     <FiUpload className="icon" />
@@ -319,7 +319,7 @@ const Profile = () => {
                     </button>
                   )}
                 </div>
-              )}
+              )} */}
             </div>
 
             <nav className="profile-menu">
