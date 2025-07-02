@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./ProductItems.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Notification from "../Notification/Notification";
-import { useNavigate, useLocation } from "react-router-dom";
-// import { checkAuth } from "../LoginRequired/checkAuth";
-import { getAuth } from "firebase/auth";
-import { auth } from "../../firebase"; // Adjust the path to where firebase.js is located
+import { auth } from "../../firebase";
 
 const ProductItems = () => {
   const navigate = useNavigate();
@@ -17,17 +14,11 @@ const ProductItems = () => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [notification, setNotification] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
+  const [selectedColors, setSelectedColors] = useState({});
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
-  };
-
-  const getCookie = (name) => {
-    const cookieValue = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(name + "="));
-    return cookieValue ? cookieValue.split("=")[1] : null;
   };
 
   const handleSizeChange = (productId, sizeId) => {
@@ -38,64 +29,51 @@ const ProductItems = () => {
   };
 
   const addToCart = async (productId) => {
-      const selectedSizeId = selectedSizes[productId];
-      if (!selectedSizeId) {
-        showNotification("Please select a size", "error");
-        return;
-      }
-  
-      const product = bestSellers.find((p) => p.id === productId);
-      if (!product) {
-        showNotification("Product not found", "error");
-        return;
-      }
-  
-      try {
-        setAddingToCartId(productId);
-        const token = await auth.currentUser.getIdToken(); // 🔐 Firebase JWT
-  
-        const colorId =
-          product.colors?.length > 0 ? product.colors[0].color.id : null;
-  
-        const response = await fetch(
-          `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              quantity: 1,
-              size_id: selectedSizeId,
-              color_id: colorId,
-              update_quantity: true,
-            }),
-          }
-        );
-  
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.message || "Failed to add to cart");
+    const sizeId = selectedSizes[productId];
+    const colorId = selectedColors[productId];
+
+    if (!sizeId) {
+      showNotification("Please select a size before adding to cart", "error");
+      return;
+    }
+
+    try {
+      setAddingToCartId(productId);
+      const token = await auth.currentUser.getIdToken();
+
+      const response = await fetch(
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            quantity: 1,
+            size_id: sizeId,
+            color_id: colorId,
+            update_quantity: true,
+          }),
         }
-  
-        showNotification(
-          data.message || `${product.name} added to cart successfully!`
-        );
-  
-        if (typeof window.updateCartCount === "function") {
-          window.updateCartCount();
-        }
-      } catch (error) {
-        console.error("Add to cart error:", error);
-        showNotification(
-          error.message || "Failed to add to cart. Please try again.",
-          "error"
-        );
-      } finally {
-        setAddingToCartId(null);
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
       }
-    };
+
+      showNotification(data.message || "Item added to cart successfully!");
+      if (typeof window.updateCartCount === "function") {
+        window.updateCartCount();
+      }
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      showNotification("Something went wrong. Please try again.", "error");
+    } finally {
+      setAddingToCartId(null);
+    }
+  };
 
   useEffect(() => {
     const fetchTopProducts = async () => {
@@ -104,13 +82,11 @@ const ProductItems = () => {
           "https://ecco-back-4j3f.onrender.com/api/products/?is_top=true"
         );
 
-        const productsWithSizes = res.data.map((product) => {
-          // Find first available size or default to first size
+        const productsWithDetails = res.data.map((product) => {
           const firstAvailableSize =
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
 
-          // Get the first available image
           let imageUrl = null;
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
@@ -126,20 +102,25 @@ const ProductItems = () => {
           return {
             ...product,
             defaultSize: firstAvailableSize,
-            image: imageUrl, // Add the image URL to the product
+            image: imageUrl,
           };
         });
 
-        setTopProducts(productsWithSizes);
+        setTopProducts(productsWithDetails);
 
-        // Initialize selected sizes
         const initialSizes = {};
-        productsWithSizes.forEach((product) => {
+        const initialColors = {};
+        productsWithDetails.forEach((product) => {
           if (product.defaultSize) {
             initialSizes[product.id] = product.defaultSize.id;
           }
+          if (product.colors?.length > 0) {
+            initialColors[product.id] = product.colors[0].color.id;
+          }
         });
+
         setSelectedSizes(initialSizes);
+        setSelectedColors(initialColors);
       } catch (err) {
         console.error("Failed to load top products", err);
         setError("Failed to load products. Please try again later.");
@@ -202,7 +183,6 @@ const ProductItems = () => {
                 )}
               </div>
 
-              {/* Only added this size selector section */}
               {item.sizes?.length > 0 && (
                 <div className="size-selector">
                   <select
