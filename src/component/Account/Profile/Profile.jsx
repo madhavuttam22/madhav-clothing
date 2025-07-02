@@ -146,7 +146,7 @@ const Profile = () => {
     // ✅ Get Firebase ID token
     const idToken = await auth.currentUser.getIdToken();
 
-    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update", {
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${idToken}`,
