@@ -136,7 +136,6 @@ const Profile = () => {
     if (user.phone) formData.append("phone", user.phone.trim());
     if (user.address) formData.append("address", user.address.trim());
 
-    // Append avatar if selected
     if (fileInputRef.current?.files[0]) {
       const file = fileInputRef.current.files[0];
       if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
@@ -144,15 +143,13 @@ const Profile = () => {
       formData.append("avatar", file);
     }
 
-    // CSRF token
-    const csrftoken = getCSRFToken();
-    if (!csrftoken) throw new Error("Session expired. Please refresh the page.");
+    // ✅ Get Firebase ID token
+    const idToken = await auth.currentUser.getIdToken();
 
     const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/", {
       method: "PUT",
-      credentials: "include",
       headers: {
-        "X-CSRFToken": csrftoken,
+        Authorization: `Bearer ${idToken}`,
       },
       body: formData,
     });
@@ -163,7 +160,7 @@ const Profile = () => {
       throw new Error(data?.detail || data?.message || "Profile update failed");
     }
 
-    // ✅ Now update Firebase auth details
+    // ✅ Update Firebase display name & photo
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, {
         displayName: user.name,
@@ -216,6 +213,7 @@ const Profile = () => {
     setLoading(false);
   }
 };
+
 
   const handleCloseModal = () => {
     setShowLogoutModal(false);
