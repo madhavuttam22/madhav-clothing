@@ -121,115 +121,102 @@ const Profile = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      if (!user.name.trim()) throw new Error("Full name is required");
-      if (!user.email.trim()) throw new Error("Email is required");
+  try {
+    if (!user.name.trim()) throw new Error("Full name is required");
+    if (!user.email.trim()) throw new Error("Email is required");
 
-      const formData = new FormData();
-      const nameParts = user.name.trim().split(/\s+/);
+    const formData = new FormData();
+    const nameParts = user.name.trim().split(/\s+/);
+    formData.append("first_name", nameParts[0] || "");
+    formData.append("last_name", nameParts.slice(1).join(" ") || "");
+    formData.append("email", user.email.trim());
+    if (user.phone) formData.append("phone", user.phone.trim());
+    if (user.address) formData.append("address", user.address.trim());
 
-      formData.append("first_name", nameParts[0] || "");
-      formData.append("last_name", nameParts.slice(1).join(" ") || "");
-      formData.append("email", user.email.trim());
-
-      if (user.phone) formData.append("phone", user.phone.trim());
-      if (user.address) formData.append("address", user.address.trim());
-
-      if (fileInputRef.current.files[0]) {
-        const file = fileInputRef.current.files[0];
-        if (!file.type.startsWith("image/")) {
-          throw new Error("Please upload an image file");
-        }
-        if (file.size > 2 * 1024 * 1024) {
-          throw new Error("Image size should be less than 2MB");
-        }
-        formData.append("avatar", file);
-      }
-
-      const csrftoken = getCSRFToken();
-      if (!csrftoken) {
-        throw new Error("Session expired. Please refresh the page.");
-      }
-
-      const response = await fetch(
-        "https://ecco-back-4j3f.onrender.com/api/profile/",
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "X-CSRFToken": csrftoken,
-          },
-          body: formData,
-        }
-      );
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, {
-          displayName: user.name,
-          photoURL: user.avatar || null,
-        });
-
-        if (auth.currentUser.email !== user.email) {
-          await updateEmail(auth.currentUser, user.email);
-        }
-      }
-
-      if (response.status === 403) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.detail || "Authentication failed. Please login again."
-        );
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Profile update failed");
-      }
-
-      setUser((prev) => ({
-        ...prev,
-        name: data.name || prev.name,
-        email: data.email || prev.email,
-        phone: data.phone || prev.phone,
-        address: data.address || prev.address,
-        avatar: data.avatar || prev.avatar,
-        initials: data.avatar
-          ? ""
-          : data.name
-          ? data.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .toUpperCase()
-          : prev.initials,
-      }));
-
-      showNotification("Profile updated successfully!");
-      setEditMode(false);
-    } catch (error) {
-      console.error("Profile update error:", error);
-
-      let errorMessage = error.message;
-      if (error.message.includes("CSRF")) {
-        errorMessage = "Session expired. Please refresh and try again.";
-      } else if (error.message.includes("email")) {
-        errorMessage = "Please enter a valid email address";
-      } else if (error.message.includes("phone")) {
-        errorMessage = "Please enter a valid phone number";
-      }
-
-      showNotification(errorMessage, "error");
-
-      if (error.message.includes("403") || error.message.includes("CSRF")) {
-        navigate("/login/");
-      }
-    } finally {
-      setLoading(false);
+    // Append avatar if selected
+    if (fileInputRef.current?.files[0]) {
+      const file = fileInputRef.current.files[0];
+      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
+      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
+      formData.append("avatar", file);
     }
-  };
+
+    // CSRF token
+    const csrftoken = getCSRFToken();
+    if (!csrftoken) throw new Error("Session expired. Please refresh the page.");
+
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/", {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "X-CSRFToken": csrftoken,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data?.detail || data?.message || "Profile update failed");
+    }
+
+    // ✅ Now update Firebase auth details
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: user.name,
+        photoURL: user.avatar || null,
+      });
+
+      if (auth.currentUser.email !== user.email) {
+        await updateEmail(auth.currentUser, user.email);
+      }
+    }
+
+    setUser((prev) => ({
+      ...prev,
+      name: data.name || prev.name,
+      email: data.email || prev.email,
+      phone: data.phone || prev.phone,
+      address: data.address || prev.address,
+      avatar: data.avatar || prev.avatar,
+      initials: data.avatar
+        ? ""
+        : data.name
+        ? data.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+        : prev.initials,
+    }));
+
+    showNotification("Profile updated successfully!");
+    setEditMode(false);
+  } catch (error) {
+    console.error("Profile update error:", error);
+    let errorMessage = error.message;
+
+    if (errorMessage.includes("CSRF")) {
+      errorMessage = "Session expired. Please refresh and try again.";
+    } else if (errorMessage.includes("email")) {
+      errorMessage = "Please enter a valid email address";
+    } else if (errorMessage.includes("403")) {
+      errorMessage = "Authentication failed. Please log in again.";
+    }
+
+    showNotification(errorMessage, "error");
+
+    if (errorMessage.includes("403") || errorMessage.includes("CSRF")) {
+      navigate("/login/");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
   const handleCloseModal = () => {
     setShowLogoutModal(false);
   };
