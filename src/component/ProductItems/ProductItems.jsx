@@ -6,8 +6,7 @@ import Notification from "../Notification/Notification";
 import { useNavigate, useLocation } from "react-router-dom";
 // import { checkAuth } from "../LoginRequired/checkAuth";
 import { getAuth } from "firebase/auth";
-import { auth } from '../../firebase';  // Adjust the path to where firebase.js is located
-
+import { auth } from "../../firebase"; // Adjust the path to where firebase.js is located
 
 const ProductItems = () => {
   const navigate = useNavigate();
@@ -25,12 +24,11 @@ const ProductItems = () => {
   };
 
   const getCookie = (name) => {
-  const cookieValue = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="));
-  return cookieValue ? cookieValue.split("=")[1] : null;
-};
-
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return cookieValue ? cookieValue.split("=")[1] : null;
+  };
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -40,48 +38,47 @@ const ProductItems = () => {
   };
 
   const addToCart = async (productId) => {
-  try {
-    const token = await auth.currentUser.getIdToken(); // ✅ Correct usage
-    console.log("Firebase Token:", token); // Log this
-    const size_id = selectedSizes[productId]; // Get selected size
+    try {
+      const token = await auth.currentUser.getIdToken(); // ✅ Correct usage
+      console.log("Firebase Token:", token); // Log this
+      const size_id = selectedSizes[productId]; // Get selected size
 
-    if (!size_id) {
-      showNotification("Please select a size before adding to cart", "error");
-      return;
+      if (!size_id) {
+        showNotification("Please select a size before adding to cart", "error");
+        return;
+      }
+
+      const response = await fetch(
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ send Firebase token
+          },
+          body: JSON.stringify({ quantity: 1, size_id }), // ✅ include size
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Error:", data);
+        showNotification(data.message || "Failed to add to cart", "error");
+      } else {
+        console.log("Added to cart!");
+        showNotification("Item added to cart successfully");
+      }
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      showNotification("Something went wrong. Please try again.", "error");
     }
-
-    const response = await fetch(`http://localhost:8000/api/cart/add/${productId}/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ send Firebase token
-      },
-      body: JSON.stringify({ quantity: 1, size_id }), // ✅ include size
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("Error:", data);
-      showNotification(data.message || "Failed to add to cart", "error");
-    } else {
-      console.log("Added to cart!");
-      showNotification("Item added to cart successfully");
-    }
-  } catch (err) {
-    console.error("Add to cart error:", err);
-    showNotification("Something went wrong. Please try again.", "error");
-  }
-};
-
-
-
-
+  };
 
   useEffect(() => {
     const fetchTopProducts = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/products/?is_top=true"
+          "https://ecco-back-4j3f.onrender.com/api/products/?is_top=true"
         );
 
         const productsWithSizes = res.data.map((product) => {

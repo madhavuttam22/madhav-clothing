@@ -30,82 +30,79 @@ const ProductDetailPage = () => {
   };
 
   const getCookie = (name) => {
-  const cookieValue = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="));
-  return cookieValue ? cookieValue.split("=")[1] : null;
-};
-
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return cookieValue ? cookieValue.split("=")[1] : null;
+  };
 
   // In your ProductDetailPage.jsx
   const addToCart = async () => {
-    
-  if (!selectedSize) {
-    showNotification("Please select a size before adding to cart", "error");
-    return;
-  }
-
-  try {
-    setIsAddingToCart(true);
-
-    // 🔐 Get Firebase ID token
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) {
-      showNotification("You need to be logged in to add to cart", "error");
-      navigate("/login", { state: { from: location.pathname } });
+    if (!selectedSize) {
+      showNotification("Please select a size before adding to cart", "error");
       return;
     }
 
-    const sizeId = selectedSize.id;
-    const colorId = selectedColor?.id || null;
+    try {
+      setIsAddingToCart(true);
 
-    const response = await fetch(
-      `http://localhost:8000/api/cart/add/${product.id}/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Auth header
-        },
-        body: JSON.stringify({
-          quantity: quantity,
-          size_id: sizeId,
-          color_id: colorId,
-          update_quantity: true,
-        }),
+      // 🔐 Get Firebase ID token
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        showNotification("You need to be logged in to add to cart", "error");
+        navigate("/login", { state: { from: location.pathname } });
+        return;
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to add to cart");
+      const sizeId = selectedSize.id;
+      const colorId = selectedColor?.id || null;
+
+      const response = await fetch(
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${product.id}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ Auth header
+          },
+          body: JSON.stringify({
+            quantity: quantity,
+            size_id: sizeId,
+            color_id: colorId,
+            update_quantity: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
+      }
+
+      showNotification(
+        data.message ||
+          `${product.name} (Size: ${selectedSize.name}) added to cart!`
+      );
+
+      if (window.updateCartCount) {
+        window.updateCartCount();
+      }
+    } catch (error) {
+      console.error("Cart Error:", {
+        error: error.message,
+        productId: product.id,
+        sizeId: selectedSize.id,
+      });
+
+      const errorMessage = error.message.includes("Network Error")
+        ? "Network error - please check your connection"
+        : error.message || "Failed to update your cart. Please try again.";
+
+      showNotification(errorMessage, "error");
+    } finally {
+      setIsAddingToCart(false);
     }
-
-    showNotification(
-      data.message ||
-        `${product.name} (Size: ${selectedSize.name}) added to cart!`
-    );
-
-    if (window.updateCartCount) {
-      window.updateCartCount();
-    }
-  } catch (error) {
-    console.error("Cart Error:", {
-      error: error.message,
-      productId: product.id,
-      sizeId: selectedSize.id,
-    });
-
-    const errorMessage = error.message.includes("Network Error")
-      ? "Network error - please check your connection"
-      : error.message || "Failed to update your cart. Please try again.";
-
-    showNotification(errorMessage, "error");
-  } finally {
-    setIsAddingToCart(false);
-  }
-};
-
+  };
 
   const handleBuyNow = async () => {
     if (!selectedSize) {
@@ -124,7 +121,7 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/products/${id}/`
+          `https://ecco-back-4j3f.onrender.com/api/products/${id}/`
         );
         if (!response.ok) {
           throw new Error("Product not found");

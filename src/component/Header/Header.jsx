@@ -9,7 +9,6 @@ import ShopDropdown from "../ShopDropdown/ShopDropdown";
 // ⬇️ Add this import
 import { useAuth } from "../context/AuthContext.jsx"; // adjust path if needed
 
-
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,7 +36,7 @@ const Header = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/search/suggestions/`,
+        `https://ecco-back-4j3f.onrender.com/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -48,14 +47,13 @@ const Header = () => {
   };
 
   const handleProfileClick = (e) => {
-  e.preventDefault();
-  if (user) {
-    navigate("/profile/");
-  } else {
-    navigate("/login/");
-  }
-};
-
+    e.preventDefault();
+    if (user) {
+      navigate("/profile/");
+    } else {
+      navigate("/login/");
+    }
+  };
 
   const handleSearchClick = (e) => {
     e.preventDefault();

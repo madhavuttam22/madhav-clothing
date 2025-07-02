@@ -46,30 +46,30 @@ const Profile = () => {
   };
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-    if (firebaseUser) {
-      setUser({
-        name: firebaseUser.displayName || "",
-        email: firebaseUser.email || "",
-        phone: firebaseUser.phoneNumber || "",
-        address: "",
-        avatar: firebaseUser.photoURL || "",
-        initials: firebaseUser.displayName
-          ? firebaseUser.displayName
-              .split(" ")
-              .map((n) => n[0])
-              .join("")
-              .toUpperCase()
-          : "",
-      });
-    } else {
-      navigate("/login/");
-    }
-    setLoading(false);
-  });
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          name: firebaseUser.displayName || "",
+          email: firebaseUser.email || "",
+          phone: firebaseUser.phoneNumber || "",
+          address: "",
+          avatar: firebaseUser.photoURL || "",
+          initials: firebaseUser.displayName
+            ? firebaseUser.displayName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+            : "",
+        });
+      } else {
+        navigate("/login/");
+      }
+      setLoading(false);
+    });
 
-  return () => unsubscribe();
-}, [navigate]);
+    return () => unsubscribe();
+  }, [navigate]);
 
   // Get CSRF token from cookies
   const getCSRFToken = () => {
@@ -81,8 +81,6 @@ const Profile = () => {
     return null;
   };
 
-  
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
@@ -93,19 +91,18 @@ const Profile = () => {
   };
 
   const handleConfirmLogout = async () => {
-  setShowLogoutModal(false);
-  try {
-    await signOut(auth);
-    showNotification("Successfully logged out", "success");
-    setTimeout(() => {
-      navigate("/");
-      window.location.reload();
-    }, 1500);
-  } catch (error) {
-    showNotification("Logout failed", "error");
-  }
-};
-
+    setShowLogoutModal(false);
+    try {
+      await signOut(auth);
+      showNotification("Successfully logged out", "success");
+      setTimeout(() => {
+        navigate("/");
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      showNotification("Logout failed", "error");
+    }
+  };
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -156,14 +153,17 @@ const Profile = () => {
         throw new Error("Session expired. Please refresh the page.");
       }
 
-      const response = await fetch("http://localhost:8000/api/profile/", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "X-CSRFToken": csrftoken,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        "https://ecco-back-4j3f.onrender.com/api/profile/",
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+          body: formData,
+        }
+      );
 
       if (response.status === 403) {
         const errorData = await response.json().catch(() => ({}));

@@ -8,7 +8,6 @@ import Notification from "../../component/Notification/Notification";
 import { FiSearch, FiX } from "react-icons/fi";
 import { auth } from "../../firebase";
 
-
 const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,40 +55,46 @@ const SearchResults = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:8000/api/products/enhanced-search/`, 
+        `https://ecco-back-4j3f.onrender.com/api/products/enhanced-search/`,
         {
-          params: { q: searchTerm }
+          params: { q: searchTerm },
         }
       );
-      
-      const productsWithImagesAndSizes = response.data.results.map((product) => {
-        let imageUrl = "/placeholder-product.jpg";
-        
-        if (product.colors?.length > 0) {
-          const firstColor = product.colors[0];
-          if (firstColor.images?.length > 0) {
-            const defaultImage = firstColor.images.find(img => img.is_default);
-            imageUrl = defaultImage?.image_url || firstColor.images[0].image_url;
+
+      const productsWithImagesAndSizes = response.data.results.map(
+        (product) => {
+          let imageUrl = "/placeholder-product.jpg";
+
+          if (product.colors?.length > 0) {
+            const firstColor = product.colors[0];
+            if (firstColor.images?.length > 0) {
+              const defaultImage = firstColor.images.find(
+                (img) => img.is_default
+              );
+              imageUrl =
+                defaultImage?.image_url || firstColor.images[0].image_url;
+            }
           }
+
+          // Find first available size or default to first size
+          const firstAvailableSize =
+            product.sizes?.find((size) => size.stock > 0)?.size ||
+            product.sizes?.[0]?.size;
+
+          return {
+            ...product,
+            image: imageUrl,
+            defaultSize: firstAvailableSize,
+          };
         }
-
-        // Find first available size or default to first size
-        const firstAvailableSize = product.sizes?.find(size => size.stock > 0)?.size || 
-                                product.sizes?.[0]?.size;
-
-        return {
-          ...product,
-          image: imageUrl,
-          defaultSize: firstAvailableSize
-        };
-      });
+      );
 
       setProducts(productsWithImagesAndSizes);
       setError(null);
-      
+
       // Initialize selected sizes
       const initialSizes = {};
-      productsWithImagesAndSizes.forEach(product => {
+      productsWithImagesAndSizes.forEach((product) => {
         if (product.defaultSize) {
           initialSizes[product.id] = product.defaultSize.id;
         }
@@ -101,9 +106,9 @@ const SearchResults = () => {
       // Fallback to basic search if enhanced search fails
       try {
         const basicResponse = await axios.get(
-          `http://localhost:8000/api/products/search/`, 
+          `https://ecco-back-4j3f.onrender.com/api/products/search/`,
           {
-            params: { q: searchTerm }
+            params: { q: searchTerm },
           }
         );
         setProducts(basicResponse.data.results || []);
@@ -118,7 +123,7 @@ const SearchResults = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/search/suggestions/`,
+        `https://ecco-back-4j3f.onrender.com/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -128,99 +133,96 @@ const SearchResults = () => {
   };
 
   const getCookie = (name) => {
-  const cookieValue = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="));
-  return cookieValue ? cookieValue.split("=")[1] : null;
-};
-
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return cookieValue ? cookieValue.split("=")[1] : null;
+  };
 
   const handleSizeChange = (productId, sizeId) => {
-  setSelectedSizes((prev) => ({
-    ...prev,
-    [productId]: parseInt(sizeId), // 👈 directly store number
-  }));
-};
-
+    setSelectedSizes((prev) => ({
+      ...prev,
+      [productId]: parseInt(sizeId), // 👈 directly store number
+    }));
+  };
 
   const addToCart = async (productId) => {
-  try {
-    setAddingToCartId(productId);
+    try {
+      setAddingToCartId(productId);
 
-    // Get selected size ID
-    const selectedSizeId = parseInt(selectedSizes[productId]); // 👈 parse here
+      // Get selected size ID
+      const selectedSizeId = parseInt(selectedSizes[productId]); // 👈 parse here
 
-    if (!selectedSizeId) {
-      showNotification("Please select a size", "error");
-      return;
-    }
-
-    // Find the selected product and size
-    const product = products.find((p) => p.id === productId);
-    if (!product) {
-      showNotification("Product not found", "error");
-      return;
-    }
-
-    const selectedSize = product.sizes?.find(
-  (size) => size.size.id === selectedSizeId
-);
-
-    if (!selectedSize || selectedSize.stock <= 0) {
-      showNotification("Selected size is out of stock", "error");
-      return;
-    }
-
-    // Get Firebase token
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) {
-      showNotification("You need to log in first", "error");
-      navigate("/login", { state: { from: location.pathname } });
-      return;
-    }
-
-    // Get color ID if available
-    const colorId = product.colors?.[0]?.color?.id || null;
-
-    const response = await fetch(
-      `http://localhost:8000/api/cart/add/${productId}/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // 🔐 Firebase token
-        },
-        body: JSON.stringify({
-          quantity: 1,
-          size_id: selectedSizeId,
-          color_id: colorId,
-          update_quantity: true,
-        }),
+      if (!selectedSizeId) {
+        showNotification("Please select a size", "error");
+        return;
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to add to cart");
+      // Find the selected product and size
+      const product = products.find((p) => p.id === productId);
+      if (!product) {
+        showNotification("Product not found", "error");
+        return;
+      }
+
+      const selectedSize = product.sizes?.find(
+        (size) => size.size.id === selectedSizeId
+      );
+
+      if (!selectedSize || selectedSize.stock <= 0) {
+        showNotification("Selected size is out of stock", "error");
+        return;
+      }
+
+      // Get Firebase token
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        showNotification("You need to log in first", "error");
+        navigate("/login", { state: { from: location.pathname } });
+        return;
+      }
+
+      // Get color ID if available
+      const colorId = product.colors?.[0]?.color?.id || null;
+
+      const response = await fetch(
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // 🔐 Firebase token
+          },
+          body: JSON.stringify({
+            quantity: 1,
+            size_id: selectedSizeId,
+            color_id: colorId,
+            update_quantity: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
+      }
+
+      showNotification(data.message || "Product added to cart successfully!");
+
+      // Update cart count if defined
+      if (typeof window.updateCartCount === "function") {
+        window.updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      showNotification(
+        error.message || "Something went wrong. Please try again.",
+        "error"
+      );
+    } finally {
+      setAddingToCartId(null);
     }
-
-    showNotification(data.message || "Product added to cart successfully!");
-
-    // Update cart count if defined
-    if (typeof window.updateCartCount === "function") {
-      window.updateCartCount();
-    }
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    showNotification(
-      error.message || "Something went wrong. Please try again.",
-      "error"
-    );
-  } finally {
-    setAddingToCartId(null);
-  }
-};
-
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -248,7 +250,10 @@ const SearchResults = () => {
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -258,32 +263,40 @@ const SearchResults = () => {
     };
   }, []);
 
-  if (loading) return (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>Searching for products...</p>
-    </div>
-  );
-  
-  if (error) return (
-    <div className="error-container">
-      <p>{error}</p>
-      <button onClick={() => window.location.reload()} className="retry-btn">
-        Try Again
-      </button>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Searching for products...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="error-container">
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()} className="retry-btn">
+          Try Again
+        </button>
+      </div>
+    );
 
   return (
     <>
       <Header />
-      
+
       <div className="search-results-page">
         <div className="search-header-container">
           <div className="container">
             <div className="search-header">
-              <h1>{products.length > 0 ? `Results for "${query}"` : "Search"}</h1>
-              <form onSubmit={handleSearchSubmit} className="search-form" ref={suggestionsRef}>
+              <h1>
+                {products.length > 0 ? `Results for "${query}"` : "Search"}
+              </h1>
+              <form
+                onSubmit={handleSearchSubmit}
+                className="search-form"
+                ref={suggestionsRef}
+              >
                 <div className="search-input-container">
                   <input
                     type="text"
@@ -309,7 +322,7 @@ const SearchResults = () => {
                     <FiSearch size={20} />
                   </button>
                 </div>
-                
+
                 {showSuggestions && suggestions.length > 0 && (
                   <div className="suggestions-dropdown">
                     {suggestions.map((suggestion, index) => (
@@ -340,7 +353,8 @@ const SearchResults = () => {
           {products.length > 0 ? (
             <>
               <div className="results-count">
-                Found {products.length} {products.length === 1 ? "item" : "items"}
+                Found {products.length}{" "}
+                {products.length === 1 ? "item" : "items"}
               </div>
               <div className="best-seller-container">
                 <div className="best-seller-cards">
@@ -357,7 +371,9 @@ const SearchResults = () => {
                             }}
                           />
                           {item.is_best_seller && (
-                            <span className="best-seller-badge">Best Seller</span>
+                            <span className="best-seller-badge">
+                              Best Seller
+                            </span>
                           )}
                         </div>
                       </Link>
@@ -381,34 +397,42 @@ const SearchResults = () => {
                               </span>
                             )}
                         </div>
-                        
+
                         {/* Added size selector */}
                         {item.sizes?.length > 0 && (
                           <div className="size-selector">
                             <select
                               value={selectedSizes[item.id] || ""}
-                              onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                              onChange={(e) =>
+                                handleSizeChange(item.id, e.target.value)
+                              }
                               className="size-dropdown"
                             >
                               {item.sizes.map(({ size, stock }) => (
-                                <option 
-                                  key={size.id} 
+                                <option
+                                  key={size.id}
                                   value={size.id}
                                   disabled={stock <= 0}
                                 >
-                                  {size.name} {stock <= 0 ? '(Out of Stock)' : ''}
+                                  {size.name}{" "}
+                                  {stock <= 0 ? "(Out of Stock)" : ""}
                                 </option>
                               ))}
                             </select>
                           </div>
                         )}
-                        
+
                         <button
                           className="best-seller-add-to-cart"
                           onClick={() => addToCart(item.id)}
-                          disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+                          disabled={
+                            addingToCartId === item.id ||
+                            !selectedSizes[item.id]
+                          }
                         >
-                          {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                          {addingToCartId === item.id
+                            ? "Adding..."
+                            : "Add to Cart"}
                         </button>
                       </div>
                     </div>
@@ -416,15 +440,24 @@ const SearchResults = () => {
                 </div>
               </div>
             </>
-          ) : !loading && (
-            <div className="no-results">
-              <img src="/no-results.svg" alt="No results" className="no-results-img" />
-              <h3>No products found</h3>
-              <p>We couldn't find any items matching "{query}"</p>
-              <button onClick={() => navigate("/")} className="continue-shopping-btn">
-                Continue Shopping
-              </button>
-            </div>
+          ) : (
+            !loading && (
+              <div className="no-results">
+                <img
+                  src="/no-results.svg"
+                  alt="No results"
+                  className="no-results-img"
+                />
+                <h3>No products found</h3>
+                <p>We couldn't find any items matching "{query}"</p>
+                <button
+                  onClick={() => navigate("/")}
+                  className="continue-shopping-btn"
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            )
           )}
         </div>
       </div>

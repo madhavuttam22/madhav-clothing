@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ShopDropdown = () => {
   const [categories, setCategories] = useState([]);
@@ -9,10 +9,12 @@ const ShopDropdown = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/categories/');
+        const response = await axios.get(
+          "https://ecco-back-4j3f.onrender.com/api/categories/"
+        );
         setCategories(response.data);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
       }
@@ -24,15 +26,19 @@ const ShopDropdown = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-     <>
-      <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+    <>
+      <a
+        className="nav-link dropdown-toggle"
+        href="#"
+        data-bs-toggle="dropdown"
+      >
         Shop
       </a>
       <ul className="dropdown-menu">
         {categories.map((category) => (
           <li key={category.id}>
-            <Link 
-              className="dropdown-item" 
+            <Link
+              className="dropdown-item"
               to={`/category/${category.id}/products/`}
             >
               {category.category}

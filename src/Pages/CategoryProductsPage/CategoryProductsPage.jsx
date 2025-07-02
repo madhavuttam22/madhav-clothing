@@ -8,7 +8,6 @@ import Notification from "../../component/Notification/Notification";
 import "./CategoryProductsPage.css";
 import { auth } from "../../firebase";
 
-
 const CategoryProductsPage = () => {
   const { category_id } = useParams();
   const [products, setProducts] = useState([]);
@@ -31,9 +30,9 @@ const CategoryProductsPage = () => {
       try {
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(
-            `http://localhost:8000/api/categories/${category_id}/products/`
+            `https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`
           ),
-          axios.get("http://localhost:8000/api/categories/"),
+          axios.get("https://ecco-back-4j3f.onrender.com/api/categories/"),
         ]);
 
         const category = categoriesRes.data.find(
@@ -57,7 +56,7 @@ const CategoryProductsPage = () => {
               );
               const imagePath =
                 defaultImage?.image_url || firstColor.images[0].image_url;
-              imageUrl = `http://localhost:8000${imagePath}`;
+              imageUrl = `https://ecco-back-4j3f.onrender.com${imagePath}`;
             }
           }
 
@@ -96,96 +95,95 @@ const CategoryProductsPage = () => {
   }, [category_id]);
 
   const getCookie = (name) => {
-  const cookieValue = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="));
-  return cookieValue ? cookieValue.split("=")[1] : null;
-};
-
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return cookieValue ? cookieValue.split("=")[1] : null;
+  };
 
   const handleSizeChange = (productId, sizeId) => {
-  setSelectedSizes((prev) => ({
-    ...prev,
-    [productId]: parseInt(sizeId), // 👈 directly store number
-  }));
-};
-
+    setSelectedSizes((prev) => ({
+      ...prev,
+      [productId]: parseInt(sizeId), // 👈 directly store number
+    }));
+  };
 
   const addToCart = async (productId) => {
-  try {
-    // 1. Get selected size
-    const selectedSizeId = parseInt(selectedSizes[productId]); // 👈 parse here
+    try {
+      // 1. Get selected size
+      const selectedSizeId = parseInt(selectedSizes[productId]); // 👈 parse here
 
-    if (!selectedSizeId) {
-      showNotification("Please select a size", "error");
-      return;
-    }
-
-    // 2. Find the product and selected size
-    const product = products.find((p) => p.id === productId);
-    if (!product) {
-      showNotification("Product not found", "error");
-      return;
-    }
-
-    const selectedSize = product.sizes?.find(
-  (size) => size.size.id === selectedSizeId
-);
-
-    if (!selectedSize || selectedSize.stock <= 0) {
-      showNotification("Selected size is out of stock", "error");
-      return;
-    }
-
-    // 3. Get Firebase token
-    setAddingToCartId(productId);
-    const token = await auth.currentUser.getIdToken();
-
-    // 4. Get color ID (optional)
-    const colorId =
-      product.colors?.length > 0 ? product.colors[0].color.id : null;
-
-    // 5. Make API call to backend
-    const response = await fetch(
-      `http://localhost:8000/api/cart/add/${productId}/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Firebase token
-        },
-        body: JSON.stringify({
-          quantity: 1,
-          size_id: selectedSizeId,
-          color_id: colorId,
-          update_quantity: true,
-        }),
+      if (!selectedSizeId) {
+        showNotification("Please select a size", "error");
+        return;
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to add to cart");
+      // 2. Find the product and selected size
+      const product = products.find((p) => p.id === productId);
+      if (!product) {
+        showNotification("Product not found", "error");
+        return;
+      }
+
+      const selectedSize = product.sizes?.find(
+        (size) => size.size.id === selectedSizeId
+      );
+
+      if (!selectedSize || selectedSize.stock <= 0) {
+        showNotification("Selected size is out of stock", "error");
+        return;
+      }
+
+      // 3. Get Firebase token
+      setAddingToCartId(productId);
+      const token = await auth.currentUser.getIdToken();
+
+      // 4. Get color ID (optional)
+      const colorId =
+        product.colors?.length > 0 ? product.colors[0].color.id : null;
+
+      // 5. Make API call to backend
+      const response = await fetch(
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ Firebase token
+          },
+          body: JSON.stringify({
+            quantity: 1,
+            size_id: selectedSizeId,
+            color_id: colorId,
+            update_quantity: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
+      }
+
+      // 6. Notify user
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
+
+      // 7. Update cart count (if applicable)
+      if (typeof window.updateCartCount === "function") {
+        window.updateCartCount();
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      showNotification(
+        error.message || "Something went wrong. Please try again.",
+        "error"
+      );
+    } finally {
+      setAddingToCartId(null);
     }
-
-    // 6. Notify user
-    showNotification(data.message || `${product.name} added to cart successfully!`);
-
-    // 7. Update cart count (if applicable)
-    if (typeof window.updateCartCount === "function") {
-      window.updateCartCount();
-    }
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    showNotification(
-      error.message || "Something went wrong. Please try again.",
-      "error"
-    );
-  } finally {
-    setAddingToCartId(null);
-  }
-};
-
+  };
 
   if (loading) return <div className="loading">Loading products...</div>;
   if (error) return <div className="error">{error}</div>;
@@ -290,6 +288,5 @@ const CategoryProductsPage = () => {
       <Footer />
     </>
   );
-
 };
 export default CategoryProductsPage;
