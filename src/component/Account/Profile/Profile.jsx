@@ -46,31 +46,46 @@ const Profile = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser({
-          name: firebaseUser.displayName || "",
-          email: firebaseUser.email || "",
-          phone: firebaseUser.phoneNumber || "",
-          address: "",
-          avatar: firebaseUser.photoURL || "",
-          initials: firebaseUser.displayName
-            ? firebaseUser.displayName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-            : "",
-        });
-      } else {
-        navigate("/login/");
-      }
-      setLoading(false);
-    });
+ useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    if (firebaseUser) {
+      const idToken = await firebaseUser.getIdToken();
 
-    return () => unsubscribe();
-  }, [navigate]);
+      // ✅ Fetch backend profile details
+      try {
+        const res = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/me/", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+
+        const data = await res.json();
+
+        setUser({
+          name: data.name || firebaseUser.displayName || "",
+          email: data.email || firebaseUser.email || "",
+          phone: data.phone || firebaseUser.phoneNumber || "",
+          address: data.address || "",
+          avatar: data.avatar || firebaseUser.photoURL || "",
+          initials: (data.name || firebaseUser.displayName || "")
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase(),
+        });
+      } catch (error) {
+        console.error("Error fetching profile from backend:", error);
+      }
+    } else {
+      navigate("/login/");
+    }
+
+    setLoading(false);
+  });
+
+  return () => unsubscribe();
+}, [navigate]);
+
 
   // Get CSRF token from cookies
   const getCSRFToken = () => {
