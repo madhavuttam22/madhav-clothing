@@ -1,171 +1,429 @@
-// src/pages/Profile/Profile.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { onAuthStateChanged, signOut, updateProfile, updateEmail } from "firebase/auth";
-import { auth } from "../../../firebase";
-import { useNavigate } from "react-router-dom";
+import "./Profile.css";
+import { Link, useNavigate } from "react-router-dom";
+import Notification from "../../Notification/Notification";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
-import Notification from "../../Notification/Notification";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
-import { FiEdit, FiLogOut, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
-import "./Profile.css";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../../../firebase";
+import { updateProfile, updateEmail } from "firebase/auth";
+
+import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
 
 const Profile = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [user, setUser] = useState({
-    name: "", email: "", phone: "", address: "", avatar: "", initials: ""
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    avatar: "",
+    initials: "",
   });
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
-  const fileRef = useRef();
+  const fileInputRef = useRef(null);
 
-  const showNotification = (msg, type = "success") => {
-    setNotification({ message: msg, type });
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const getInitials = (name) => name
-    .split(" ")
-    .map(n => n[0])
-    .join("")
-    .toUpperCase();
-
   const getRandomColor = () => {
-    const colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F06292", "#7986CB", "#9575CD"];
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#FFA07A",
+      "#98D8C8",
+      "#F06292",
+      "#7986CB",
+      "#9575CD",
+    ];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (fbUser) => {
-      if (fbUser) {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
         setUser({
-          name: fbUser.displayName || "",
-          email: fbUser.email,
-          phone: "",
+          name: firebaseUser.displayName || "",
+          email: firebaseUser.email || "",
+          phone: firebaseUser.phoneNumber || "",
           address: "",
-          avatar: fbUser.photoURL || "",
-          initials: getInitials(fbUser.displayName || "")
+          avatar: firebaseUser.photoURL || "",
+          initials: firebaseUser.displayName
+            ? firebaseUser.displayName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+            : "",
         });
       } else {
         navigate("/login/");
       }
       setLoading(false);
     });
-    return () => unsub();
+
+    return () => unsubscribe();
   }, [navigate]);
 
-  const handleChange = e => setUser(prev => ({ ...prev, [e.target.name]: e.target.value }));
-
-  const handleAvatarChange = e => {
-    const file = e.target.files[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setUser(prev => ({ ...prev, avatar: reader.result }));
-    reader.readAsDataURL(file);
+  // Get CSRF token from cookies
+  const getCSRFToken = () => {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split("=");
+      if (name === "csrftoken") return decodeURIComponent(value);
+    }
+    return null;
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    setShowLogoutModal(false);
     try {
-      if (!user.name || !user.email) throw new Error("Name and Email are required");
-
-      const form = new FormData();
-      const [first_name, ...rest] = user.name.split(" ");
-      form.append("first_name", first_name);
-      form.append("last_name", rest.join(" "));
-      form.append("email", user.email);
-      form.append("phone", user.phone);
-      form.append("address", user.address);
-
-      if (fileRef.current.files[0]) {
-        form.append("avatar", fileRef.current.files[0]);
-      }
-
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-        body: form,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Update failed");
-
-      await updateProfile(auth.currentUser, {
-        displayName: user.name,
-        photoURL: data.avatar_url || user.avatar
-      });
-      if (auth.currentUser.email !== user.email) {
-        await updateEmail(auth.currentUser, user.email);
-      }
-
-      setUser(prev => ({
-        ...prev,
-        avatar: data.avatar_url,
-        initials: getInitials(user.name)
-      }));
-      showNotification("Profile updated");
-      setEditMode(false);
-    } catch (err) {
-      showNotification(err.message, "error");
-    } finally {
-      setLoading(false);
+      await signOut(auth);
+      showNotification("Successfully logged out", "success");
+      setTimeout(() => {
+        navigate("/");
+        window.location.reload();
+      }, 1500);
+    } catch (error) {
+      showNotification("Logout failed", "error");
     }
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/"); window.location.reload();
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUser((prev) => ({
+          ...prev,
+          avatar: reader.result,
+          initials: "",
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    if (!user.name.trim()) throw new Error("Full name is required");
+    if (!user.email.trim()) throw new Error("Email is required");
+
+    const formData = new FormData();
+    const nameParts = user.name.trim().split(/\s+/);
+    formData.append("first_name", nameParts[0] || "");
+    formData.append("last_name", nameParts.slice(1).join(" ") || "");
+    formData.append("email", user.email.trim());
+    if (user.phone) formData.append("phone", user.phone.trim());
+    if (user.address) formData.append("address", user.address.trim());
+
+    if (fileInputRef.current?.files[0]) {
+      const file = fileInputRef.current.files[0];
+      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
+      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
+      formData.append("avatar", file);
+    }
+
+    // ✅ Get Firebase ID token
+    const idToken = await auth.currentUser.getIdToken();
+
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update", {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data?.detail || data?.message || "Profile update failed");
+    }
+
+    // ✅ Update Firebase display name & photo
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: user.name,
+        photoURL: user.avatar || null,
+      });
+
+      if (auth.currentUser.email !== user.email) {
+        await updateEmail(auth.currentUser, user.email);
+      }
+    }
+
+    setUser((prev) => ({
+      ...prev,
+      name: data.name || prev.name,
+      email: data.email || prev.email,
+      phone: data.phone || prev.phone,
+      address: data.address || prev.address,
+      avatar: data.avatar || prev.avatar,
+      initials: data.avatar
+        ? ""
+        : data.name
+        ? data.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+        : prev.initials,
+    }));
+
+    showNotification("Profile updated successfully!");
+    setEditMode(false);
+  } catch (error) {
+    console.error("Profile update error:", error);
+    let errorMessage = error.message;
+
+    if (errorMessage.includes("CSRF")) {
+      errorMessage = "Session expired. Please refresh and try again.";
+    } else if (errorMessage.includes("email")) {
+      errorMessage = "Please enter a valid email address";
+    } else if (errorMessage.includes("403")) {
+      errorMessage = "Authentication failed. Please log in again.";
+    }
+
+    showNotification(errorMessage, "error");
+
+    if (errorMessage.includes("403") || errorMessage.includes("CSRF")) {
+      navigate("/login/");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleCloseModal = () => {
+    setShowLogoutModal(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <Header />
       <div className="profile-container">
-        <h1>My Profile</h1>
-        {!editMode ? (
-          <div className="view-mode">
-            <div className="avatar-display">
-              {user.avatar
-                ? <img src={user.avatar} alt="Profile" />
-                : <div className="initials" style={{ backgroundColor: getRandomColor() }}>{user.initials}</div>
-              }
+        <div className="profile-header">
+          <h1>My Profile</h1>
+          {!editMode && (
+            <div className="action-btns">
+              <button className="edit-button" onClick={() => setEditMode(true)}>
+                <FiEdit className="btn-icon" /> Edit Profile
+              </button>
+              <button className="logout-button" onClick={handleLogoutClick}>
+                <FiLogOut className="btn-icon" /> Logout
+              </button>
             </div>
-            <p><strong>Name:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Phone:</strong> {user.phone || "Not provided"}</p>
-            <p><strong>Address:</strong> {user.address || "Not provided"}</p>
-            <button onClick={() => setEditMode(true)}><FiEdit /> Edit</button>
-            <button onClick={() => setShowLogoutModal(true)}><FiLogOut /> Logout</button>
+          )}
+        </div>
+
+        <div className="profile-content">
+          <div className="profile-sidebar">
+            <div className="avatar-container">
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="Profile"
+                  className="profile-avatar"
+                />
+              ) : (
+                <div
+                  className="initials-avatar"
+                  style={{ backgroundColor: getRandomColor() }}
+                >
+                  {user.initials}
+                </div>
+              )}
+
+              {editMode && (
+                <div className="avatar-upload">
+                  <label htmlFor="avatar-upload" className="upload-button">
+                    <FiUpload className="icon" />
+                    {user.avatar ? "Change Photo" : "Upload Photo"}
+                  </label>
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    name="avatar"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    ref={fileInputRef}
+                    hidden
+                  />
+                  {user.avatar && (
+                    <button
+                      type="button"
+                      className="remove-avatar"
+                      onClick={() => {
+                        setUser((prev) => ({ ...prev, avatar: "" }));
+                        const nameParts = user.name.split(" ");
+                        const initials = nameParts
+                          .map((part) => part[0])
+                          .join("")
+                          .toUpperCase();
+                        setUser((prev) => ({ ...prev, initials }));
+                      }}
+                    >
+                      <FiTrash2 className="icon" /> Remove
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <nav className="profile-menu">
+              <Link to="" className="menu-item">
+                My Orders
+              </Link>
+              <Link to="" className="menu-item">
+                Wishlist
+              </Link>
+              <Link to="" className="menu-item">
+                Saved Addresses
+              </Link>
+              <Link to="" className="menu-item">
+                Account Settings
+              </Link>
+            </nav>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="edit-mode">
-            <label htmlFor="avatar">Profile Photo</label>
-            <input id="avatar" type="file" accept="image/*" ref={fileRef} onChange={handleAvatarChange} />
 
-            <input name="name" value={user.name} onChange={handleChange} required placeholder="Full Name" />
-            <input name="email" value={user.email} onChange={handleChange} required placeholder="Email" />
-            <input name="phone" value={user.phone} onChange={handleChange} placeholder="Phone" />
-            <textarea name="address" value={user.address} onChange={handleChange} placeholder="Address"></textarea>
+          <div className="profile-details">
+            {editMode ? (
+              <form onSubmit={handleSubmit} className="profile-form">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={user.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-            <button type="submit" disabled={loading}>{loading ? "Saving…" : "Save"}</button>
-            <button type="button" onClick={() => setEditMode(false)}><FiX /> Cancel</button>
-          </form>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={user.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={user.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Address</label>
+                  <textarea
+                    name="address"
+                    value={user.address}
+                    onChange={handleChange}
+                    rows="4"
+                  />
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() => setEditMode(false)}
+                    disabled={loading}
+                  >
+                    <FiX className="btn-icon" /> Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="save-button"
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="profile-info">
+                <div className="info-item">
+                  <span className="info-label">Name:</span>
+                  <span className="info-value">
+                    {user.name || "Not provided"}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Email:</span>
+                  <span className="info-value">{user.email}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Phone:</span>
+                  <span className="info-value">
+                    {user.phone || "Not provided"}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Address:</span>
+                  <span className="info-value">
+                    {user.address || "Not provided"}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
         )}
-        {notification && <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
       </div>
       <Footer />
+
       <ConfirmationModal
         isOpen={showLogoutModal}
-        onClose={() => setShowLogoutModal(false)}
-        onConfirm={handleLogout}
-        title="Logout?"
-        message="Are you sure?"
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmLogout}
+        title="Logout Confirmation"
+        message="Are you sure you want to logout?"
         confirmText="Logout"
         icon={FiLogOut}
         type="danger"
