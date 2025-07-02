@@ -7,6 +7,7 @@ import Footer from "../../Footer/Footer";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
+import { updateProfile, updateEmail } from "firebase/auth";
 
 import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
 
@@ -164,6 +165,16 @@ const Profile = () => {
           body: formData,
         }
       );
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: user.name,
+          photoURL: user.avatar || null,
+        });
+
+        if (auth.currentUser.email !== user.email) {
+          await updateEmail(auth.currentUser, user.email);
+        }
+      }
 
       if (response.status === 403) {
         const errorData = await response.json().catch(() => ({}));
