@@ -147,12 +147,20 @@ const Profile = () => {
     const idToken = await auth.currentUser.getIdToken();
 
     const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: formData,
-    });
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${idToken}`,
+  },
+  body: JSON.stringify({
+    first_name: nameParts[0] || "",
+    last_name: nameParts.slice(1).join(" ") || "",
+    email: user.email.trim(),
+    phone: user.phone?.trim() || "",
+    address: user.address?.trim() || "",
+  }),
+});
+
 
     const data = await response.json();
 
