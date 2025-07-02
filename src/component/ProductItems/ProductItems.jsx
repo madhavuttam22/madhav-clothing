@@ -38,41 +38,64 @@ const ProductItems = () => {
   };
 
   const addToCart = async (productId) => {
-    try {
-      const token = await auth.currentUser.getIdToken(); // ✅ Correct usage
-      console.log("Firebase Token:", token); // Log this
-      const size_id = selectedSizes[productId]; // Get selected size
-
-      if (!size_id) {
-        showNotification("Please select a size before adding to cart", "error");
+      const selectedSizeId = selectedSizes[productId];
+      if (!selectedSizeId) {
+        showNotification("Please select a size", "error");
         return;
       }
-
-      const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ send Firebase token
-          },
-          body: JSON.stringify({ quantity: 1, size_id }), // ✅ include size
-        }
-      );
-
-      const data = await response.json();
-      if (!response.ok) {
-        console.error("Error:", data);
-        showNotification(data.message || "Failed to add to cart", "error");
-      } else {
-        console.log("Added to cart!");
-        showNotification("Item added to cart successfully");
+  
+      const product = bestSellers.find((p) => p.id === productId);
+      if (!product) {
+        showNotification("Product not found", "error");
+        return;
       }
-    } catch (err) {
-      console.error("Add to cart error:", err);
-      showNotification("Something went wrong. Please try again.", "error");
-    }
-  };
+  
+      try {
+        setAddingToCartId(productId);
+        const token = await auth.currentUser.getIdToken(); // 🔐 Firebase JWT
+  
+        const colorId =
+          product.colors?.length > 0 ? product.colors[0].color.id : null;
+  
+        const response = await fetch(
+          `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              quantity: 1,
+              size_id: selectedSizeId,
+              color_id: colorId,
+              update_quantity: true,
+            }),
+          }
+        );
+  
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to add to cart");
+        }
+  
+        showNotification(
+          data.message || `${product.name} added to cart successfully!`
+        );
+  
+        if (typeof window.updateCartCount === "function") {
+          window.updateCartCount();
+        }
+      } catch (error) {
+        console.error("Add to cart error:", error);
+        showNotification(
+          error.message || "Failed to add to cart. Please try again.",
+          "error"
+        );
+      } finally {
+        setAddingToCartId(null);
+      }
+    };
 
   useEffect(() => {
     const fetchTopProducts = async () => {
