@@ -46,9 +46,18 @@ const Register = () => {
   try {
     const { user } = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
     
-    // Optional: Save full name in Firebase profile
     await updateProfile(user, {
       displayName: `${formData.first_name} ${formData.last_name}`,
+    });
+
+    const idToken = await user.getIdToken();
+
+    // 🔥 Save to Django backend
+    await fetch("https://ecco-back-4j3f.onrender.com/api/register/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
     });
 
     setShowSuccessModal(true);
@@ -59,6 +68,7 @@ const Register = () => {
     setLoading(false);
   }
 };
+
 
 
   const handleConfirmSuccess = () => {

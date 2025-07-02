@@ -36,7 +36,17 @@ const Login = () => {
   setLoading(true);
 
   try {
-    await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    const { user } = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    const idToken = await user.getIdToken();
+
+    // ✅ Inform backend user is active
+    await fetch("https://ecco-back-4j3f.onrender.com/api/register/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
+
     setShowSuccessModal(true);
   } catch (error) {
     console.error("Login error:", error);
@@ -45,6 +55,7 @@ const Login = () => {
     setLoading(false);
   }
 };
+
 
 
   const handleConfirmSuccess = () => {
