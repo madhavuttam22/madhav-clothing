@@ -149,15 +149,29 @@ const Register = () => {
   onClick={async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const idToken = await user.getIdToken();
+
+      // 🔥 Send token to your Django backend to register/save user
+      await fetch("https://ecco-back-4j3f.onrender.com/api/register/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+
       setShowSuccessModal(true);
     } catch (error) {
+      console.error("Google sign-up error:", error);
       showNotification("Google sign-up failed", "error");
     }
   }}
 >
   Continue with Google
 </button>
+
 
         </form>
 
