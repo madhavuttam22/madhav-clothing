@@ -54,7 +54,7 @@ const Profile = () => {
           email: firebaseUser.email || "",
           phone: firebaseUser.phoneNumber || "",
           address: "",
-          avatar: firebaseUser.photoURL || "",
+          avatar: ""|| "",
           initials: firebaseUser.displayName
             ? firebaseUser.displayName
                 .split(" ")
@@ -105,20 +105,7 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUser((prev) => ({
-          ...prev,
-          avatar: reader.result,
-          initials: "",
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -136,12 +123,12 @@ const Profile = () => {
     if (user.phone) formData.append("phone", user.phone.trim());
     if (user.address) formData.append("address", user.address.trim());
 
-    if (fileInputRef.current?.files[0]) {
-      const file = fileInputRef.current.files[0];
-      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
-      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
-      formData.append("avatar", file);
-    }
+    // if (fileInputRef.current?.files[0]) {
+    //   const file = fileInputRef.current.files[0];
+    //   if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
+    //   if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
+    //   formData.append("avatar", file);
+    // }
 
     // ✅ Get Firebase ID token
     const idToken = await auth.currentUser.getIdToken();
@@ -250,21 +237,16 @@ const Profile = () => {
           <div className="profile-sidebar">
             <div className="avatar-container">
               {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt="Profile"
-                  className="profile-avatar"
-                />
-              ) : (
+                
                 <div
                   className="initials-avatar"
                   style={{ backgroundColor: getRandomColor() }}
                 >
                   {user.initials}
                 </div>
-              )}
+              ):(<p>No image found</p>)}
 
-              {editMode && (
+              {/* {editMode && (
                 <div className="avatar-upload">
                   <label htmlFor="avatar-upload" className="upload-button">
                     <FiUpload className="icon" />
@@ -297,7 +279,7 @@ const Profile = () => {
                     </button>
                   )}
                 </div>
-              )}
+              )} */}
             </div>
 
             <nav className="profile-menu">
