@@ -144,7 +144,13 @@ const Profile = () => {
       },
       body: formData,
     });
-    const data = await res.json();
+    let data;
+try {
+  data = await response.json();
+} catch (jsonError) {
+  throw new Error("Server did not return JSON. Check backend.");
+}
+
     if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
 
     // Update Firebase displayName & photoURL
