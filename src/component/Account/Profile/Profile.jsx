@@ -49,10 +49,9 @@ const Profile = () => {
  useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
-      const idToken = await firebaseUser.getIdToken();
-
-      // ✅ Fetch backend profile details
       try {
+        const idToken = await firebaseUser.getIdToken();
+
         const res = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/me/", {
           headers: {
             Authorization: `Bearer ${idToken}`,
