@@ -5,8 +5,10 @@ import Notification from "../../Notification/Notification";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
-import { onAuthStateChanged, signOut, updateProfile, updateEmail } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
+import { updateProfile, updateEmail } from "firebase/auth";
+
 import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
 
 const Profile = () => {
@@ -31,7 +33,16 @@ const Profile = () => {
   };
 
   const getRandomColor = () => {
-    const colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F06292", "#7986CB", "#9575CD"];
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#FFA07A",
+      "#98D8C8",
+      "#F06292",
+      "#7986CB",
+      "#9575CD",
+    ];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -45,7 +56,11 @@ const Profile = () => {
           address: "",
           avatar: firebaseUser.photoURL || "",
           initials: firebaseUser.displayName
-            ? firebaseUser.displayName.split(" ").map((n) => n[0]).join("").toUpperCase()
+            ? firebaseUser.displayName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
             : "",
         });
       } else {
@@ -57,13 +72,24 @@ const Profile = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  // Get CSRF token from cookies
+  const getCSRFToken = () => {
+    const cookies = document.cookie.split(";");
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split("=");
+      if (name === "csrftoken") return decodeURIComponent(value);
+    }
+    return null;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogoutClick = () => setShowLogoutModal(true);
-  const handleCloseModal = () => setShowLogoutModal(false);
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
 
   const handleConfirmLogout = async () => {
     setShowLogoutModal(false);
@@ -84,50 +110,58 @@ const Profile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUser((prev) => ({ ...prev, avatar: reader.result, initials: "" }));
+        setUser((prev) => ({
+          ...prev,
+          avatar: reader.result,
+          initials: "",
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      if (!user.name.trim()) throw new Error("Full name is required");
-      if (!user.email.trim()) throw new Error("Email is required");
+  try {
+    if (!user.name.trim()) throw new Error("Full name is required");
+    if (!user.email.trim()) throw new Error("Email is required");
 
-      const formData = new FormData();
-      const nameParts = user.name.trim().split(/\s+/);
-      formData.append("first_name", nameParts[0] || "");
-      formData.append("last_name", nameParts.slice(1).join(" ") || "");
-      formData.append("email", user.email.trim());
-      if (user.phone) formData.append("phone", user.phone.trim());
-      if (user.address) formData.append("address", user.address.trim());
+    const formData = new FormData();
+    const nameParts = user.name.trim().split(/\s+/);
+    formData.append("first_name", nameParts[0] || "");
+    formData.append("last_name", nameParts.slice(1).join(" ") || "");
+    formData.append("email", user.email.trim());
+    if (user.phone) formData.append("phone", user.phone.trim());
+    if (user.address) formData.append("address", user.address.trim());
 
-      if (fileInputRef.current?.files[0]) {
-        const file = fileInputRef.current.files[0];
-        if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
-        if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
-        formData.append("avatar", file);
-      }
+    if (fileInputRef.current?.files[0]) {
+      const file = fileInputRef.current.files[0];
+      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
+      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
+      formData.append("avatar", file);
+    }
 
-      const idToken = await auth.currentUser.getIdToken();
-      const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: formData,
-      });
+    // ✅ Get Firebase ID token
+    const idToken = await auth.currentUser.getIdToken();
 
-      const data = await response.json();
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/", {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: formData,
+    });
 
-      if (!response.ok) {
-        throw new Error(data?.detail || data?.message || "Profile update failed");
-      }
+    const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data?.detail || data?.message || "Profile update failed");
+    }
+
+    // ✅ Update Firebase display name & photo
+    if (auth.currentUser) {
       await updateProfile(auth.currentUser, {
         displayName: user.name,
         photoURL: user.avatar || null,
@@ -136,40 +170,53 @@ const Profile = () => {
       if (auth.currentUser.email !== user.email) {
         await updateEmail(auth.currentUser, user.email);
       }
-
-      setUser((prev) => ({
-        ...prev,
-        name: data.name || prev.name,
-        email: data.email || prev.email,
-        phone: data.phone || prev.phone,
-        address: data.address || prev.address,
-        avatar: data.avatar || prev.avatar,
-        initials: data.avatar
-          ? ""
-          : data.name
-          ? data.name.split(" ").map((n) => n[0]).join("").toUpperCase()
-          : prev.initials,
-      }));
-
-      showNotification("Profile updated successfully!");
-      setEditMode(false);
-    } catch (error) {
-      console.error("Profile update error:", error);
-      let errorMessage = error.message;
-
-      if (errorMessage.includes("CSRF")) {
-        errorMessage = "Session expired. Please refresh and try again.";
-      } else if (errorMessage.includes("email")) {
-        errorMessage = "Please enter a valid email address";
-      } else if (errorMessage.includes("403")) {
-        errorMessage = "Authentication failed. Please log in again.";
-      }
-
-      showNotification(errorMessage, "error");
-      if (errorMessage.includes("403") || errorMessage.includes("CSRF")) navigate("/login/");
-    } finally {
-      setLoading(false);
     }
+
+    setUser((prev) => ({
+      ...prev,
+      name: data.name || prev.name,
+      email: data.email || prev.email,
+      phone: data.phone || prev.phone,
+      address: data.address || prev.address,
+      avatar: data.avatar || prev.avatar,
+      initials: data.avatar
+        ? ""
+        : data.name
+        ? data.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+        : prev.initials,
+    }));
+
+    showNotification("Profile updated successfully!");
+    setEditMode(false);
+  } catch (error) {
+    console.error("Profile update error:", error);
+    let errorMessage = error.message;
+
+    if (errorMessage.includes("CSRF")) {
+      errorMessage = "Session expired. Please refresh and try again.";
+    } else if (errorMessage.includes("email")) {
+      errorMessage = "Please enter a valid email address";
+    } else if (errorMessage.includes("403")) {
+      errorMessage = "Authentication failed. Please log in again.";
+    }
+
+    showNotification(errorMessage, "error");
+
+    if (errorMessage.includes("403") || errorMessage.includes("CSRF")) {
+      navigate("/login/");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleCloseModal = () => {
+    setShowLogoutModal(false);
   };
 
   if (loading) {
