@@ -123,49 +123,104 @@ const Profile = () => {
  const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
-  try {
-    const formData = new FormData();
-    const [first_name, ...rest] = user.name.trim().split(' ');
-    formData.append("first_name", first_name || "");
-    formData.append("last_name", rest.join(' ') || "");
-    formData.append("email", user.email.trim());
-    formData.append("phone", user.phone.trim());
-    formData.append("address", user.address.trim());
 
-    if (fileInputRef.current.files[0]) {
-      formData.append("avatar", fileInputRef.current.files[0]);
+  try {
+    if (!user.name.trim()) throw new Error("Full name is required");
+    if (!user.email.trim()) throw new Error("Email is required");
+
+    const formData = new FormData();
+    const nameParts = user.name.trim().split(/\s+/);
+    formData.append("first_name", nameParts[0] || "");
+    formData.append("last_name", nameParts.slice(1).join(" ") || "");
+    formData.append("email", user.email.trim());
+    if (user.phone) formData.append("phone", user.phone.trim());
+    if (user.address) formData.append("address", user.address.trim());
+
+    if (fileInputRef.current?.files[0]) {
+      const file = fileInputRef.current.files[0];
+      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
+      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
+      formData.append("avatar", file);
     }
 
     const idToken = await auth.currentUser.getIdToken();
-    const res = await fetch("/api/profile/update/", {
+
+    console.log("📤 Sending formData to backend...");
+    for (let pair of formData.entries()) {
+      console.log(`🧾 ${pair[0]}: ${pair[1]}`);
+    }
+
+    console.log("🔐 Firebase ID Token:", idToken);
+
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${idToken}`,
       },
       body: formData,
     });
+
+    console.log("📥 Raw response:", response);
+
     let data;
-try {
-  data = await response.json();
-} catch (jsonError) {
-  throw new Error("Server did not return JSON. Check backend.");
-}
+    try {
+      data = await response.json();
+      console.log("✅ Parsed response JSON:", data);
+    } catch (jsonError) {
+      console.error("❌ Failed to parse JSON response:", jsonError);
+      const text = await response.text();
+      console.error("🔍 Raw response text instead:", text);
+      throw new Error("Server did not return JSON. Check backend.");
+    }
 
-    if (!res.ok) throw new Error(data.detail || JSON.stringify(data));
+    if (!response.ok) {
+      throw new Error(data?.detail || data?.message || "Profile update failed");
+    }
 
-    // Update Firebase displayName & photoURL
-    await updateProfile(auth.currentUser, {
-      displayName: user.name,
-      photoURL: data.avatar ? `${BACKEND_URL}${data.avatar}` : null,
-    });
-    // ...followed by success logic
-  } catch (err) {
-    console.error(err);
-    showNotification(err.message, "error");
+    // Firebase updates
+    if (auth.currentUser) {
+      await updateProfile(auth.currentUser, {
+        displayName: user.name,
+        photoURL: user.avatar || null,
+      });
+
+      if (auth.currentUser.email !== user.email) {
+        await updateEmail(auth.currentUser, user.email);
+      }
+    }
+
+    setUser((prev) => ({
+      ...prev,
+      name: data.name || prev.name,
+      email: data.email || prev.email,
+      phone: data.phone || prev.phone,
+      address: data.address || prev.address,
+      avatar: data.avatar || prev.avatar,
+      initials: data.avatar
+        ? ""
+        : data.name
+        ? data.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+        : prev.initials,
+    }));
+
+    showNotification("Profile updated successfully!");
+    setEditMode(false);
+  } catch (error) {
+    console.error("🔥 Profile update error:", error.message);
+    showNotification(error.message || "An error occurred", "error");
+
+    if (error.message.includes("403") || error.message.includes("CSRF")) {
+      navigate("/login/");
+    }
   } finally {
     setLoading(false);
   }
 };
+ 
 
 
   const handleCloseModal = () => {
