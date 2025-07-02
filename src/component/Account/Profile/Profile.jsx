@@ -128,39 +128,25 @@ const Profile = () => {
     if (!user.name.trim()) throw new Error("Full name is required");
     if (!user.email.trim()) throw new Error("Email is required");
 
-    const formData = new FormData();
     const nameParts = user.name.trim().split(/\s+/);
-    formData.append("first_name", nameParts[0] || "");
-    formData.append("last_name", nameParts.slice(1).join(" ") || "");
-    formData.append("email", user.email.trim());
-    if (user.phone) formData.append("phone", user.phone.trim());
-    if (user.address) formData.append("address", user.address.trim());
+    const body = {
+      first_name: nameParts[0] || "",
+      last_name: nameParts.slice(1).join(" ") || "",
+      email: user.email.trim(),
+      phone: user.phone?.trim() || "",
+      address: user.address?.trim() || "",
+    };
 
-    if (fileInputRef.current?.files[0]) {
-      const file = fileInputRef.current.files[0];
-      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
-      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
-      formData.append("avatar", file);
-    }
-
-    // ✅ Get Firebase ID token
     const idToken = await auth.currentUser.getIdToken();
 
-    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
-  method: "PUT",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${idToken}`,
-  },
-  body: JSON.stringify({
-    first_name: nameParts[0] || "",
-    last_name: nameParts.slice(1).join(" ") || "",
-    email: user.email.trim(),
-    phone: user.phone?.trim() || "",
-    address: user.address?.trim() || "",
-  }),
-});
-
+    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify(body),
+    });
 
     const data = await response.json();
 
@@ -168,11 +154,9 @@ const Profile = () => {
       throw new Error(data?.detail || data?.message || "Profile update failed");
     }
 
-    // ✅ Update Firebase display name & photo
     if (auth.currentUser) {
       await updateProfile(auth.currentUser, {
         displayName: user.name,
-        photoURL: user.avatar || null,
       });
 
       if (auth.currentUser.email !== user.email) {
@@ -186,10 +170,7 @@ const Profile = () => {
       email: data.email || prev.email,
       phone: data.phone || prev.phone,
       address: data.address || prev.address,
-      avatar: data.avatar || prev.avatar,
-      initials: data.avatar
-        ? ""
-        : data.name
+      initials: data.name
         ? data.name
             .split(" ")
             .map((n) => n[0])
@@ -221,6 +202,7 @@ const Profile = () => {
     setLoading(false);
   }
 };
+
 
 
   const handleCloseModal = () => {
@@ -257,22 +239,18 @@ const Profile = () => {
         <div className="profile-content">
           <div className="profile-sidebar">
             <div className="avatar-container">
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt="Profile"
-                  className="profile-avatar"
-                />
-              ) : (
-                <div
-                  className="initials-avatar"
-                  style={{ backgroundColor: getRandomColor() }}
-                >
-                  {user.initials}
+              <div
+  className="initials-avatar"
+  style={{ backgroundColor: getRandomColor() }}
+>
+  {user.initials}
+</div>
+
+              {editMode && (
+                <div className="avatar-upload">
+                 
                 </div>
               )}
-
-              
             </div>
 
             <nav className="profile-menu">
