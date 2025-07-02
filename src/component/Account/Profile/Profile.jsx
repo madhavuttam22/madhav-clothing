@@ -18,14 +18,12 @@ const Profile = () => {
     email: "",
     phone: "",
     address: "",
-    avatar: "",
     initials: "",
   });
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -54,14 +52,14 @@ const Profile = () => {
           email: firebaseUser.email || "",
           phone: firebaseUser.phoneNumber || "",
           address: "",
-          avatar: firebaseUser.photoURL || "",
           initials: firebaseUser.displayName
-            ? firebaseUser.displayName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-            : "",
+  ? firebaseUser.displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  : "",
+
         });
       } else {
         navigate("/login/");
@@ -105,20 +103,7 @@ const Profile = () => {
     }
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUser((prev) => ({
-          ...prev,
-          avatar: reader.result,
-          initials: "",
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+ 
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -246,11 +231,7 @@ const Profile = () => {
   {user.initials}
 </div>
 
-              {editMode && (
-                <div className="avatar-upload">
-                 
-                </div>
-              )}
+              
             </div>
 
             <nav className="profile-menu">
