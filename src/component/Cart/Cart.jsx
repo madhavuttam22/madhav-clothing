@@ -57,13 +57,15 @@ const Cart = () => {
       const item_count = data.item_count || 0;
 
       const processedItems = items.map((item) => ({
-  ...item,
-  image: item.image || "/placeholder-product.jpg",
-  color_name: item.color || item.color_name || "",
-  size_name: item.size_name || "",
-  size_id: item.size_id || null,
-  product_id: item.product_id || item.id || null,
-}));
+        ...item,
+        image: item.image || "/placeholder-product.jpg",
+        color_name: item.color || item.color_name || "",
+        color_id: item.color_id || item.color?.id || null,  // ✅ Ensure color_id is captured
+        size_name: item.size_name || "",
+        size_id: item.size_id || null,
+        product_id: item.product_id || item.id || null,
+      }));
+
 
 
       setCartData({
