@@ -57,13 +57,14 @@ const Cart = () => {
       const item_count = data.item_count || 0;
 
       const processedItems = items.map((item) => ({
-        ...item,
-        image: item.image || "/placeholder-product.jpg",
-        color: item.color || "",
-        size: item.size || "",
-        size_id: item.size_id || null,
-        product_id: item.product_id || item.id || null,
-      }));
+  ...item,
+  image: item.image || "/placeholder-product.jpg",
+  color_name: item.color || item.color_name || "",
+  size_name: item.size_name || "",
+  size_id: item.size_id || null,
+  product_id: item.product_id || item.id || null,
+}));
+
 
       setCartData({
         items: processedItems,
@@ -183,19 +184,20 @@ const Cart = () => {
                   <div className="item-info">
                     <div className="item-image-container">
                       <img
-                        src={item.image}
-                        alt={item.name}
-                        className="item-image"
-                        onError={(e) => {
-                          e.target.src = "/placeholder-product.jpg";
-                        }}
-                      />
+  src={item.image}
+  alt={`${item.name} - ${item.color_name || item.color}`}
+  className="item-image"
+  onError={(e) => {
+    e.target.src = "/placeholder-product.jpg";
+  }}
+/>
+
                     </div>
                     <div className="item-details">
                       <h3 className="item-name">{item.name}</h3>
-                      {item.color_name && (
-                        <p className="item-variant">Color: {item.color_name}</p>
-                      )}
+                      {(item.color_name || item.color) && (
+  <p className="item-variant">Color: {item.color_name || item.color}</p>
+)}
                       {item.size_name && (
                         <p className="item-variant">Size: {item.size_name}</p>
                       )}
