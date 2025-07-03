@@ -50,7 +50,7 @@ const Cart = () => {
       }
 
       const data = await response.json();
-      console.log("Cart API response:", data);
+      // console.log("Cart API response:", data);
 
       const items = data.items || [];
       const total = data.total || 0;

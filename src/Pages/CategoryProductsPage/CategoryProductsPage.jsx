@@ -7,6 +7,7 @@ import Notification from "../../component/Notification/Notification";
 // import { checkAuth } from "../../component/LoginRequired/checkAuth";
 import "./CategoryProductsPage.css";
 import { auth } from "../../firebase";
+import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 const CategoryProductsPage = () => {
   const { category_id } = useParams();
