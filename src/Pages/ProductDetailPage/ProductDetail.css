@@ -248,7 +248,7 @@
   margin-bottom: 8px;
 }
 .step-icon {
-  background-color: #c33039;
+  background-color: #9702b0;
   color: white;
   width: 25px;
   height: 25px;
@@ -261,7 +261,7 @@
 }
 
 .close-modal {
-  background-color: #c33039;
+  background-color: #9702b0;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -273,12 +273,12 @@
 }
 
 .close-modal:hover {
-  background-color: #a00000;
+  background-color: #9702b0;
 }
 
 /* Size Guide Link */
 .size-guide-link {
-  color: #c33039;
+  color: #9702b0;
   margin-left: 10px;
   font-weight: normal;
   text-decoration: underline;
@@ -286,7 +286,7 @@
 }
 
 .size-guide-link:hover {
-  color: #a00000;
+  color: #9702b0;
 }
 .breadcrumb {
   font-size: 14px;

@@ -71,7 +71,7 @@
 .current-price {
   font-size: 14px;
   font-weight: 600;
-  color: #ba0000;
+  color: #9702b0;
   margin-right: 5px;
 }
 
@@ -92,7 +92,7 @@
 
 .add-to-cart-top {
   width: 100%;
-  background-color: #ba0000;
+  background-color: #9702b0;
   color: white;
   font-size: 12px;
   font-weight: 600;
@@ -104,7 +104,7 @@
 }
 
 .add-to-cart-top:hover {
-  background-color: #a00000;
+  background-color: #9702b0;
 }
 
 /* Size Selector Styles */

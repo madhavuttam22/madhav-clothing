@@ -21,7 +21,7 @@
   font-size: 2.5rem;
   margin-bottom: 20px;
   text-align: center;
-  color: #c33039;
+  color: #9702b0;
   font-weight: 700;
 }
 
@@ -186,7 +186,7 @@
 .best-seller-current-price {
   font-size: 15px;
   font-weight: 600;
-  color: #ba0000;
+  color: #9702b0;
   margin-right: 6px;
 }
 
@@ -198,7 +198,7 @@
 
 .best-seller-add-to-cart {
   width: 100%;
-  background-color: #ba0000;
+  background-color: #9702b0;
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -210,7 +210,7 @@
 }
 
 .best-seller-add-to-cart:hover {
-  background-color: #a00000;
+  background-color: #9702b0;
 }
 
 .best-seller-add-to-cart:disabled {
