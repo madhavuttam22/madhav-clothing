@@ -136,7 +136,8 @@ const CategoryProductsPage = () => {
 
       // 3. Get Firebase token
       setAddingToCartId(productId);
-      const token = await auth.currentUser.getIdToken();
+      const token = await checkAuthAndRedirect(navigate, location.pathname);
+if (!token) return; // User not logged in, redirected
 
       // 4. Get color ID (optional)
       const colorId =

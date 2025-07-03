@@ -7,6 +7,7 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 // import { checkAuth } from "../../component/LoginRequired/checkAuth";
 import Notification from "../../component/Notification/Notification";
 import { auth } from "../../firebase";
+import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 const BestSellerPage = () => {
   const navigate = useNavigate();
@@ -116,7 +117,8 @@ const BestSellerPage = () => {
     try {
       setAddingToCartId(productId);
 
-      const token = await auth.currentUser.getIdToken(); // ✅ Firebase ID token
+      const token = await checkAuthAndRedirect(navigate, location.pathname);
+if (!token) return; // User not logged in, redirected
       const colorId =
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 

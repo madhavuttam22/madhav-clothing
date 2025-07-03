@@ -53,6 +53,7 @@ const ProductDetailPage = () => {
         navigate("/login", { state: { from: location.pathname } });
         return;
       }
+      
 
       const sizeId = selectedSize.id;
       const colorId = selectedColor?.id || null;

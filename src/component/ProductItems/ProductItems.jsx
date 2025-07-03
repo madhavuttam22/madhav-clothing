@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Notification from "../Notification/Notification";
 import { auth } from "../../firebase";
+import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 const ProductItems = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const ProductItems = () => {
   const [notification, setNotification] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
   const [selectedColors, setSelectedColors] = useState({});
+  const from = location.state?.from || "/";
+
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -39,7 +42,8 @@ const ProductItems = () => {
 
     try {
       setAddingToCartId(productId);
-      const token = await auth.currentUser.getIdToken();
+      const token = await checkAuthAndRedirect(navigate, location.pathname);
+      if (!token) return; // User not logged in, redirected
 
       const response = await fetch(
         `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
