@@ -4,6 +4,7 @@ import "./BestSeller.css";
 import axios from "axios";
 import Notification from "../Notification/Notification";
 import { auth } from "../../firebase"; // 🔁 Make sure this is imported at the top
+import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 // import { checkAuth } from "../LoginRequired/checkAuth";
 
@@ -89,64 +90,68 @@ const BestSeller = () => {
   };
 
   const addToCart = async (productId) => {
-    const selectedSizeId = selectedSizes[productId];
-    if (!selectedSizeId) {
-      showNotification("Please select a size", "error");
-      return;
-    }
+  const selectedSizeId = selectedSizes[productId];
+  if (!selectedSizeId) {
+    showNotification("Please select a size", "error");
+    return;
+  }
 
-    const product = bestSellers.find((p) => p.id === productId);
-    if (!product) {
-      showNotification("Product not found", "error");
-      return;
-    }
+  const product = bestSellers.find((p) => p.id === productId);
+  if (!product) {
+    showNotification("Product not found", "error");
+    return;
+  }
 
-    try {
-      setAddingToCartId(productId);
-      const token = await auth.currentUser.getIdToken(); // 🔐 Firebase JWT
+  try {
+    // 🔐 Check login and get token
+    const token = await checkAuthAndRedirect(navigate, location.pathname);
+    if (!token) return;
 
-      const colorId =
-        product.colors?.length > 0 ? product.colors[0].color.id : null;
+    setAddingToCartId(productId);
 
-      const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            quantity: 1,
-            size_id: selectedSizeId,
-            color_id: colorId,
-            update_quantity: true,
-          }),
-        }
-      );
+    const colorId =
+      product.colors?.length > 0 ? product.colors[0].color.id : null;
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add to cart");
+    const response = await fetch(
+      `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          quantity: 1,
+          size_id: selectedSizeId,
+          color_id: colorId,
+          update_quantity: true,
+        }),
       }
+    );
 
-      showNotification(
-        data.message || `${product.name} added to cart successfully!`
-      );
-
-      if (typeof window.updateCartCount === "function") {
-        window.updateCartCount();
-      }
-    } catch (error) {
-      console.error("Add to cart error:", error);
-      showNotification(
-        error.message || "Failed to add to cart. Please try again.",
-        "error"
-      );
-    } finally {
-      setAddingToCartId(null);
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add to cart");
     }
-  };
+
+    showNotification(
+      data.message || `${product.name} added to cart successfully!`
+    );
+
+    if (typeof window.updateCartCount === "function") {
+      window.updateCartCount();
+    }
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    showNotification(
+      error.message || "Failed to add to cart. Please try again.",
+      "error"
+    );
+  } finally {
+    setAddingToCartId(null);
+  }
+};
+
 
   if (loading) return <div className="loading">Loading best sellers...</div>;
   if (error) return <div className="error">{error}</div>;
