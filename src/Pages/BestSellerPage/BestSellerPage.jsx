@@ -8,10 +8,9 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Notification from "../../component/Notification/Notification";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
-import useBackToTop from "../../component/Customhook/useBackToTop";
+import BackToTop from "../../component/BackToTop/BackToTop";
 
 const BestSellerPage = () => {
-  const { isVisible, scrollToTop } = useBackToTop();
   const navigate = useNavigate();
   const location = useLocation();
   const [bestSellers, setBestSellers] = useState([]);
@@ -255,24 +254,7 @@ if (!token) return; // User not logged in, redirected
         </div>
       </div>
       <Footer />
-       {isVisible && (
-        <button 
-          onClick={scrollToTop}
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            padding: '10px',
-            background: '#000',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer'
-          }}
-        >
-          ↑
-        </button>
-      )}
+      <BackToTop/>
     </>
   );
 };

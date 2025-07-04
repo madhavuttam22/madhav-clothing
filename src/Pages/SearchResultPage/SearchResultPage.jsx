@@ -7,7 +7,7 @@ import Footer from "../../component/Footer/Footer";
 import Notification from "../../component/Notification/Notification";
 import { FiSearch, FiX } from "react-icons/fi";
 import { auth } from "../../firebase";
-import useBackToTop from "../../component/Customhook/useBackToTop";
+import BackToTop from "../../component/BackToTop/BackToTop";
 
 const SearchResults = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ const SearchResults = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
   const suggestionsRef = useRef(null);
-  const { isVisible, scrollToTop } = useBackToTop();
+  
 
   const query = new URLSearchParams(location.search).get("q");
 
@@ -465,24 +465,7 @@ const SearchResults = () => {
       </div>
 
       <Footer />
-       {isVisible && (
-        <button 
-          onClick={scrollToTop}
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            padding: '10px',
-            background: '#000',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer'
-          }}
-        >
-          ↑
-        </button>
-      )}
+      <BackToTop/>
     </>
   );
 };
