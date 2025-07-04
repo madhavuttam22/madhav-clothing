@@ -22,15 +22,64 @@ const CategoryProductsPage = () => {
   const [selectedSizes, setSelectedSizes] = useState({});
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [maxPrice, setMaxPrice] = useState(10000);
+  const [activeFilters, setActiveFilters] = useState({
+    colors: [],
+    sizes: [],
+    availability: 'all'
+  });
   const navigate = useNavigate();
   const location = useLocation();
-
-  const BASE_URL = "https://ecco-back-4j3f.onrender.com/api";
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
+
+  // Apply all filters to products
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Apply price range filter
+    filtered = filtered.filter(product => 
+      product.currentprice >= priceRange[0] && 
+      product.currentprice <= priceRange[1]
+    );
+
+    // Apply color filter
+    if (activeFilters.colors.length > 0) {
+      filtered = filtered.filter(product => 
+        product.colors?.some(color => 
+          activeFilters.colors.includes(color.color.id.toString())
+        )
+      );
+    }
+
+    // Apply size filter
+    if (activeFilters.sizes.length > 0) {
+      filtered = filtered.filter(product =>
+        product.sizes?.some(size =>
+          activeFilters.sizes.includes(size.size.id.toString())
+        )
+      );
+    }
+
+    // Apply availability filter
+    if (activeFilters.availability === 'in-stock') {
+      filtered = filtered.filter(product =>
+        product.sizes?.some(size => size.stock > 0)
+      );
+    } else if (activeFilters.availability === 'out-of-stock') {
+      filtered = filtered.filter(product =>
+        product.sizes?.every(size => size.stock <= 0)
+      );
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, priceRange, activeFilters]);
 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
@@ -39,11 +88,7 @@ const CategoryProductsPage = () => {
         setError(null);
         
         const [productsRes, categoriesRes] = await Promise.all([
-          axios.get(`${BASE_URL}/categories/${category_id}/products/`, {
-            params: {
-              min_price: priceRange[0],
-              max_price: priceRange[1]
-            },
+          axios.get(`https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`, {
             timeout: 10000,
             headers: {
               'Content-Type': 'application/json',
@@ -58,7 +103,7 @@ const CategoryProductsPage = () => {
             }
             throw err;
           }),
-          axios.get(`${BASE_URL}/categories/`, {
+          axios.get(`https://ecco-back-4j3f.onrender.com/api/categories/`, {
             timeout: 10000,
             headers: {
               'Content-Type': 'application/json',
@@ -75,14 +120,6 @@ const CategoryProductsPage = () => {
           throw new Error("Category not found");
         }
 
-        // Calculate max price from products
-        const prices = productsRes.data.map(p => p.currentprice);
-        const calculatedMaxPrice = Math.max(...prices, 10000);
-        setMaxPrice(calculatedMaxPrice);
-        if (priceRange[1] > calculatedMaxPrice) {
-          setPriceRange([priceRange[0], calculatedMaxPrice]);
-        }
-
         const productsWithImagesAndSizes = productsRes.data.map((product) => {
           let imageUrl = "/placeholder-product.jpg";
 
@@ -94,7 +131,7 @@ const CategoryProductsPage = () => {
               );
               const imagePath =
                 defaultImage?.image_url || firstColor.images[0].image_url;
-              imageUrl = imagePath.startsWith('http') ? imagePath : `${BASE_URL.replace('/api', '')}${imagePath}`;
+              imageUrl = imagePath.startsWith('http') ? imagePath : `https://ecco-back-4j3f.onrender.com${imagePath}`;
             }
           }
 
@@ -109,8 +146,15 @@ const CategoryProductsPage = () => {
           };
         });
 
+        // Calculate max price from products
+        const prices = productsWithImagesAndSizes.map(p => p.currentprice);
+        const calculatedMaxPrice = Math.max(...prices, 10000);
+        setMaxPrice(calculatedMaxPrice);
+        if (priceRange[1] > calculatedMaxPrice) {
+          setPriceRange([priceRange[0], calculatedMaxPrice]);
+        }
+
         setProducts(productsWithImagesAndSizes);
-        setFilteredProducts(productsWithImagesAndSizes);
         setCategory(category);
 
         const initialSizes = {};
@@ -129,13 +173,12 @@ const CategoryProductsPage = () => {
     };
 
     fetchCategoryProducts();
-  }, [category_id, location.search, priceRange]);
+  }, [category_id]);
 
   const handlePriceRangeChange = (e, index) => {
     const newPriceRange = [...priceRange];
     newPriceRange[index] = parseInt(e.target.value);
     
-    // Ensure min doesn't exceed max and vice versa
     if (index === 0 && newPriceRange[0] > newPriceRange[1]) {
       newPriceRange[1] = newPriceRange[0];
     } else if (index === 1 && newPriceRange[1] < newPriceRange[0]) {
@@ -145,9 +188,27 @@ const CategoryProductsPage = () => {
     setPriceRange(newPriceRange);
   };
 
+  const handleFilterChange = (filterType, value) => {
+    setActiveFilters(prev => {
+      if (filterType === 'availability') {
+        return {...prev, availability: value};
+      } else {
+        const currentValues = prev[filterType];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter(v => v !== value)
+          : [...currentValues, value];
+        return {...prev, [filterType]: newValues};
+      }
+    });
+  };
+
   const resetFilters = () => {
     setPriceRange([0, maxPrice]);
-    navigate(`/category/${category_id}/products/`, { replace: true });
+    setActiveFilters({
+      colors: [],
+      sizes: [],
+      availability: 'all'
+    });
   };
 
   const handleSizeChange = (productId, sizeId) => {
@@ -189,7 +250,7 @@ const CategoryProductsPage = () => {
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `${BASE_URL}/cart/add/${productId}/`,
+        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -253,9 +314,55 @@ const CategoryProductsPage = () => {
       <div className="category-page-container">
         <div className="category-content">
           <div className="filters-sidebar">
+            <div className="filter-section">
+              <h3>Price Range</h3>
+              <div className="price-range-controls">
+                <div className="price-range-inputs">
+                  <input
+                    type="number"
+                    min="0"
+                    max={maxPrice}
+                    value={priceRange[0]}
+                    onChange={(e) => handlePriceRangeChange(e, 0)}
+                  />
+                  <span>to</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max={maxPrice}
+                    value={priceRange[1]}
+                    onChange={(e) => handlePriceRangeChange(e, 1)}
+                  />
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={maxPrice}
+                  step="100"
+                  value={priceRange[0]}
+                  onChange={(e) => handlePriceRangeChange(e, 0)}
+                  className="range-slider"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max={maxPrice}
+                  step="100"
+                  value={priceRange[1]}
+                  onChange={(e) => handlePriceRangeChange(e, 1)}
+                  className="range-slider"
+                />
+                <div className="price-range-values">
+                  ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                </div>
+              </div>
+            </div>
             
-            
-            <ProductFilters categoryId={category_id} />
+            <ProductFilters 
+              categoryId={category_id}
+              onFilterChange={handleFilterChange}
+              activeFilters={activeFilters}
+            />
             
             <button 
               className="reset-filters-btn"
