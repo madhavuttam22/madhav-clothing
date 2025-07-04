@@ -253,8 +253,7 @@ const CategoryProductsPage = () => {
       <div className="category-page-container">
         <div className="category-content">
           <div className="filters-sidebar">
-            <div className="filter-section">
-              
+            
             
             <ProductFilters categoryId={category_id} />
             
