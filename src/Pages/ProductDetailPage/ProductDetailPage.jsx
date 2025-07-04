@@ -5,10 +5,12 @@ import Footer from "../../component/Footer/Footer";
 import "./ProductDetail.css";
 import Notification from "../../component/Notification/Notification";
 import { auth } from "../../firebase";
+import useBackToTop from "../../component/Customhook/useBackToTop";
 
 // import { checkAuth } from "../../component/LoginRequired/checkAuth";
 
 const ProductDetailPage = () => {
+  const { isVisible, scrollToTop } = useBackToTop();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -484,6 +486,24 @@ const ProductDetailPage = () => {
         />
       )}
       <Footer />
+       {isVisible && (
+        <button 
+          onClick={scrollToTop}
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            padding: '10px',
+            background: '#000',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: 'pointer'
+          }}
+        >
+          ↑
+        </button>
+      )}
     </>
   );
 };
