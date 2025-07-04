@@ -1,5 +1,5 @@
 // components/BackToTop.jsx
-import useBackToTop from '../../hooks/useBackToTop';
+import useBackToTop from '../Customhook/useBackToTop';
 import styles from './BackToTop.module.css';
 
 const BackToTop = () => {
