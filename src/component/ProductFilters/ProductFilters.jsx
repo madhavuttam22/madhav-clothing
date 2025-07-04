@@ -19,53 +19,53 @@ const ProductFilters = ({ categoryId }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchFilterOptions = async () => {
-      try {
-        const url = categoryId 
-          ? `https://ecco-back-4j3f.onrender.com/api/categories/${categoryId}/filter-options/`
-          : 'https://ecco-back-4j3f.onrender.com/api/products/filter-options/';
+//   useEffect(() => {
+//     const fetchFilterOptions = async () => {
+//       try {
+//         const url = categoryId 
+//           ? `https://ecco-back-4j3f.onrender.com/api/categories/${categoryId}/filter-options/`
+//           : 'https://ecco-back-4j3f.onrender.com/api/products/filter-options/';
         
-        const response = await axios.get(url);
-        const data = response.data;
+//         const response = await axios.get(url);
+//         const data = response.data;
         
-        setFilters(prev => ({
-          ...prev,
-          priceRange: [data.price_range.min, data.price_range.max],
-          selectedPrice: [data.price_range.min, data.price_range.max],
-          colors: data.colors,
-          sizes: data.sizes
-        }));
-      } catch (error) {
-        console.error('Error fetching filter options:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+//         setFilters(prev => ({
+//           ...prev,
+//           priceRange: [data.price_range.min, data.price_range.max],
+//           selectedPrice: [data.price_range.min, data.price_range.max],
+//           colors: data.colors,
+//           sizes: data.sizes
+//         }));
+//       } catch (error) {
+//         console.error('Error fetching filter options:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
     
-    fetchFilterOptions();
+//     fetchFilterOptions();
     
-    // Parse existing filters from URL
-    const searchParams = new URLSearchParams(location.search);
-    const minPrice = searchParams.get('min_price');
-    const maxPrice = searchParams.get('max_price');
-    const colors = searchParams.getAll('colors[]');
-    const sizes = searchParams.getAll('sizes[]');
-    const availability = searchParams.get('availability');
+//     // Parse existing filters from URL
+//     const searchParams = new URLSearchParams(location.search);
+//     const minPrice = searchParams.get('min_price');
+//     const maxPrice = searchParams.get('max_price');
+//     const colors = searchParams.getAll('colors[]');
+//     const sizes = searchParams.getAll('sizes[]');
+//     const availability = searchParams.get('availability');
     
-    if (minPrice || maxPrice || colors.length || sizes.length || availability) {
-      setFilters(prev => ({
-        ...prev,
-        selectedPrice: [
-          minPrice ? parseInt(minPrice) : prev.priceRange[0],
-          maxPrice ? parseInt(maxPrice) : prev.priceRange[1]
-        ],
-        selectedColors: colors.map(id => parseInt(id)),
-        selectedSizes: sizes.map(id => parseInt(id)),
-        availability: availability || 'all'
-      }));
-    }
-  }, [categoryId, location.search]);
+//     if (minPrice || maxPrice || colors.length || sizes.length || availability) {
+//       setFilters(prev => ({
+//         ...prev,
+//         selectedPrice: [
+//           minPrice ? parseInt(minPrice) : prev.priceRange[0],
+//           maxPrice ? parseInt(maxPrice) : prev.priceRange[1]
+//         ],
+//         selectedColors: colors.map(id => parseInt(id)),
+//         selectedSizes: sizes.map(id => parseInt(id)),
+//         availability: availability || 'all'
+//       }));
+//     }
+//   }, [categoryId, location.search]);
 
   const handlePriceChange = (value) => {
     setFilters(prev => ({
