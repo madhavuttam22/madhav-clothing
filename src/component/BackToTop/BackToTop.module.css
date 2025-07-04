@@ -44,3 +44,36 @@
   width: 15px;
   height: 15px;
 }
+/* Update your BackToTop.module.css */
+.progressCircle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* This is crucial for proper circle orientation */
+}
+
+.progressPath {
+  fill: none;
+  stroke: #000; /* Ensure this color contrasts with your background */
+  stroke-width: 2px; /* Make sure this is visible enough */
+  transition: stroke-dashoffset 100ms linear;
+}
+
+.circle {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+
+.progressCircle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+}
