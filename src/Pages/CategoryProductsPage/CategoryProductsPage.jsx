@@ -4,16 +4,16 @@ import axios from "axios";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import Notification from "../../component/Notification/Notification";
-import ProductFilters from "../../component/ProductFilters/ProductFilters";
+// import { checkAuth } from "../../component/LoginRequired/checkAuth";
+import "./CategoryProductsPage.css";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import "./CategoryProductsPage.css";
 
 const CategoryProductsPage = () => {
+  
   const { category_id } = useParams();
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [category, setCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,20 +31,9 @@ const CategoryProductsPage = () => {
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       try {
-        const searchParams = new URLSearchParams(location.search);
-        const params = {};
-        
-        // Get filter params from URL
-        if (searchParams.get('min_price')) params.min_price = searchParams.get('min_price');
-        if (searchParams.get('max_price')) params.max_price = searchParams.get('max_price');
-        if (searchParams.getAll('colors[]').length) params.colors = searchParams.getAll('colors[]');
-        if (searchParams.getAll('sizes[]').length) params.sizes = searchParams.getAll('sizes[]');
-        if (searchParams.get('availability')) params.availability = searchParams.get('availability');
-
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(
-            `https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`,
-            { params }
+            `https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`
           ),
           axios.get("https://ecco-back-4j3f.onrender.com/api/categories/"),
         ]);
@@ -87,7 +76,6 @@ const CategoryProductsPage = () => {
         });
 
         setProducts(productsWithImagesAndSizes);
-        setFilteredProducts(productsWithImagesAndSizes);
         setCategory(category);
 
         // Initialize selected sizes
@@ -107,24 +95,33 @@ const CategoryProductsPage = () => {
     };
 
     fetchCategoryProducts();
-  }, [category_id, location.search]);
+  }, [category_id]);
+
+  const getCookie = (name) => {
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(name + "="));
+    return cookieValue ? cookieValue.split("=")[1] : null;
+  };
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
-      [productId]: parseInt(sizeId),
+      [productId]: parseInt(sizeId), // 👈 directly store number
     }));
   };
 
   const addToCart = async (productId) => {
     try {
-      const selectedSizeId = parseInt(selectedSizes[productId]);
+      // 1. Get selected size
+      const selectedSizeId = parseInt(selectedSizes[productId]); // 👈 parse here
 
       if (!selectedSizeId) {
         showNotification("Please select a size", "error");
         return;
       }
 
+      // 2. Find the product and selected size
       const product = products.find((p) => p.id === productId);
       if (!product) {
         showNotification("Product not found", "error");
@@ -140,20 +137,23 @@ const CategoryProductsPage = () => {
         return;
       }
 
+      // 3. Get Firebase token
       setAddingToCartId(productId);
       const token = await checkAuthAndRedirect(navigate, location.pathname);
-      if (!token) return;
+if (!token) return; // User not logged in, redirected
 
+      // 4. Get color ID (optional)
       const colorId =
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
+      // 5. Make API call to backend
       const response = await fetch(
         `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // ✅ Firebase token
           },
           body: JSON.stringify({
             quantity: 1,
@@ -169,10 +169,12 @@ const CategoryProductsPage = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
+      // 6. Notify user
       showNotification(
         data.message || `${product.name} added to cart successfully!`
       );
 
+      // 7. Update cart count (if applicable)
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
       }
@@ -193,107 +195,98 @@ const CategoryProductsPage = () => {
   return (
     <>
       <Header />
-      <div className="category-page-container">
-        <div className="category-content">
-          {/* Filters Sidebar */}
-          <div className="filters-sidebar">
-            <ProductFilters categoryId={category_id} />
-          </div>
-          
-          {/* Products Grid */}
-          <div className="products-grid-container">
-            <h1 className="category-title">{category?.category || "Category"}</h1>
+      <div className="category-products-container">
+        <h1 className="category-title">{category?.category || "Category"}</h1>
 
-            {notification && (
-              <Notification
-                message={notification.message}
-                type={notification.type}
-                onClose={() => setNotification(null)}
-              />
-            )}
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
 
-            <div className="products-grid">
-              {filteredProducts.map((product) => (
-                <div className="product-card" key={product.id}>
-                  <Link to={`/product/${product.id}/`}>
-                    <div className="product-image-container">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="product-image"
-                        onError={(e) => {
-                          console.error("Failed to load image:", product.image);
-                          e.target.src = "/placeholder-product.jpg";
-                          e.target.onerror = null;
-                        }}
-                      />
-                      {product.is_best_seller && (
-                        <span className="product-badge">Best Seller</span>
-                      )}
-                      {product.is_top_product && (
-                        <span className="product-badge top-product">
-                          Top Product
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="product-info">
-                    <h3 className="product-title">
-                      <Link
-                        to={`/product/${product.id}/`}
-                        className="product-title-link"
-                      >
-                        {product.name}
-                      </Link>
-                    </h3>
-                    <div className="product-price-wrapper">
-                      <span className="product-current-price">
-                        ₹{product.currentprice}
-                      </span>
-                      {product.orignalprice &&
-                        product.orignalprice > product.currentprice && (
-                          <span className="product-original-price">
-                            ₹{product.orignalprice}
-                          </span>
-                        )}
-                    </div>
-
-                    {product.sizes?.length > 0 && (
-                      <div className="size-selector">
-                        <select
-                          value={selectedSizes[product.id] || ""}
-                          onChange={(e) =>
-                            handleSizeChange(product.id, e.target.value)
-                          }
-                          className="size-dropdown"
-                        >
-                          {product.sizes.map(({ size, stock }) => (
-                            <option
-                              key={size.id}
-                              value={size.id}
-                              disabled={stock <= 0}
-                            >
-                              {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    <button
-                      className="product-add-to-cart"
-                      onClick={() => addToCart(product.id)}
-                      disabled={
-                        addingToCartId === product.id || !selectedSizes[product.id]
-                      }
-                    >
-                      {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
-                    </button>
-                  </div>
+        <div className="products-grid">
+          {products.map((product) => (
+            <div className="product-card" key={product.id}>
+              <Link to={`/product/${product.id}/`}>
+                <div className="product-image-container">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="product-image"
+                    onError={(e) => {
+                      console.error("Failed to load image:", product.image);
+                      e.target.src = "/placeholder-product.jpg";
+                      e.target.onerror = null;
+                    }}
+                  />
+                  {product.is_best_seller && (
+                    <span className="product-badge">Best Seller</span>
+                  )}
+                  {product.is_top_product && (
+                    <span className="product-badge top-product">
+                      Top Product
+                    </span>
+                  )}
                 </div>
-              ))}
+              </Link>
+              <div className="product-info-1">
+                <h3 className="product-title">
+                  <Link
+                    to={`/product/${product.id}/`}
+                    className="product-title-link"
+                  >
+                    {product.name}
+                  </Link>
+                </h3>
+                <div className="product-price-wrapper">
+                  <span className="product-current-price">
+                    ₹{product.currentprice}
+                  </span>
+                  {product.orignalprice &&
+                    product.orignalprice > product.currentprice && (
+                      <span className="product-original-price">
+                        ₹{product.orignalprice}
+                      </span>
+                    )}
+                </div>
+
+                {/* Added size selector */}
+                {product.sizes?.length > 0 && (
+                  <div className="size-selector">
+                    <select
+                      value={selectedSizes[product.id] || ""}
+                      onChange={(e) =>
+                        handleSizeChange(product.id, e.target.value)
+                      }
+                      className="size-dropdown"
+                    >
+                      {product.sizes.map(({ size, stock }) => (
+                        <option
+                          key={size.id}
+                          value={size.id}
+                          disabled={stock <= 0}
+                        >
+                          {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <button
+                  className="product-add-to-cart"
+                  onClick={() => addToCart(product.id)}
+                  disabled={
+                    addingToCartId === product.id || !selectedSizes[product.id]
+                  }
+                >
+                  {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
+                </button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
       <Footer />
@@ -301,5 +294,4 @@ const CategoryProductsPage = () => {
     </>
   );
 };
-
 export default CategoryProductsPage;
