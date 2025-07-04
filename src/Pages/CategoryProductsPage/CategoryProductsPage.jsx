@@ -20,8 +20,12 @@ const CategoryProductsPage = () => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [notification, setNotification] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const BASE_URL = "https://ecco-back-4j3f.onrender.com/api";
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -31,22 +35,36 @@ const CategoryProductsPage = () => {
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       try {
-        const searchParams = new URLSearchParams(location.search);
-        const params = {};
+        setLoading(true);
+        setError(null);
         
-        // Get filter params from URL
-        if (searchParams.get('min_price')) params.min_price = searchParams.get('min_price');
-        if (searchParams.get('max_price')) params.max_price = searchParams.get('max_price');
-        if (searchParams.getAll('colors[]').length) params.colors = searchParams.getAll('colors[]');
-        if (searchParams.getAll('sizes[]').length) params.sizes = searchParams.getAll('sizes[]');
-        if (searchParams.get('availability')) params.availability = searchParams.get('availability');
-
         const [productsRes, categoriesRes] = await Promise.all([
-          axios.get(
-            `https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`,
-            { params }
-          ),
-          axios.get("https://ecco-back-4j3f.onrender.com/api/categories/"),
+          axios.get(`${BASE_URL}/categories/${category_id}/products/`, {
+            params: {
+              min_price: priceRange[0],
+              max_price: priceRange[1]
+            },
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          }).catch(err => {
+            if (err.code === 'ECONNABORTED') {
+              throw new Error('Request timed out. Please try again.');
+            }
+            if (err.response?.status === 502) {
+              throw new Error('Server is currently unavailable. Please try again later.');
+            }
+            throw err;
+          }),
+          axios.get(`${BASE_URL}/categories/`, {
+            timeout: 10000,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          })
         ]);
 
         const category = categoriesRes.data.find(
@@ -54,9 +72,15 @@ const CategoryProductsPage = () => {
         );
 
         if (!category) {
-          setError("Category not found");
-          setLoading(false);
-          return;
+          throw new Error("Category not found");
+        }
+
+        // Calculate max price from products
+        const prices = productsRes.data.map(p => p.currentprice);
+        const calculatedMaxPrice = Math.max(...prices, 10000);
+        setMaxPrice(calculatedMaxPrice);
+        if (priceRange[1] > calculatedMaxPrice) {
+          setPriceRange([priceRange[0], calculatedMaxPrice]);
         }
 
         const productsWithImagesAndSizes = productsRes.data.map((product) => {
@@ -70,11 +94,10 @@ const CategoryProductsPage = () => {
               );
               const imagePath =
                 defaultImage?.image_url || firstColor.images[0].image_url;
-              imageUrl = `https://ecco-back-4j3f.onrender.com${imagePath}`;
+              imageUrl = imagePath.startsWith('http') ? imagePath : `${BASE_URL.replace('/api', '')}${imagePath}`;
             }
           }
 
-          // Find first available size or default to first size
           const firstAvailableSize =
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
@@ -90,7 +113,6 @@ const CategoryProductsPage = () => {
         setFilteredProducts(productsWithImagesAndSizes);
         setCategory(category);
 
-        // Initialize selected sizes
         const initialSizes = {};
         productsWithImagesAndSizes.forEach((product) => {
           if (product.defaultSize) {
@@ -100,14 +122,33 @@ const CategoryProductsPage = () => {
         setSelectedSizes(initialSizes);
       } catch (err) {
         console.error("Failed to load category products", err);
-        setError("Failed to load products. Please try again later.");
+        setError(err.message || "Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchCategoryProducts();
-  }, [category_id, location.search]);
+  }, [category_id, location.search, priceRange]);
+
+  const handlePriceRangeChange = (e, index) => {
+    const newPriceRange = [...priceRange];
+    newPriceRange[index] = parseInt(e.target.value);
+    
+    // Ensure min doesn't exceed max and vice versa
+    if (index === 0 && newPriceRange[0] > newPriceRange[1]) {
+      newPriceRange[1] = newPriceRange[0];
+    } else if (index === 1 && newPriceRange[1] < newPriceRange[0]) {
+      newPriceRange[0] = newPriceRange[1];
+    }
+    
+    setPriceRange(newPriceRange);
+  };
+
+  const resetFilters = () => {
+    setPriceRange([0, maxPrice]);
+    navigate(`/category/${category_id}/products/`, { replace: true });
+  };
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -148,12 +189,12 @@ const CategoryProductsPage = () => {
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        `${BASE_URL}/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify({
             quantity: 1,
@@ -187,22 +228,93 @@ const CategoryProductsPage = () => {
     }
   };
 
-  if (loading) return <div className="loading">Loading products...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <div>Loading products...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="error-container">
+      <div className="error-message">{error}</div>
+      <button 
+        className="error-retry-btn"
+        onClick={() => window.location.reload()}
+      >
+        Retry
+      </button>
+    </div>
+  );
 
   return (
     <>
       <Header />
       <div className="category-page-container">
         <div className="category-content">
-          {/* Filters Sidebar */}
           <div className="filters-sidebar">
+            <div className="filter-section">
+              <h3>Filters</h3>
+              <div className="price-range-filter">
+                <h4>Price Range</h4>
+                <div className="price-range-inputs">
+                  <input
+                    type="number"
+                    min="0"
+                    max={maxPrice}
+                    value={priceRange[0]}
+                    onChange={(e) => handlePriceRangeChange(e, 0)}
+                  />
+                  <span>-</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max={maxPrice}
+                    value={priceRange[1]}
+                    onChange={(e) => handlePriceRangeChange(e, 1)}
+                  />
+                </div>
+                <div className="price-range-slider">
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxPrice}
+                    step="100"
+                    value={priceRange[0]}
+                    onChange={(e) => handlePriceRangeChange(e, 0)}
+                    className="range-slider"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxPrice}
+                    step="100"
+                    value={priceRange[1]}
+                    onChange={(e) => handlePriceRangeChange(e, 1)}
+                    className="range-slider"
+                  />
+                </div>
+                <div className="price-range-values">
+                  ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                </div>
+              </div>
+            </div>
+            
             <ProductFilters categoryId={category_id} />
+            
+            <button 
+              className="reset-filters-btn"
+              onClick={resetFilters}
+            >
+              <i className="fas fa-sync-alt"></i> Reset All Filters
+            </button>
           </div>
           
-          {/* Products Grid */}
           <div className="products-grid-container">
-            <h1 className="category-title">{category?.category || "Category"}</h1>
+            <div className="category-header">
+              <h1 className="category-title">{category?.category || "Category"}</h1>
+              <div className="products-count">{filteredProducts.length} products</div>
+            </div>
 
             {notification && (
               <Notification
@@ -212,87 +324,113 @@ const CategoryProductsPage = () => {
               />
             )}
 
-            <div className="products-grid">
-              {filteredProducts.map((product) => (
-                <div className="product-card" key={product.id}>
-                  <Link to={`/product/${product.id}/`}>
-                    <div className="product-image-container">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="product-image"
-                        onError={(e) => {
-                          console.error("Failed to load image:", product.image);
-                          e.target.src = "/placeholder-product.jpg";
-                          e.target.onerror = null;
-                        }}
-                      />
-                      {product.is_best_seller && (
-                        <span className="product-badge">Best Seller</span>
-                      )}
-                      {product.is_top_product && (
-                        <span className="product-badge top-product">
-                          Top Product
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="product-info">
-                    <h3 className="product-title">
-                      <Link
-                        to={`/product/${product.id}/`}
-                        className="product-title-link"
-                      >
-                        {product.name}
-                      </Link>
-                    </h3>
-                    <div className="product-price-wrapper">
-                      <span className="product-current-price">
-                        ₹{product.currentprice}
-                      </span>
-                      {product.orignalprice &&
-                        product.orignalprice > product.currentprice && (
-                          <span className="product-original-price">
-                            ₹{product.orignalprice}
+            {filteredProducts.length === 0 ? (
+              <div className="no-products-found">
+                <h3>No products found matching your filters</h3>
+                <button 
+                  className="reset-filters-btn"
+                  onClick={resetFilters}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="products-grid">
+                {filteredProducts.map((product) => (
+                  <div className="product-card" key={product.id}>
+                    <Link to={`/product/${product.id}/`}>
+                      <div className="product-image-container">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="product-image"
+                          onError={(e) => {
+                            e.target.src = "/placeholder-product.jpg";
+                            e.target.onerror = null;
+                          }}
+                        />
+                        {product.is_best_seller && (
+                          <span className="product-badge">Best Seller</span>
+                        )}
+                        {product.is_top_product && (
+                          <span className="product-badge top-product">
+                            Top Product
                           </span>
                         )}
-                    </div>
-
-                    {product.sizes?.length > 0 && (
-                      <div className="size-selector">
-                        <select
-                          value={selectedSizes[product.id] || ""}
-                          onChange={(e) =>
-                            handleSizeChange(product.id, e.target.value)
-                          }
-                          className="size-dropdown"
-                        >
-                          {product.sizes.map(({ size, stock }) => (
-                            <option
-                              key={size.id}
-                              value={size.id}
-                              disabled={stock <= 0}
-                            >
-                              {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
-                            </option>
-                          ))}
-                        </select>
                       </div>
-                    )}
+                    </Link>
+                    <div className="product-info">
+                      <h3 className="product-title">
+                        <Link
+                          to={`/product/${product.id}/`}
+                          className="product-title-link"
+                        >
+                          {product.name}
+                        </Link>
+                      </h3>
+                      <div className="product-price-wrapper">
+                        <span className="product-current-price">
+                          ₹{product.currentprice.toLocaleString()}
+                        </span>
+                        {product.orignalprice &&
+                          product.orignalprice > product.currentprice && (
+                            <span className="product-original-price">
+                              ₹{product.orignalprice.toLocaleString()}
+                            </span>
+                          )}
+                        {product.discount_percent > 0 && (
+                          <span className="product-discount">
+                            {product.discount_percent}% OFF
+                          </span>
+                        )}
+                      </div>
 
-                    <button
-                      className="product-add-to-cart"
-                      onClick={() => addToCart(product.id)}
-                      disabled={
-                        addingToCartId === product.id || !selectedSizes[product.id]
-                      }
-                    >
-                      {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
-                    </button>
+                      {product.sizes?.length > 0 && (
+                        <div className="size-selector">
+                          <select
+                            value={selectedSizes[product.id] || ""}
+                            onChange={(e) =>
+                              handleSizeChange(product.id, e.target.value)
+                            }
+                            className="size-dropdown"
+                          >
+                            {product.sizes.map(({ size, stock }) => (
+                              <option
+                                key={size.id}
+                                value={size.id}
+                                disabled={stock <= 0}
+                              >
+                                {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      <button
+                        className={`product-add-to-cart ${
+                          addingToCartId === product.id ? "adding" : ""
+                        }`}
+                        onClick={() => addToCart(product.id)}
+                        disabled={
+                          addingToCartId === product.id || !selectedSizes[product.id]
+                        }
+                      >
+                        {addingToCartId === product.id ? (
+                          <>
+                            <i className="fas fa-spinner fa-spin"></i> Adding...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-shopping-cart"></i> Add to Cart
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
