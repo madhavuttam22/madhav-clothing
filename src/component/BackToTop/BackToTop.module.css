@@ -1,79 +1,94 @@
-/* styles/BackToTop.module.css */
+/* components/BackToTop.module.css */
 .backToTop {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 50px;
-  height: 50px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  z-index: 1000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 100;
+  overflow: hidden;
 }
 
 .backToTop.visible {
   opacity: 1;
-  pointer-events: all;
+  transform: translateY(0);
 }
 
-.circle {
+.backToTop:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+.progressRing {
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.progressCircle {
+.ringSvg {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
 }
 
-.progressPath {
+.ringTrack {
   fill: none;
-  stroke: #000;
-  stroke-width: 2px;
-  transition: stroke-dashoffset 10ms linear;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 3;
 }
 
-.arrow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 15px;
-  height: 15px;
-}
-/* Update your BackToTop.module.css */
-.progressCircle {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg); /* This is crucial for proper circle orientation */
-}
-
-.progressPath {
+.ringFill {
   fill: none;
-  stroke: #000; /* Ensure this color contrasts with your background */
-  stroke-width: 2px; /* Make sure this is visible enough */
-  transition: stroke-dashoffset 100ms linear;
+  stroke: white;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
 }
 
-.circle {
-  width: 50px;
-  height: 50px;
-  position: relative;
-}
-
-.progressCircle {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.arrow {
+.arrowContainer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrowIcon {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  stroke-width: 2;
+  fill: none;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: -30px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.backToTop:hover .tooltip {
+  opacity: 1;
 }

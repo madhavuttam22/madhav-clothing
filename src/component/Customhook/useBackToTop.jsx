@@ -6,12 +6,14 @@ const useBackToTop = () => {
   const [scrollPercentage, setScrollPercentage] = useState(0);
 
   const handleScroll = () => {
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPosition = window.pageYOffset;
-    const percentage = (scrollPosition / scrollHeight) * 100;
-    
-    setScrollPercentage(percentage);
-    setIsVisible(window.pageYOffset > 300);
+    if (typeof window !== 'undefined') {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPosition = window.pageYOffset;
+      const percentage = Math.min(100, (scrollPosition / scrollHeight) * 100);
+      
+      setScrollPercentage(percentage);
+      setIsVisible(scrollPosition > 300);
+    }
   };
 
   const scrollToTop = () => {
