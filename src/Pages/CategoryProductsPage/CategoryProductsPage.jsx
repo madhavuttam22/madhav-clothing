@@ -254,51 +254,7 @@ const CategoryProductsPage = () => {
         <div className="category-content">
           <div className="filters-sidebar">
             <div className="filter-section">
-              <h3>Filters</h3>
-              <div className="price-range-filter">
-                <h4>Price Range</h4>
-                <div className="price-range-inputs">
-                  <input
-                    type="number"
-                    min="0"
-                    max={maxPrice}
-                    value={priceRange[0]}
-                    onChange={(e) => handlePriceRangeChange(e, 0)}
-                  />
-                  <span>-</span>
-                  <input
-                    type="number"
-                    min="0"
-                    max={maxPrice}
-                    value={priceRange[1]}
-                    onChange={(e) => handlePriceRangeChange(e, 1)}
-                  />
-                </div>
-                <div className="price-range-slider">
-                  <input
-                    type="range"
-                    min="0"
-                    max={maxPrice}
-                    step="100"
-                    value={priceRange[0]}
-                    onChange={(e) => handlePriceRangeChange(e, 0)}
-                    className="range-slider"
-                  />
-                  <input
-                    type="range"
-                    min="0"
-                    max={maxPrice}
-                    step="100"
-                    value={priceRange[1]}
-                    onChange={(e) => handlePriceRangeChange(e, 1)}
-                    className="range-slider"
-                  />
-                </div>
-                <div className="price-range-values">
-                  ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
-                </div>
-              </div>
-            </div>
+              
             
             <ProductFilters categoryId={category_id} />
             
