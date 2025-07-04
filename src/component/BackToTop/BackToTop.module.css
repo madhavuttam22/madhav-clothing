@@ -1,4 +1,5 @@
 /* components/BackToTop.module.css */
+/* BackToTop.module.css */
 .backToTop {
   position: fixed;
   bottom: 2rem;
@@ -7,72 +8,17 @@
   height: 56px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: #000;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  transition: opacity 0.3s ease;
   z-index: 100;
-  overflow: hidden;
 }
 
 .backToTop.visible {
   opacity: 1;
-  transform: translateY(0);
-}
-
-.backToTop:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
-}
-
-.progressRing {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ringSvg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.ringTrack {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
-  stroke-width: 3;
-}
-
-.ringFill {
-  fill: none;
-  stroke: white;
-  stroke-width: 3;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s linear;
-}
-
-.arrowContainer {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.arrowIcon {
-  width: 24px;
-  height: 24px;
-  stroke: white;
-  stroke-width: 2;
-  fill: none;
 }
 
 .tooltip {
