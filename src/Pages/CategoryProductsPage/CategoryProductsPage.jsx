@@ -8,6 +8,7 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
+import './CategoryProductsPage.css'
 
 const CategoryProductsPage = () => {
   const { category_id } = useParams();
@@ -98,8 +99,6 @@ const CategoryProductsPage = () => {
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
-        // In a real implementation, you would fetch more data here
-        // For now, we'll just simulate infinite scroll with existing data
         setPage(prevPage => prevPage + 1);
       }
     });
@@ -206,7 +205,7 @@ const CategoryProductsPage = () => {
     }
 
     setFilteredProducts(filtered);
-    setPage(1); // Reset to first page when filters change
+    setPage(1);
   };
 
   if (loading) return <div className="loading">Loading products...</div>;
