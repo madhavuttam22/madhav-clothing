@@ -58,8 +58,9 @@ const CategoryProductsPage = () => {
                 (img) => img.is_default
               );
               const imagePath =
-                defaultImage?.image_url || firstColor.images[0].image_url;
-              imageUrl = `https://ecco-back-4j3f.onrender.com${imagePath}`;
+  defaultImage?.image_url || firstColor.images[0].image_url;
+imageUrl = imagePath;
+
             }
           }
 
