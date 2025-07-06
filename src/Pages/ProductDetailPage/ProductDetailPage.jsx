@@ -412,70 +412,73 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      {/* Size Chart Modal */}
-      <div className="size-chart-modal" id="size-chart">
-        <div className="modal-content">
-          <h3>Indian Size Chart (in cm)</h3>
-          <div className="size-chart-container">
-            <table className="size-chart-table">
-              <thead>
-                <tr>
-                  <th>Size</th>
-                  <th>Chest</th>
-                  <th>Waist</th>
-                  <th>Hip</th>
-                  <th>Length</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>S</td>
-                  <td>86-91</td>
-                  <td>71-76</td>
-                  <td>91-96</td>
-                  <td>66</td>
-                </tr>
-                <tr>
-                  <td>M</td>
-                  <td>91-96</td>
-                  <td>76-81</td>
-                  <td>96-101</td>
-                  <td>68</td>
-                </tr>
-                <tr>
-                  <td>L</td>
-                  <td>96-101</td>
-                  <td>81-86</td>
-                  <td>101-106</td>
-                  <td>70</td>
-                </tr>
-                <tr>
-                  <td>XL</td>
-                  <td>101-106</td>
-                  <td>86-91</td>
-                  <td>106-111</td>
-                  <td>72</td>
-                </tr>
-                <tr>
-                  <td>XXL</td>
-                  <td>106-112</td>
-                  <td>91-97</td>
-                  <td>111-117</td>
-                  <td>74</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <button
-            className="close-modal"
-            onClick={() =>
-              (document.getElementById("size-chart").style.display = "none")
-            }
-          >
-            Close
-          </button>
-        </div>
-      </div>
+     {/* Size Chart Modal */}
+<div className="size-chart-modal" id="size-chart">
+  <div className="modal-content">
+    <h3>Size Guide</h3>
+    <div className="size-chart-container">
+      <table className="size-chart-table">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Chest (in inches)</th>
+            <th>Length (in inches)</th>
+            <th>Shoulder (in inches)</th>
+            <th>Sleeve (in inches)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>S</td>
+            <td>38</td>
+            <td>26</td>
+            <td>16</td>
+            <td>8.5</td>
+          </tr>
+          <tr>
+            <td>M</td>
+            <td>40</td>
+            <td>27</td>
+            <td>17</td>
+            <td>9</td>
+          </tr>
+          <tr>
+            <td>L</td>
+            <td>42</td>
+            <td>28</td>
+            <td>18</td>
+            <td>9.5</td>
+          </tr>
+          <tr>
+            <td>XL</td>
+            <td>44</td>
+            <td>29</td>
+            <td>19</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>XXL</td>
+            <td>46</td>
+            <td>30</td>
+            <td>20</td>
+            <td>10.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div className="size-note">
+      <p><strong>Note:</strong> All measurements are body measurements. Please refer to the product description for fit details.</p>
+    </div>
+    <button
+      className="close-modal"
+      onClick={() =>
+        (document.getElementById("size-chart").style.display = "none")
+      }
+    >
+      Close
+    </button>
+  </div>
+</div>
 
       {notification && (
         <Notification
