@@ -6,26 +6,23 @@
   font-size: 2.2rem;
   color: #333;
 }
-
 .top-products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* This centers the cards horizontally */
   gap: 25px;
   padding: 0 20px 40px;
   max-width: 1440px;
   margin: 0 auto;
-  justify-items: center; /* This centers the cards in their grid cells */
 }
 
-/* Rest of your existing CSS remains the same */
 .top-product-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
-  width: 100%; /* Ensures cards take full width of their grid cell */
-  max-width: 250px; /* Optional: prevents cards from stretching too wide */
+  width: 250px; /* Fixed width for each card */
 }
 
 .top-product-card:hover {
