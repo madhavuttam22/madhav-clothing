@@ -18,7 +18,6 @@ const ProductItems = () => {
   const [selectedColors, setSelectedColors] = useState({});
   const from = location.state?.from || "/";
 
-
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
@@ -91,7 +90,7 @@ const ProductItems = () => {
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
 
-          let imageUrl = null;
+          let imageUrl = "/placeholder-product.jpg";
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
             if (firstColor.images?.length > 0) {
@@ -99,7 +98,7 @@ const ProductItems = () => {
                 (img) => img.is_default
               );
               imageUrl =
-                defaultImage?.image_url || firstColor.images[0].image_url;
+                defaultImage?.image_url || firstColor.images[0].image_url || imageUrl;
             }
           }
 
@@ -140,7 +139,7 @@ const ProductItems = () => {
 
   return (
     <>
-      <h1 className="my-5 text-center fw-medium">Top Products</h1>
+      <h1 className="top-products-title">Top Products</h1>
 
       {notification && (
         <Notification
@@ -150,38 +149,35 @@ const ProductItems = () => {
         />
       )}
 
-      <div className="cards mt-5">
+      <div className="top-products-grid">
         {topProducts.map((item) => (
-          <div className="product-card" key={item.id}>
+          <div className="top-product-card" key={item.id}>
             <Link to={`/product/${item.id}/`}>
-              <div className="image-container">
-                {item.image ? (
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="product-image"
-                  />
-                ) : (
-                  <div className="no-image-placeholder" />
+              <div className="top-product-image-container">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="top-product-image"
+                  onError={(e) => {
+                    e.target.src = "/placeholder-product.jpg";
+                    e.target.onerror = null;
+                  }}
+                />
+                {item.is_top_product && (
+                  <span className="top-product-badge">Top Product</span>
                 )}
-                <span className="sale-badge">On Sale</span>
               </div>
             </Link>
-            <div className="best-seller-info">
-              <h3 className="best-seller-title">
-                <Link
-                  to={`/product/${item.id}/`}
-                  className="best-seller-title-link"
-                >
+            <div className="top-product-info">
+              <h3 className="top-product-title">
+                <Link to={`/product/${item.id}/`} className="top-product-title-link">
                   {item.name}
                 </Link>
               </h3>
-              <div className="best-seller-price-wrapper">
-                <span className="best-seller-current-price">
-                  ₹{item.currentprice}
-                </span>
+              <div className="top-product-price-wrapper">
+                <span className="top-product-current-price">₹{item.currentprice}</span>
                 {item.orignalprice && item.orignalprice > item.currentprice && (
-                  <span className="best-seller-original-price">
+                  <span className="top-product-original-price">
                     ₹{item.orignalprice}
                   </span>
                 )}
@@ -208,7 +204,7 @@ const ProductItems = () => {
               )}
 
               <button
-                className="add-to-cart-top"
+                className="top-product-add-to-cart"
                 onClick={() => addToCart(item.id)}
                 disabled={addingToCartId === item.id || !selectedSizes[item.id]}
               >
