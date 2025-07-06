@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import axios from "axios";
@@ -8,6 +8,7 @@ import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
+import './BestSellerPage.css'
 
 const BestSellerPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ const BestSellerPage = () => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [notification, setNotification] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -71,6 +75,19 @@ const BestSellerPage = () => {
     };
     fetchBestSellers();
   }, []);
+
+  const lastProductRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        // In a real implementation, you would fetch more data here
+        // For now, we'll just simulate infinite scroll with existing data
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -168,6 +185,7 @@ const BestSellerPage = () => {
     }
 
     setFilteredProducts(filtered);
+    setPage(1); // Reset to first page when filters change
   };
 
   if (loading) return <div className="loading">Loading best sellers...</div>;
@@ -176,81 +194,91 @@ const BestSellerPage = () => {
   return (
     <>
       <Header />
-      <h1 className="bestseller">Best Seller</h1>
+      <div className="bestseller-page-container">
+        <h1 className="bestseller">Best Seller</h1>
 
-      {notification && (
-        <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
 
-      <Filters products={bestSellers} onApply={applyFilters} />
-
-      <div className="best-seller-container">
-        <div className="best-seller-cards">
-          {filteredProducts.map((item) => (
-            <div className="best-seller-card" key={item.id}>
-              <Link to={`/product/${item.id}/`}>
-                <div className="best-seller-image-container">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="best-seller-image"
-                    onError={(e) => {
-                      e.target.src = "/placeholder-product.jpg";
-                    }}
-                  />
-                  <span className="best-seller-badge">Best Seller</span>
-                </div>
-              </Link>
-              <div className="best-seller-info">
-                <h3 className="best-seller-title">
-                  <Link to={`/product/${item.id}/`} className="best-seller-title-link">
-                    {item.name}
-                  </Link>
-                </h3>
-                <div className="best-seller-price-wrapper">
-                  <span className="best-seller-current-price">₹{item.currentprice}</span>
-                  {item.orignalprice &&
-                    item.orignalprice > item.currentprice && (
-                      <span className="best-seller-original-price">
-                        ₹{item.orignalprice}
-                      </span>
-                    )}
-                </div>
-
-                {item.sizes?.length > 0 && (
-                  <div className="size-selector">
-                    <select
-                      value={selectedSizes[item.id] || ""}
-                      onChange={(e) => handleSizeChange(item.id, e.target.value)}
-                      className="size-dropdown"
-                    >
-                      {item.sizes.map(({ size, stock }) => (
-                        <option
-                          key={size.id}
-                          value={size.id}
-                          disabled={stock <= 0}
-                        >
-                          {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <button
-                  className="best-seller-add-to-cart"
-                  onClick={() => addToCart(item.id)}
-                  disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+        <div className="bestseller-content">
+          <div className="filters-sidebar">
+            <Filters products={bestSellers} onApply={applyFilters} />
+          </div>
+          
+          <div className="products-grid-container">
+            <div className="best-seller-grid">
+              {filteredProducts.map((item, index) => (
+                <div 
+                  className="best-seller-card" 
+                  key={item.id}
+                  ref={index === filteredProducts.length - 1 ? lastProductRef : null}
                 >
-                  {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
-                </button>
-              </div>
+                  <Link to={`/product/${item.id}/`}>
+                    <div className="best-seller-image-container">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="best-seller-image"
+                        onError={(e) => {
+                          e.target.src = "/placeholder-product.jpg";
+                        }}
+                      />
+                      <span className="best-seller-badge">Best Seller</span>
+                    </div>
+                  </Link>
+                  <div className="best-seller-info">
+                    <h3 className="best-seller-title">
+                      <Link to={`/product/${item.id}/`} className="best-seller-title-link">
+                        {item.name}
+                      </Link>
+                    </h3>
+                    <div className="best-seller-price-wrapper">
+                      <span className="best-seller-current-price">₹{item.currentprice}</span>
+                      {item.orignalprice &&
+                        item.orignalprice > item.currentprice && (
+                          <span className="best-seller-original-price">
+                            ₹{item.orignalprice}
+                          </span>
+                        )}
+                    </div>
+
+                    {item.sizes?.length > 0 && (
+                      <div className="size-selector">
+                        <select
+                          value={selectedSizes[item.id] || ""}
+                          onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                          className="size-dropdown"
+                        >
+                          {item.sizes.map(({ size, stock }) => (
+                            <option
+                              key={size.id}
+                              value={size.id}
+                              disabled={stock <= 0}
+                            >
+                              {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <button
+                      className="best-seller-add-to-cart"
+                      onClick={() => addToCart(item.id)}
+                      disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+                    >
+                      {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
