@@ -6,7 +6,6 @@ const Filters = ({ products = [], onApply }) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
-  // ✅ Safe flatMap handling
   const uniqueSizes = Array.from(
     new Map(
       products
@@ -23,16 +22,14 @@ const Filters = ({ products = [], onApply }) => {
     ).values()
   );
 
-  const applyFilters = () => {
-    onApply({
-      size: selectedSize,
-      color: selectedColor,
-      sort: sortOrder,
-    });
-  };
-
   useEffect(() => {
-    applyFilters(); // Auto apply on filter change
+    if (typeof onApply === "function") {
+      onApply({
+        size: selectedSize,
+        color: selectedColor,
+        sort: sortOrder,
+      });
+    }
   }, [selectedSize, selectedColor, sortOrder]);
 
   return (

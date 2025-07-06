@@ -1,4 +1,3 @@
-// BestSellerPage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../component/Header/Header";
@@ -7,7 +6,6 @@ import Notification from "../../component/Notification/Notification";
 import Filters from "../../component/Filters/Filters";
 import { Link } from "react-router-dom";
 import BackToTop from "../../component/BackToTop/BackToTop";
-// import "./BestSellerPage.css";
 
 const BestSellerPage = () => {
   const [products, setProducts] = useState([]);
@@ -52,6 +50,30 @@ const BestSellerPage = () => {
     fetchBestSellers();
   }, []);
 
+  const applyFilters = ({ size, color, sort }) => {
+    let filtered = [...products];
+
+    if (size) {
+      filtered = filtered.filter((product) =>
+        product.sizes?.some((s) => s.size.id === parseInt(size))
+      );
+    }
+
+    if (color) {
+      filtered = filtered.filter((product) =>
+        product.colors?.some((c) => c.color.id === parseInt(color))
+      );
+    }
+
+    if (sort === "price_low") {
+      filtered.sort((a, b) => a.currentprice - b.currentprice);
+    } else if (sort === "price_high") {
+      filtered.sort((a, b) => b.currentprice - a.currentprice);
+    }
+
+    setFilteredProducts(filtered);
+  };
+
   if (loading) return <div className="loading">Loading Best Sellers...</div>;
 
   return (
@@ -68,10 +90,7 @@ const BestSellerPage = () => {
           />
         )}
 
-        <Filters
-          allProducts={products}
-          onFilterChange={(filtered) => setFilteredProducts(filtered)}
-        />
+        <Filters products={products} onApply={applyFilters} />
 
         <div className="products-grid">
           {filteredProducts.map((product) => (
