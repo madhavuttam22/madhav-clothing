@@ -370,7 +370,7 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
-            // ProductDetailPage.jsx (updated sharing buttons section)
+           {/* sharing buttons */}
 <div className="sharing-section">
   <h4 className="sharing-title">Share this product:</h4>
   <div className="sharing-buttons">
