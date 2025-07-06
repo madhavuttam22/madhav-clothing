@@ -1,5 +1,4 @@
-/* Add this at the top of your ProductDetail.css */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
 
 /* ProductDetailPage.css */
 .product-detail-page {
@@ -829,4 +828,49 @@
 
 .close-modal:hover {
   background: #555;
+}
+
+/* Sharing Buttons */
+.sharing-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.share-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.share-button:hover {
+  transform: scale(1.1);
+}
+
+.share-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.share-button.whatsapp {
+  background-color: #25D366;
+}
+
+.share-button.facebook {
+  background-color: #3b5998;
+}
+
+.share-button.copy-link {
+  background-color: #555;
 }
