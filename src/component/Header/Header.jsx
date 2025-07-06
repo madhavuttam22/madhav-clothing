@@ -6,8 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FiSearch, FiX } from "react-icons/fi";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
-// ⬇️ Add this import
-import { useAuth } from "../context/AuthContext.jsx"; // adjust path if needed
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,7 +19,6 @@ const Header = () => {
 
   const { user } = useAuth();
 
-  // Fetch suggestions as user types
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery.length > 1 && showSearchBar) {
@@ -28,7 +26,7 @@ const Header = () => {
       } else {
         setSuggestions([]);
       }
-    }, 300); // 300ms debounce delay
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery, showSearchBar]);
@@ -90,7 +88,6 @@ const Header = () => {
     }
   };
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -128,9 +125,8 @@ const Header = () => {
       <header className="bg-white border-bottom sticky-top">
         <div className="container-fluid py-2 px-3">
           <div className="d-flex align-items-center justify-content-between">
-            {/* Mobile Menu Button */}
             <button
-              className="btn d-md-none"
+              className="btn d-md-none menu-btn"
               type="button"
               data-bs-toggle="offcanvas"
               data-bs-target="#sidebarMenu"
@@ -140,30 +136,28 @@ const Header = () => {
             </button>
             <div className="fill w-25"></div>
 
-            {/* Logo */}
             <Link
               to={"/"}
-              className="navbar-brand mx-auto d-md-block d-none w-25"
+              className="navbar-brand mx-auto d-md-block d-none w-25 logo-container"
             >
               <img
                 src="https://www.zuclothing.com/cdn/shop/files/ZU_438ede84-8d3d-4544-95ca-ceaafda670cf_70x.png?v=1703589164"
                 alt="ZU Clothing Logo"
                 height="70"
+                className="logo-img"
               />
             </Link>
 
-            {/* Header Icons */}
             <div className="d-flex align-items-center gap-3">
               <a
                 href="#"
-                className="text-dark"
+                className="text-dark icon-hover"
                 onClick={handleProfileClick}
                 style={{ textDecoration: "none" }}
               >
-                <i className="bi bi-person" style={{ fontSize: "20px" }}></i>
+                <i className="bi bi-person profile-icon" style={{ fontSize: "20px" }}></i>
               </a>
 
-              {/* Search Icon and Search Bar */}
               <div className="search-container" ref={suggestionsRef}>
                 {showSearchBar ? (
                   <form onSubmit={handleSearchSubmit} className="search-form">
@@ -208,27 +202,27 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <a href="#" className="text-dark" onClick={handleSearchClick}>
+                  <a href="#" className="text-dark icon-hover" onClick={handleSearchClick}>
                     <i
-                      className="bi bi-search"
+                      className="bi bi-search search-icon"
                       style={{ fontSize: "20px" }}
                     ></i>
                   </a>
                 )}
               </div>
 
-              <Link to={"/cart/"} className="position-relative text-dark">
-                <i className="bi bi-cart" style={{ fontSize: "20px" }}></i>
+              <Link to={"/cart/"} className="position-relative text-dark icon-hover">
+                <i className="bi bi-cart cart-icon" style={{ fontSize: "20px" }}></i>
+                <span className="cart-badge"></span>
               </Link>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="d-none d-md-flex justify-content-center mt-3">
             <ul className="nav">
               <li className="nav-item">
-                <Link to={"/"} className="nav-link" href="">
-                  Home
+                <Link to={"/"} className="nav-link nav-hover" href="">
+                  <span>Home</span>
                 </Link>
               </li>
               <li className="nav-item dropdown">
@@ -284,17 +278,17 @@ const Header = () => {
                 </ul>
               </li>
               <li className="nav-item">
-                <Link to={"/bestseller/"} className="nav-link" href="">
-                  Best Sellers
+                <Link to={"/bestseller/"} className="nav-link nav-hover" href="">
+                  <span>Best Sellers</span>
                 </Link>
               </li>
               <li className="nav-item dropdown">
                 <a
-                  className="nav-link dropdown-toggle"
+                  className="nav-link dropdown-toggle nav-hover"
                   href=""
                   data-bs-toggle="dropdown"
                 >
-                  New Collection
+                  <span>New Collection</span>
                 </a>
                 <ul className="dropdown-menu">
                   <li>
@@ -310,17 +304,17 @@ const Header = () => {
                 </ul>
               </li>
               <li className="nav-item">
-                <a className="nav-link active" href="">
-                  Wholesale
+                <a className="nav-link active nav-hover" href="">
+                  <span>Wholesale</span>
                 </a>
               </li>
               <li className="nav-item dropdown">
                 <a
-                  className="nav-link dropdown-toggle"
+                  className="nav-link dropdown-toggle nav-hover"
                   href=""
                   data-bs-toggle="dropdown"
                 >
-                  Brand
+                  <span>Brand</span>
                 </a>
                 <ul className="dropdown-menu">
                   <li>
@@ -351,13 +345,13 @@ const Header = () => {
                 </ul>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="">
-                  Blogs
+                <a className="nav-link nav-hover" href="">
+                  <span>Blogs</span>
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="">
-                  Contact
+                <a className="nav-link nav-hover" href="">
+                  <span>Contact</span>
                 </a>
               </li>
             </ul>
