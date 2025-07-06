@@ -1,3 +1,6 @@
+/* Add this at the top of your ProductDetail.css */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
 /* ProductDetailPage.css */
 .product-detail-page {
   font-family: 'Arial', sans-serif;
