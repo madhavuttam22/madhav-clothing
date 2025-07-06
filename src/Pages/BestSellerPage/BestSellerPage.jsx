@@ -7,7 +7,7 @@ import Notification from "../../component/Notification/Notification";
 import Filters from "../../component/Filters/Filters";
 import { Link } from "react-router-dom";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import "./BestSellerPage.css";
+// import "./BestSellerPage.css";
 
 const BestSellerPage = () => {
   const [products, setProducts] = useState([]);
