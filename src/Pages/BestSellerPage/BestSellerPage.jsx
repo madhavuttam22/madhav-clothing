@@ -6,12 +6,14 @@ import Notification from "../../component/Notification/Notification";
 import Filters from "../../component/Filters/Filters";
 import { Link } from "react-router-dom";
 import BackToTop from "../../component/BackToTop/BackToTop";
+import "./BestSellerPage.css"; // Optional, if you want to style cards
 
 const BestSellerPage = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState({}); // Track selected size per product
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -74,6 +76,29 @@ const BestSellerPage = () => {
     setFilteredProducts(filtered);
   };
 
+  const handleSizeChange = (productId, selectedSizeId) => {
+    setSelectedSizes((prev) => ({
+      ...prev,
+      [productId]: selectedSizeId,
+    }));
+  };
+
+  const handleAddToCart = (product) => {
+    const selectedSize = selectedSizes[product.id];
+    if (!selectedSize) {
+      showNotification("Please select a size!", "error");
+      return;
+    }
+
+    // TODO: Integrate with your cart logic here
+    console.log("Adding to cart:", {
+      productId: product.id,
+      sizeId: selectedSize,
+    });
+
+    showNotification("Item added to cart!");
+  };
+
   if (loading) return <div className="loading">Loading Best Sellers...</div>;
 
   return (
@@ -108,12 +133,14 @@ const BestSellerPage = () => {
                   />
                 </div>
               </Link>
+
               <div className="product-info-1">
                 <h3 className="product-title">
                   <Link to={`/product/${product.id}/`} className="product-title-link">
                     {product.name}
                   </Link>
                 </h3>
+
                 <div className="product-price-wrapper">
                   <span className="product-current-price">₹{product.currentprice}</span>
                   {product.orignalprice > product.currentprice && (
@@ -121,6 +148,27 @@ const BestSellerPage = () => {
                       ₹{product.orignalprice}
                     </span>
                   )}
+                </div>
+
+                <div className="product-actions">
+                  <select
+                    value={selectedSizes[product.id] || ""}
+                    onChange={(e) => handleSizeChange(product.id, e.target.value)}
+                  >
+                    <option value="">Select Size</option>
+                    {product.sizes?.map((s) => (
+                      <option key={s.size.id} value={s.size.id}>
+                        {s.size.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    className="add-to-cart-btn"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
                 </div>
               </div>
             </div>
