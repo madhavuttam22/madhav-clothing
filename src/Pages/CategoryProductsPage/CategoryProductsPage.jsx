@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import Notification from "../../component/Notification/Notification";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import Filters from "../../component/Filters/Filters"; // ✅ Imported
-
-import "./CategoryProductsPage.css";
+import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
@@ -21,8 +19,11 @@ const CategoryProductsPage = () => {
   const [addingToCartId, setAddingToCartId] = useState(null);
   const [notification, setNotification] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const observer = useRef();
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -71,7 +72,7 @@ const CategoryProductsPage = () => {
         });
 
         setProducts(productsWithDetails);
-        setFilteredProducts(productsWithDetails); // ✅ initially show all
+        setFilteredProducts(productsWithDetails);
         setCategory(category);
 
         const initialSizes = {};
@@ -91,6 +92,19 @@ const CategoryProductsPage = () => {
 
     fetchCategoryProducts();
   }, [category_id]);
+
+  const lastProductRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        // In a real implementation, you would fetch more data here
+        // For now, we'll just simulate infinite scroll with existing data
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -192,6 +206,7 @@ const CategoryProductsPage = () => {
     }
 
     setFilteredProducts(filtered);
+    setPage(1); // Reset to first page when filters change
   };
 
   if (loading) return <div className="loading">Loading products...</div>;
@@ -200,7 +215,7 @@ const CategoryProductsPage = () => {
   return (
     <>
       <Header />
-      <div className="category-products-container">
+      <div className="category-products-page-container">
         <h1 className="category-title">{category?.category || "Category"}</h1>
 
         {notification && (
@@ -211,82 +226,92 @@ const CategoryProductsPage = () => {
           />
         )}
 
-        <Filters products={products} onApply={applyFilters} /> {/* ✅ Filters */}
-
-        <div className="products-grid">
-          {filteredProducts.map((product) => (
-            <div className="product-card" key={product.id}>
-              <Link to={`/product/${product.id}/`}>
-                <div className="product-image-container">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="product-image"
-                    onError={(e) => {
-                      e.target.src = "/placeholder-product.jpg";
-                      e.target.onerror = null;
-                    }}
-                  />
-                  {product.is_best_seller && (
-                    <span className="product-badge">Best Seller</span>
-                  )}
-                  {product.is_top_product && (
-                    <span className="product-badge top-product">Top Product</span>
-                  )}
-                </div>
-              </Link>
-              <div className="product-info-1">
-                <h3 className="product-title">
-                  <Link
-                    to={`/product/${product.id}/`}
-                    className="product-title-link"
-                  >
-                    {product.name}
-                  </Link>
-                </h3>
-                <div className="product-price-wrapper">
-                  <span className="product-current-price">₹{product.currentprice}</span>
-                  {product.orignalprice > product.currentprice && (
-                    <span className="product-original-price">
-                      ₹{product.orignalprice}
-                    </span>
-                  )}
-                </div>
-
-                {product.sizes?.length > 0 && (
-                  <div className="size-selector">
-                    <select
-                      value={selectedSizes[product.id] || ""}
-                      onChange={(e) =>
-                        handleSizeChange(product.id, e.target.value)
-                      }
-                      className="size-dropdown"
-                    >
-                      {product.sizes.map(({ size, stock }) => (
-                        <option
-                          key={size.id}
-                          value={size.id}
-                          disabled={stock <= 0}
-                        >
-                          {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <button
-                  className="product-add-to-cart"
-                  onClick={() => addToCart(product.id)}
-                  disabled={
-                    addingToCartId === product.id || !selectedSizes[product.id]
-                  }
+        <div className="category-content">
+          <div className="filters-sidebar">
+            <Filters products={products} onApply={applyFilters} />
+          </div>
+          
+          <div className="products-grid-container">
+            <div className="products-grid">
+              {filteredProducts.map((product, index) => (
+                <div 
+                  className="product-card" 
+                  key={product.id}
+                  ref={index === filteredProducts.length - 1 ? lastProductRef : null}
                 >
-                  {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
-                </button>
-              </div>
+                  <Link to={`/product/${product.id}/`}>
+                    <div className="product-image-container">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-image"
+                        onError={(e) => {
+                          e.target.src = "/placeholder-product.jpg";
+                          e.target.onerror = null;
+                        }}
+                      />
+                      {product.is_best_seller && (
+                        <span className="product-badge">Best Seller</span>
+                      )}
+                      {product.is_top_product && (
+                        <span className="product-badge top-product">Top Product</span>
+                      )}
+                    </div>
+                  </Link>
+                  <div className="product-info">
+                    <h3 className="product-title">
+                      <Link
+                        to={`/product/${product.id}/`}
+                        className="product-title-link"
+                      >
+                        {product.name}
+                      </Link>
+                    </h3>
+                    <div className="product-price-wrapper">
+                      <span className="product-current-price">₹{product.currentprice}</span>
+                      {product.orignalprice > product.currentprice && (
+                        <span className="product-original-price">
+                          ₹{product.orignalprice}
+                        </span>
+                      )}
+                    </div>
+
+                    {product.sizes?.length > 0 && (
+                      <div className="size-selector">
+                        <select
+                          value={selectedSizes[product.id] || ""}
+                          onChange={(e) =>
+                            handleSizeChange(product.id, e.target.value)
+                          }
+                          className="size-dropdown"
+                        >
+                          {product.sizes.map(({ size, stock }) => (
+                            <option
+                              key={size.id}
+                              value={size.id}
+                              disabled={stock <= 0}
+                            >
+                              {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <button
+                      className="product-add-to-cart"
+                      onClick={() => addToCart(product.id)}
+                      disabled={
+                        addingToCartId === product.id || !selectedSizes[product.id]
+                      }
+                    >
+                      {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
       <Footer />
