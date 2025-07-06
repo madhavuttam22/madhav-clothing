@@ -253,7 +253,7 @@ const CategoryProductsPage = () => {
                         {product.name}
                       </Link>
                     </h3>
-                    <div className="category-price-wrapper">
+                    <div className="category-price-wrapper d-flex justify-content-center">
                       <span className="category-current-price">₹{product.currentprice}</span>
                       {product.orignalprice > product.currentprice && (
                         <span className="category-original-price">

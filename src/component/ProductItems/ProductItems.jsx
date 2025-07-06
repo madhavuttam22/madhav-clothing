@@ -174,7 +174,7 @@ const ProductItems = () => {
                   {item.name}
                 </Link>
               </h3>
-              <div className="top-product-price-wrapper">
+              <div className="top-product-price-wrapper d-flex justify-content-center">
                 <span className="top-product-current-price">₹{item.currentprice}</span>
                 {item.orignalprice && item.orignalprice > item.currentprice && (
                   <span className="top-product-original-price">

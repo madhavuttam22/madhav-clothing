@@ -237,7 +237,7 @@ const BestSellerPage = () => {
                         {item.name}
                       </Link>
                     </h3>
-                    <div className="best-seller-price-wrapper">
+                    <div className="best-seller-price-wrapper d-flex justify-content-center">
                       <span className="best-seller-current-price">₹{item.currentprice}</span>
                       {item.orignalprice &&
                         item.orignalprice > item.currentprice && (
