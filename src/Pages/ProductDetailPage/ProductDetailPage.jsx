@@ -6,17 +6,14 @@ import "./ProductDetail.css";
 import Notification from "../../component/Notification/Notification";
 import { auth } from "../../firebase";
 
-// import { checkAuth } from "../../component/LoginRequired/checkAuth";
-
 const ProductDetailPage = () => {
-  
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [showDescription, setShowDescription] = useState(false); // Toggle for description
+  const [showDescription, setShowDescription] = useState(false);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,14 +27,30 @@ const ProductDetailPage = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const getCookie = (name) => {
-    const cookieValue = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(name + "="));
-    return cookieValue ? cookieValue.split("=")[1] : null;
+  const shareOnWhatsApp = () => {
+    const productUrl = window.location.href;
+    const message = `Check out this product: ${product.name} - ${productUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
-  // In your ProductDetailPage.jsx
+  const shareOnFacebook = () => {
+    const productUrl = window.location.href;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
+    window.open(facebookUrl, '_blank', 'width=600,height=400');
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        showNotification("Link copied to clipboard!", "success");
+      })
+      .catch(() => {
+        showNotification("Failed to copy link", "error");
+      });
+  };
+
   const addToCart = async () => {
     if (!selectedSize) {
       showNotification("Please select a size before adding to cart", "error");
@@ -46,8 +59,6 @@ const ProductDetailPage = () => {
 
     try {
       setIsAddingToCart(true);
-
-      // 🔐 Get Firebase ID token
       const token = await auth.currentUser?.getIdToken();
       if (!token) {
         showNotification("You need to be logged in to add to cart", "error");
@@ -55,7 +66,6 @@ const ProductDetailPage = () => {
         return;
       }
       
-
       const sizeId = selectedSize.id;
       const colorId = selectedColor?.id || null;
 
@@ -65,7 +75,7 @@ const ProductDetailPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ Auth header
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             quantity: quantity,
@@ -167,9 +177,6 @@ const ProductDetailPage = () => {
   const handleColorChange = (colorData) => {
     setSelectedColor(colorData.color);
     updateColorImages(colorData);
-
-    // Instead of setting to null, find if the currently selected size is available for this color
-    // If not, find the first available size
     const availableSizes = product.sizes.filter((size) => size.stock > 0);
     const sizeToSelect =
       availableSizes.find((size) => size.size.id === selectedSize?.id)?.size ||
@@ -190,17 +197,6 @@ const ProductDetailPage = () => {
 
   const toggleDescription = () => {
     setShowDescription(!showDescription);
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard
-      .writeText(window.location.href)
-      .then(() => {
-        showNotification("Link copied to clipboard!", "success");
-      })
-      .catch(() => {
-        showNotification("Failed to copy link", "error");
-      });
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -350,7 +346,7 @@ const ProductDetailPage = () => {
             <div className="action-buttons">
               <button
                 className="add-to-cart"
-                onClick={addToCart} // Changed from onClick={() => addToCart(product.id)}
+                onClick={addToCart}
                 disabled={isAddingToCart || !selectedSize}
               >
                 {isAddingToCart ? (
@@ -374,7 +370,32 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
-            {/* Description Section with Toggle */}
+            {/* Sharing Buttons */}
+            <div className="sharing-buttons">
+              <button 
+                className="share-button whatsapp" 
+                onClick={shareOnWhatsApp}
+                title="Share on WhatsApp"
+              >
+                <i className="fab fa-whatsapp"></i>
+              </button>
+              <button 
+                className="share-button facebook" 
+                onClick={shareOnFacebook}
+                title="Share on Facebook"
+              >
+                <i className="fab fa-facebook-f"></i>
+              </button>
+              <button 
+                className="share-button copy-link" 
+                onClick={copyToClipboard}
+                title="Copy product link"
+              >
+                <i className="fas fa-link"></i>
+              </button>
+            </div>
+
+            {/* Description Section */}
             <div className="product-description-toggle">
               <button
                 className={`description-toggle-button ${
@@ -393,92 +414,77 @@ const ProductDetailPage = () => {
                 </div>
               )}
             </div>
-
-            {/* Commented out other sections */}
-            {/*
-            <div className="product-tabs">
-              <div className="tab">
-                <button>Fabric</button>
-              </div>
-              <div className="tab">
-                <button>Wash Care</button>
-              </div>
-              <div className="tab-content">
-                <p>Content would go here</p>
-              </div>
-            </div>
-            */}
           </div>
         </div>
       </div>
 
-     {/* Size Chart Modal */}
-<div className="size-chart-modal" id="size-chart">
-  <div className="modal-content">
-    <h3>Size Guide</h3>
-    <div className="size-chart-container">
-      <table className="size-chart-table">
-        <thead>
-          <tr>
-            <th>Size</th>
-            <th>Chest (in inches)</th>
-            <th>Length (in inches)</th>
-            <th>Shoulder (in inches)</th>
-            <th>Sleeve (in inches)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>S</td>
-            <td>38</td>
-            <td>26</td>
-            <td>16</td>
-            <td>8.5</td>
-          </tr>
-          <tr>
-            <td>M</td>
-            <td>40</td>
-            <td>27</td>
-            <td>17</td>
-            <td>9</td>
-          </tr>
-          <tr>
-            <td>L</td>
-            <td>42</td>
-            <td>28</td>
-            <td>18</td>
-            <td>9.5</td>
-          </tr>
-          <tr>
-            <td>XL</td>
-            <td>44</td>
-            <td>29</td>
-            <td>19</td>
-            <td>10</td>
-          </tr>
-          <tr>
-            <td>XXL</td>
-            <td>46</td>
-            <td>30</td>
-            <td>20</td>
-            <td>10.5</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div className="size-note">
-      <p><strong>Note:</strong> All measurements are body measurements. Please refer to the product description for fit details.</p>
-    </div>
-    <button
-      className="close-modal"
-      onClick={() =>
-        (document.getElementById("size-chart").style.display = "none")
-      }
-    >
-      Close
-    </button>
-  </div>
-</div>
+      {/* Size Chart Modal */}
+      <div className="size-chart-modal" id="size-chart">
+        <div className="modal-content">
+          <h3>Size Guide</h3>
+          <div className="size-chart-container">
+            <table className="size-chart-table">
+              <thead>
+                <tr>
+                  <th>Size</th>
+                  <th>Chest (in inches)</th>
+                  <th>Length (in inches)</th>
+                  <th>Shoulder (in inches)</th>
+                  <th>Sleeve (in inches)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>S</td>
+                  <td>38</td>
+                  <td>26</td>
+                  <td>16</td>
+                  <td>8.5</td>
+                </tr>
+                <tr>
+                  <td>M</td>
+                  <td>40</td>
+                  <td>27</td>
+                  <td>17</td>
+                  <td>9</td>
+                </tr>
+                <tr>
+                  <td>L</td>
+                  <td>42</td>
+                  <td>28</td>
+                  <td>18</td>
+                  <td>9.5</td>
+                </tr>
+                <tr>
+                  <td>XL</td>
+                  <td>44</td>
+                  <td>29</td>
+                  <td>19</td>
+                  <td>10</td>
+                </tr>
+                <tr>
+                  <td>XXL</td>
+                  <td>46</td>
+                  <td>30</td>
+                  <td>20</td>
+                  <td>10.5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="size-note">
+            <p><strong>Note:</strong> All measurements are body measurements. Please refer to the product description for fit details.</p>
+          </div>
+          <button
+            className="close-modal"
+            onClick={() =>
+              (document.getElementById("size-chart").style.display = "none")
+            }
+          >
+            Close
+          </button>
+        </div>
+      </div>
 
       {notification && (
         <Notification
