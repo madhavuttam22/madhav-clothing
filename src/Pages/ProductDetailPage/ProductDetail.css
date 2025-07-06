@@ -830,37 +830,51 @@
   background: #555;
 }
 
-/* Sharing Buttons */
+/* ProductDetail.css (updated sharing section) */
+.sharing-section {
+  margin: 30px 0;
+  padding: 20px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sharing-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
 .sharing-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .share-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  background-color: #333;
-  color: white;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
   transition: all 0.3s ease;
-  padding: 0;
+  color: white;
 }
 
 .share-button:hover {
-  transform: scale(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .share-button svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .share-button.whatsapp {
@@ -873,4 +887,151 @@
 
 .share-button.copy-link {
   background-color: #555;
+}
+
+/* Main image gallery improvements */
+.main-image {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.main-image:hover img {
+  transform: scale(1.02);
+}
+
+/* Thumbnail improvements */
+.gallery-thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-right: 15px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+}
+
+.thumbnail:hover {
+  border-color: #9702b0;
+}
+
+.thumbnail.active {
+  border: 2px solid #9702b0;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Price section improvements */
+.price-section {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.current-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: #9702b0;
+}
+
+.compare-price {
+  font-size: 20px;
+  color: #999;
+  text-decoration: line-through;
+  margin-left: 10px;
+}
+
+/* Action buttons improvements */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.add-to-cart, .buy-now {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-to-cart {
+  background-color: #9702b0;
+  color: white;
+  border: none;
+}
+
+.add-to-cart:hover {
+  background-color: #7d0299;
+}
+
+.buy-now {
+  background-color: white;
+  color: #9702b0;
+  border: 2px solid #9702b0;
+}
+
+.buy-now:hover {
+  background-color: #f9f0fc;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .product-wrapper {
+    flex-direction: column;
+  }
+  
+  .product-gallery, .product-info {
+    width: 100%;
+    padding: 0;
+  }
+  
+  .gallery-thumbnails {
+    flex-direction: row;
+    margin-right: 0;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .thumbnail {
+    min-width: 70px;
+  }
+  
+  .sharing-buttons {
+    justify-content: space-between;
+  }
+  
+  .share-button {
+    flex: 1;
+    justify-content: center;
+  }
 }
