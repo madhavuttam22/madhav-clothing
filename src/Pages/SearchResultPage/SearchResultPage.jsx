@@ -6,7 +6,7 @@ import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import Filters from "../../component/Filters/Filters";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import "./SearchResults.css";
+import "./SearchResultsPage.css";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
