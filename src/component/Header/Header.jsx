@@ -2,22 +2,28 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Header.css";
 import { IoCallOutline } from "react-icons/io5";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FiSearch, FiX } from "react-icons/fi";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef(null);
   const navigate = useNavigate();
-
+  const location = useLocation();
   const { user } = useAuth();
+
+  // Check active routes
+  const isActive = (path, exact = false) => {
+    return exact 
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -46,11 +52,7 @@ const Header = () => {
 
   const handleProfileClick = (e) => {
     e.preventDefault();
-    if (user) {
-      navigate("/profile/");
-    } else {
-      navigate("/login/");
-    }
+    navigate(user ? "/profile/" : "/login/");
   };
 
   const handleSearchClick = (e) => {
@@ -81,26 +83,17 @@ const Header = () => {
 
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
-    if (e.target.value.length > 1) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
+    setShowSuggestions(e.target.value.length > 1);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target)
-      ) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
         setShowSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -136,10 +129,7 @@ const Header = () => {
             </button>
             <div className="fill w-25"></div>
 
-            <Link
-              to={"/"}
-              className="navbar-brand mx-auto d-md-block d-none w-25 logo-container"
-            >
+            <Link to={"/"} className="navbar-brand mx-auto d-md-block d-none w-25 logo-container">
               <img
                 src="https://www.zuclothing.com/cdn/shop/files/ZU_438ede84-8d3d-4544-95ca-ceaafda670cf_70x.png?v=1703589164"
                 alt="ZU Clothing Logo"
@@ -155,7 +145,7 @@ const Header = () => {
                 onClick={handleProfileClick}
                 style={{ textDecoration: "none" }}
               >
-                <i className="bi bi-person profile-icon" style={{ fontSize: "20px" }}></i>
+                <i className={`bi bi-person profile-icon ${isActive('/profile') ? 'active-icon' : ''}`}></i>
               </a>
 
               <div className="search-container" ref={suggestionsRef}>
@@ -175,10 +165,7 @@ const Header = () => {
                         <button
                           type="button"
                           className="clear-search-btn"
-                          onClick={() => {
-                            setSearchQuery("");
-                            setSuggestions([]);
-                          }}
+                          onClick={() => setSearchQuery("")}
                         >
                           <FiX />
                         </button>
@@ -203,16 +190,13 @@ const Header = () => {
                   </form>
                 ) : (
                   <a href="#" className="text-dark icon-hover" onClick={handleSearchClick}>
-                    <i
-                      className="bi bi-search search-icon"
-                      style={{ fontSize: "20px" }}
-                    ></i>
+                    <i className={`bi bi-search search-icon ${isActive('/search') ? 'active-icon' : ''}`}></i>
                   </a>
                 )}
               </div>
 
               <Link to={"/cart/"} className="position-relative text-dark icon-hover">
-                <i className="bi bi-cart cart-icon" style={{ fontSize: "20px" }}></i>
+                <i className={`bi bi-cart cart-icon ${isActive('/cart') ? 'active-icon' : ''}`}></i>
                 <span className="cart-badge"></span>
               </Link>
             </div>
@@ -221,138 +205,74 @@ const Header = () => {
           <nav className="d-none d-md-flex justify-content-center mt-3">
             <ul className="nav">
               <li className="nav-item">
-                <Link to={"/"} className="nav-link nav-hover" href="">
+                <Link to={"/"} className={`nav-link nav-hover ${isActive('/', true) ? 'active' : ''}`}>
                   <span>Home</span>
                 </Link>
               </li>
               <li className="nav-item dropdown">
                 <ShopDropdown />
-                <ul className="dropdown-menu">
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Coord Sets
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Basic Tshirts
-                    </a>
-                  </li>
-                  <li className="dropdown-submenu">
-                    <a className="dropdown-item dropdown-toggle" href="">
-                      Oversized T-shirt
-                    </a>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a className="dropdown-item" href="">
-                          Printed
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="">
-                          Holographic
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Tie & Dye
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Vest
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Hoodies
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Sweatshirts
-                    </a>
-                  </li>
-                </ul>
               </li>
               <li className="nav-item">
-                <Link to={"/bestseller/"} className="nav-link nav-hover" href="">
+                <Link to={"/bestseller/"} className={`nav-link nav-hover ${isActive('/bestseller') ? 'active' : ''}`}>
                   <span>Best Sellers</span>
                 </Link>
               </li>
               <li className="nav-item dropdown">
                 <a
-                  className="nav-link dropdown-toggle nav-hover"
-                  href=""
+                  className={`nav-link dropdown-toggle nav-hover ${isActive('/new-collection') ? 'active' : ''}`}
+                  href="#"
                   data-bs-toggle="dropdown"
                 >
                   <span>New Collection</span>
                 </a>
                 <ul className="dropdown-menu">
                   <li>
-                    <a className="dropdown-item" href="">
+                    <Link className={`dropdown-item ${isActive('/new-collection/winter') ? 'active-category' : ''}`} to="/new-collection/winter">
                       Winter
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="">
+                    <Link className={`dropdown-item ${isActive('/new-collection/summer') ? 'active-category' : ''}`} to="/new-collection/summer">
                       Summer
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
               <li className="nav-item">
-                <a className="nav-link active nav-hover" href="">
+                <Link to={"/wholesale/"} className={`nav-link nav-hover ${isActive('/wholesale') ? 'active' : ''}`}>
                   <span>Wholesale</span>
-                </a>
+                </Link>
               </li>
               <li className="nav-item dropdown">
                 <a
-                  className="nav-link dropdown-toggle nav-hover"
-                  href=""
+                  className={`nav-link dropdown-toggle nav-hover ${isActive('/brand') ? 'active' : ''}`}
+                  href="#"
                   data-bs-toggle="dropdown"
                 >
                   <span>Brand</span>
                 </a>
                 <ul className="dropdown-menu">
                   <li>
-                    <a className="dropdown-item" href="">
+                    <Link className={`dropdown-item ${isActive('/brand/verticals') ? 'active-category' : ''}`} to="/brand/verticals">
                       Verticals
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a className="dropdown-item" href="">
+                    <Link className={`dropdown-item ${isActive('/brand/about') ? 'active-category' : ''}`} to="/brand/about">
                       About Us
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Why Buy from Us
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      How Apparel is Made
-                    </a>
-                  </li>
-                  <li>
-                    <a className="dropdown-item" href="">
-                      Responsibility
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
               <li className="nav-item">
-                <a className="nav-link nav-hover" href="">
+                <Link to={"/blogs/"} className={`nav-link nav-hover ${isActive('/blogs') ? 'active' : ''}`}>
                   <span>Blogs</span>
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link nav-hover" href="">
+                <Link to={"/contact/"} className={`nav-link nav-hover ${isActive('/contact') ? 'active' : ''}`}>
                   <span>Contact</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>

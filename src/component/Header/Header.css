@@ -141,19 +141,14 @@ header:hover {
     transition: all 0.3s ease;
 }
 
-.icon-hover:hover .profile-icon {
-    color: #9702b0;
-    transform: scale(1.1);
-}
-
-.icon-hover:hover .search-icon {
-    color: #ff00aa;
-    transform: scale(1.1);
-}
-
+.icon-hover:hover .profile-icon,
+.icon-hover:hover .search-icon,
 .icon-hover:hover .cart-icon {
-    color: #9702b0;
     transform: scale(1.1);
+}
+
+.active-icon {
+    color: #9702b0 !important;
 }
 
 .cart-badge {
@@ -317,13 +312,19 @@ header:hover {
     transition: transform 0.3s ease;
 }
 
-.nav-hover:hover::before {
+.nav-hover:hover::before,
+.nav-link.active::before {
     transform: scaleX(1);
     transform-origin: left;
 }
 
-.nav-hover:hover {
+.nav-hover:hover,
+.nav-link.active {
     color: #9702b0 !important;
+}
+
+.nav-link.active {
+    font-weight: 600;
 }
 
 .dropdown-menu {
@@ -342,8 +343,28 @@ header:hover {
 
 .dropdown-item:hover {
     background-color: #f8f8f8;
-    color: #9702b0;
-    padding-left: 25px;
+    color: #9702b0 !important;
+    padding-left: 25px !important;
+}
+
+.active-category {
+    background-color: #f8f8f8 !important;
+    color: #9702b0 !important;
+    font-weight: 500;
+    position: relative;
+    padding-left: 25px !important;
+}
+
+.active-category::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #9702b0;
+    border-radius: 50%;
 }
 
 .dropdown-submenu .dropdown-menu {
@@ -353,17 +374,24 @@ header:hover {
     margin-top: -10px;
 }
 
-/* Active State */
-.nav-link.active {
-    color: #9702b0 !important;
-    font-weight: 600;
+/* Dropdown animation */
+.dropdown-menu {
+    animation: fadeIn 0.2s ease-out;
+    transform-origin: top center;
 }
 
-.nav-link.active::before {
-    transform: scaleX(1);
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Mobile responsive search */
+/* Mobile responsive */
 @media (max-width: 768px) {
     .search-container {
         position: absolute;
@@ -392,14 +420,4 @@ header:hover {
     .nav-link {
         padding: 12px 20px !important;
     }
-}
-
-/* Animation Keyframes */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.suggestions-dropdown {
-    animation: fadeIn 0.3s ease forwards;
 }
