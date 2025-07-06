@@ -204,7 +204,7 @@ const CategoryProductsPage = () => {
   return (
     <>
       <Header />
-      <div className="category-products-page-container">
+      <div className="category-page-container">
         <h1 className="category-title">{category?.category || "Category"}</h1>
 
         {notification && (
@@ -221,42 +221,42 @@ const CategoryProductsPage = () => {
           </div>
           
           <div className="products-grid-container">
-            <div className="products-grid">
+            <div className="category-grid">
               {filteredProducts.map((product, index) => (
                 <div 
-                  className="product-card" 
+                  className="category-card" 
                   key={product.id}
                   ref={index === filteredProducts.length - 1 ? lastProductRef : null}
                 >
                   <Link to={`/product/${product.id}/`}>
-                    <div className="product-image-container">
+                    <div className="category-image-container">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="product-image"
+                        className="category-image"
                         onError={(e) => {
                           e.target.src = "/placeholder-product.jpg";
                           e.target.onerror = null;
                         }}
                       />
                       {product.is_best_seller && (
-                        <span className="product-badge">Best Seller</span>
+                        <span className="category-badge">Best Seller</span>
                       )}
                       {product.is_top_product && (
-                        <span className="product-badge top-product">Top Product</span>
+                        <span className="category-badge top-product">Top Product</span>
                       )}
                     </div>
                   </Link>
-                  <div className="product-info">
-                    <h3 className="product-title">
-                      <Link to={`/product/${product.id}/`} className="product-title-link">
+                  <div className="category-info">
+                    <h3 className="category-product-title">
+                      <Link to={`/product/${product.id}/`} className="category-title-link">
                         {product.name}
                       </Link>
                     </h3>
-                    <div className="product-price-wrapper">
-                      <span className="product-current-price">₹{product.currentprice}</span>
+                    <div className="category-price-wrapper">
+                      <span className="category-current-price">₹{product.currentprice}</span>
                       {product.orignalprice > product.currentprice && (
-                        <span className="product-original-price">
+                        <span className="category-original-price">
                           ₹{product.orignalprice}
                         </span>
                       )}
@@ -283,7 +283,7 @@ const CategoryProductsPage = () => {
                     )}
 
                     <button
-                      className="product-add-to-cart"
+                      className="category-add-to-cart"
                       onClick={() => addToCart(product.id)}
                       disabled={addingToCartId === product.id || !selectedSizes[product.id]}
                     >
