@@ -169,7 +169,7 @@ const ProductItems = () => {
               </div>
             </Link>
             <div className="top-product-info">
-              <h3 className="top-product-title">
+              <h3 className="top-product-title text-center">
                 <Link to={`/product/${item.id}/`} className="top-product-title-link">
                   {item.name}
                 </Link>
