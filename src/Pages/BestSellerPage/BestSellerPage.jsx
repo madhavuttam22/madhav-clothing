@@ -39,10 +39,11 @@ const BestSellerPage = () => {
           return { ...product, image: imageUrl };
         });
 
-        // Set default selected size
+        // Set default selected size (first in-stock or first available)
         const initialSizes = {};
         withImages.forEach((product) => {
-          const defaultSize = product.sizes?.find((s) => s.stock > 0)?.size || product.sizes?.[0]?.size;
+          const defaultSize =
+            product.sizes?.find((s) => s.stock > 0)?.size || product.sizes?.[0]?.size;
           if (defaultSize) {
             initialSizes[product.id] = defaultSize.id;
           }
@@ -99,7 +100,6 @@ const BestSellerPage = () => {
       return;
     }
 
-    // TODO: Replace with real cart API logic
     console.log("Adding to cart:", {
       productId: product.id,
       sizeId: selectedSize,
