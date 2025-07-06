@@ -1,0 +1,25 @@
+.filters-section {
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.filters-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+.filter-group {
+  margin-bottom: 1rem;
+}
+.filter-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+}
+.filter-group select {
+  padding: 0.5rem;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
