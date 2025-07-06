@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./Filters.css";
 
-const Filters = ({ products, onApply }) => {
+const Filters = ({ products = [], onApply }) => {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [sortOrder, setSortOrder] = useState("");
 
+  // ✅ Safe flatMap handling
   const uniqueSizes = Array.from(
     new Map(
       products
-        .flatMap((p) => p.sizes?.map((s) => s.size))
+        .flatMap((p) => (p.sizes?.map((s) => s.size) || []))
         .map((size) => [size?.id, size])
     ).values()
   );
@@ -17,7 +18,7 @@ const Filters = ({ products, onApply }) => {
   const uniqueColors = Array.from(
     new Map(
       products
-        .flatMap((p) => p.colors?.map((c) => c.color))
+        .flatMap((p) => (p.colors?.map((c) => c.color) || []))
         .map((color) => [color?.id, color])
     ).values()
   );
@@ -31,7 +32,7 @@ const Filters = ({ products, onApply }) => {
   };
 
   useEffect(() => {
-    applyFilters(); // Auto apply on mount or changes
+    applyFilters(); // Auto apply on filter change
   }, [selectedSize, selectedColor, sortOrder]);
 
   return (
