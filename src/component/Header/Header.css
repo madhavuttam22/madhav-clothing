@@ -421,3 +421,44 @@ header:hover {
         padding: 12px 20px !important;
     }
 }
+
+/* Active state for all nav items */
+.nav-link.active {
+  color: #9702b0 !important;
+  font-weight: 600;
+}
+
+.nav-link.active::before {
+  transform: scaleX(1);
+}
+
+/* Remove hardcoded active class from wholesale */
+.nav-link.active:not(.nav-hover) {
+  color: inherit;
+  font-weight: inherit;
+}
+
+/* Dropdown active states */
+.dropdown-toggle.active {
+  color: #9702b0 !important;
+}
+
+/* Active category items */
+.active-category {
+  background-color: #f8f8f8 !important;
+  color: #9702b0 !important;
+  font-weight: 500;
+  position: relative;
+}
+
+.active-category::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #9702b0;
+  border-radius: 50%;
+}

@@ -203,46 +203,64 @@ const Header = () => {
           </div>
 
           <nav className="d-none d-md-flex justify-content-center mt-3">
-            <ul className="nav">
-              <li className="nav-item">
-                <Link to={"/"} className={`nav-link nav-hover ${isActive('/', true) ? 'active' : ''}`}>
-                  <span>Home</span>
-                </Link>
-              </li>
-              <li className="nav-item dropdown">
-                <ShopDropdown />
-              </li>
-              <li className="nav-item">
-                <Link to={"/bestseller/"} className={`nav-link nav-hover ${isActive('/bestseller') ? 'active' : ''}`}>
-                  <span>Best Sellers</span>
-                </Link>
-              </li>
-              <li className="nav-item dropdown">
-                <a
-                  className={`nav-link dropdown-toggle nav-hover ${isActive('/new-collection') ? 'active' : ''}`}
-                  href="#"
-                  data-bs-toggle="dropdown"
-                >
-                  <span>New Collection</span>
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className={`dropdown-item ${isActive('/new-collection/winter') ? 'active-category' : ''}`} to="/new-collection/winter">
-                      Winter
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className={`dropdown-item ${isActive('/new-collection/summer') ? 'active-category' : ''}`} to="/new-collection/summer">
-                      Summer
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item">
-                <Link to={"/wholesale/"} className={`nav-link nav-hover ${isActive('/wholesale') ? 'active' : ''}`}>
-                  <span>Wholesale</span>
-                </Link>
-              </li>
+  <ul className="nav">
+    <li className="nav-item">
+      <Link 
+        to="/" 
+        className={`nav-link nav-hover ${isActive('/', true) ? 'active' : ''}`}
+      >
+        <span>Home</span>
+      </Link>
+    </li>
+    
+    <li className="nav-item dropdown">
+      <ShopDropdown />
+    </li>
+    
+    <li className="nav-item">
+      <Link 
+        to="/bestseller" 
+        className={`nav-link nav-hover ${isActive('/bestseller') ? 'active' : ''}`}
+      >
+        <span>Best Sellers</span>
+      </Link>
+    </li>
+    
+    <li className="nav-item dropdown">
+      <Link
+        to="/new-collection"
+        className={`nav-link dropdown-toggle nav-hover ${isActive('/new-collection') ? 'active' : ''}`}
+      >
+        <span>New Collection</span>
+      </Link>
+      <ul className="dropdown-menu">
+        <li>
+          <Link 
+            to="/new-collection/winter" 
+            className={`dropdown-item ${isActive('/new-collection/winter') ? 'active-category' : ''}`}
+          >
+            Winter
+          </Link>
+        </li>
+        <li>
+          <Link 
+            to="/new-collection/summer" 
+            className={`dropdown-item ${isActive('/new-collection/summer') ? 'active-category' : ''}`}
+          >
+            Summer
+          </Link>
+        </li>
+      </ul>
+    </li>
+    
+    <li className="nav-item">
+      <Link 
+        to="/wholesale" 
+        className={`nav-link nav-hover ${isActive('/wholesale') ? 'active' : ''}`}
+      >
+        <span>Wholesale</span>
+      </Link>
+    </li>
               <li className="nav-item dropdown">
                 <a
                   className={`nav-link dropdown-toggle nav-hover ${isActive('/brand') ? 'active' : ''}`}
