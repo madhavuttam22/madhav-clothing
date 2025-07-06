@@ -12,7 +12,7 @@ const BestSellerPage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState(null);
-  const [selectedSizes, setSelectedSizes] = useState({}); // Track selected size per product
+  const [selectedSizes, setSelectedSizes] = useState({});
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -39,8 +39,18 @@ const BestSellerPage = () => {
           return { ...product, image: imageUrl };
         });
 
+        // Set default selected size
+        const initialSizes = {};
+        withImages.forEach((product) => {
+          const defaultSize = product.sizes?.find((s) => s.stock > 0)?.size || product.sizes?.[0]?.size;
+          if (defaultSize) {
+            initialSizes[product.id] = defaultSize.id;
+          }
+        });
+
         setProducts(withImages);
         setFilteredProducts(withImages);
+        setSelectedSizes(initialSizes);
       } catch (error) {
         console.error("Error loading best sellers:", error);
       } finally {
@@ -89,7 +99,7 @@ const BestSellerPage = () => {
       return;
     }
 
-    // TODO: Integrate with your cart logic here
+    // TODO: Replace with real cart API logic
     console.log("Adding to cart:", {
       productId: product.id,
       sizeId: selectedSize,
@@ -133,42 +143,49 @@ const BestSellerPage = () => {
                 </div>
               </Link>
 
-              <div className="product-info-1">
-                <h3 className="product-title">
-                  <Link to={`/product/${product.id}/`} className="product-title-link">
+              <div className="best-seller-info">
+                <h3 className="best-seller-title">
+                  <Link to={`/product/${product.id}/`} className="best-seller-title-link">
                     {product.name}
                   </Link>
                 </h3>
 
-                <div className="product-price-wrapper">
-                  <span className="product-current-price">₹{product.currentprice}</span>
+                <div className="best-seller-price-wrapper">
+                  <span className="best-seller-current-price">₹{product.currentprice}</span>
                   {product.orignalprice > product.currentprice && (
-                    <span className="product-original-price">
+                    <span className="best-seller-original-price">
                       ₹{product.orignalprice}
                     </span>
                   )}
                 </div>
 
-                <div className="product-actions">
-                  <select
-                    value={selectedSizes[product.id] || ""}
-                    onChange={(e) => handleSizeChange(product.id, e.target.value)}
-                  >
-                    <option value="">Select Size</option>
-                    {product.sizes?.map((s) => (
-                      <option key={s.size.id} value={s.size.id}>
-                        {s.size.name}
-                      </option>
-                    ))}
-                  </select>
+                {product.sizes?.length > 0 && (
+                  <div className="size-selector">
+                    <select
+                      className="size-dropdown"
+                      value={selectedSizes[product.id] || ""}
+                      onChange={(e) => handleSizeChange(product.id, e.target.value)}
+                    >
+                      {product.sizes.map(({ size, stock }) => (
+                        <option
+                          key={size.id}
+                          value={size.id}
+                          disabled={stock <= 0}
+                        >
+                          {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-                  <button
-                    className="add-to-cart-btn"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    Add to Cart
-                  </button>
-                </div>
+                <button
+                  className="add-to-cart-top"
+                  onClick={() => handleAddToCart(product)}
+                  disabled={!selectedSizes[product.id]}
+                >
+                  Add to Cart
+                </button>
               </div>
             </div>
           ))}
