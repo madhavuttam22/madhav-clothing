@@ -6,7 +6,6 @@ import Notification from "../../component/Notification/Notification";
 import Filters from "../../component/Filters/Filters";
 import { Link } from "react-router-dom";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import "./BestSellerPage.css"; // Optional, if you want to style cards
 
 const BestSellerPage = () => {
   const [products, setProducts] = useState([]);
