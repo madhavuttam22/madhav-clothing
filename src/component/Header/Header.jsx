@@ -228,24 +228,24 @@ const Header = () => {
     
     <li className="nav-item dropdown">
       <Link
-        to="/new-collection"
-        className={`nav-link dropdown-toggle nav-hover ${isActive('/new-collection') ? 'active' : ''}`}
+        
+        className={`nav-link dropdown-toggle nav-hover `}
       >
         <span>New Collection</span>
       </Link>
       <ul className="dropdown-menu">
         <li>
           <Link 
-            to="/new-collection/winter" 
-            className={`dropdown-item ${isActive('/new-collection/winter') ? 'active-category' : ''}`}
+             
+            className={`dropdown-item `}
           >
             Winter
           </Link>
         </li>
         <li>
           <Link 
-            to="/new-collection/summer" 
-            className={`dropdown-item ${isActive('/new-collection/summer') ? 'active-category' : ''}`}
+             
+            className={`dropdown-item `}
           >
             Summer
           </Link>
@@ -255,15 +255,15 @@ const Header = () => {
     
     <li className="nav-item">
       <Link 
-        to="/wholesale" 
-        className={`nav-link nav-hover ${isActive('/wholesale') ? 'active' : ''}`}
+        
+        className={`nav-link nav-hover `}
       >
         <span>Wholesale</span>
       </Link>
     </li>
               <li className="nav-item dropdown">
                 <a
-                  className={`nav-link dropdown-toggle nav-hover ${isActive('/brand') ? 'active' : ''}`}
+                  className={`nav-link dropdown-toggle nav-hover `}
                   href="#"
                   data-bs-toggle="dropdown"
                 >
@@ -271,24 +271,24 @@ const Header = () => {
                 </a>
                 <ul className="dropdown-menu">
                   <li>
-                    <Link className={`dropdown-item ${isActive('/brand/verticals') ? 'active-category' : ''}`} to="/brand/verticals">
+                    <Link className={`dropdown-item `} to="">
                       Verticals
                     </Link>
                   </li>
                   <li>
-                    <Link className={`dropdown-item ${isActive('/brand/about') ? 'active-category' : ''}`} to="/brand/about">
+                    <Link className={`dropdown-item `} to="">
                       About Us
                     </Link>
                   </li>
                 </ul>
               </li>
               <li className="nav-item">
-                <Link to={"/blogs/"} className={`nav-link nav-hover ${isActive('/blogs') ? 'active' : ''}`}>
+                <Link  className={`nav-link nav-hover `}>
                   <span>Blogs</span>
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to={"/contact/"} className={`nav-link nav-hover ${isActive('/contact') ? 'active' : ''}`}>
+                <Link to={""} className={`nav-link nav-hover`}>
                   <span>Contact</span>
                 </Link>
               </li>
