@@ -94,6 +94,12 @@
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .product-title-link {
@@ -107,6 +113,8 @@
 
 .product-price-wrapper {
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .product-current-price {
@@ -132,6 +140,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .product-add-to-cart {
