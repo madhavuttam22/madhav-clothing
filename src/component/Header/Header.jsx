@@ -255,10 +255,10 @@ const Header = () => {
     
     <li className="nav-item">
       <Link 
-        
+        to={'/allproducts/'}
         className={`nav-link nav-hover `}
       >
-        <span>Wholesale</span>
+        <span>All Products</span>
       </Link>
     </li>
               <li className="nav-item dropdown">
