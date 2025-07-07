@@ -234,7 +234,7 @@ const AllProductsPage = () => {
                       )}
                     </div>
                   </Link>
-                  <div className="product-info">
+                  <div className="product-info w-100 text-center">
                     <h3 className="product-title">
                       <Link to={`/product/${item.id}/`} className="product-title-link">
                         {item.name}
