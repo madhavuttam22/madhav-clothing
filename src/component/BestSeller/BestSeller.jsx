@@ -170,7 +170,7 @@ const BestSeller = () => {
 
       <div className="best-seller-container">
         <div className="best-seller-cards">
-          {bestSellers.slice(0, 6).map((item) => (
+          {bestSellers.slice(0, 8).map((item) => (
             <div className="best-seller-card" key={item.id}>
               <Link to={`/product/${item.id}/`}>
                 <div className="best-seller-image-container">
