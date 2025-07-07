@@ -288,7 +288,7 @@ const Header = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to={""} className={`nav-link nav-hover`}>
+                <Link to={"/contactus/"} className={`nav-link nav-hover`}>
                   <span>Contact</span>
                 </Link>
               </li>
