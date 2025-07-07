@@ -261,16 +261,18 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Color Selection */}
-            {product.colors?.length > 0 && (
-  <div className="product-option">
-    <label>Color:</label>
-    <div className="color-swatches-container">
-      <div className="color-swatches">
+            {product.colors?.length > 0 ? (
+  <div className="product-detail__color-selector">
+    <label className="product-detail__color-label">Color:</label>
+    <div className="product-detail__color-swatches-wrapper">
+      <div className="product-detail__color-swatches">
         {product.colors.map((colorData) => (
           <button
             key={colorData.color.id}
-            className={`color-swatch ${
-              selectedColor?.id === colorData.color.id ? "active" : ""
+            className={`product-detail__color-swatch ${
+              selectedColor?.id === colorData.color.id 
+                ? "product-detail__color-swatch--active" 
+                : ""
             }`}
             style={{
               backgroundColor: colorData.color.hex_code || "#F4C2C2",
@@ -281,13 +283,17 @@ const ProductDetailPage = () => {
         ))}
       </div>
       {selectedColor && (
-        <div className="selected-color-info">
-          <span className="selected-color-name">
+        <div className="product-detail__selected-color">
+          Selected: <span className="product-detail__selected-color-name">
             {selectedColor.name}
           </span>
         </div>
       )}
     </div>
+  </div>
+) : (
+  <div className="product-detail__no-colors">
+    No color options available
   </div>
 )}
 
