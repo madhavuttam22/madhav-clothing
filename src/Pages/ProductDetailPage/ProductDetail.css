@@ -1035,3 +1035,58 @@
     justify-content: center;
   }
 }
+
+/* Color Swatches Container */
+.color-swatches-container {
+  margin-top: 8px;
+}
+
+/* Color Swatches */
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 0;
+  position: relative;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.color-swatch::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+}
+
+.color-swatch.active {
+  border-color: #000;
+  transform: scale(1.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.05);
+}
+
+/* Selected Color Info */
+.selected-color-info {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.selected-color-name {
+  color: #555;
+  font-weight: 500;
+}

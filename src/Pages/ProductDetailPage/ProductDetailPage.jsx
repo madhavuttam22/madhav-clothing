@@ -262,32 +262,34 @@ const ProductDetailPage = () => {
 
             {/* Color Selection */}
             {product.colors?.length > 0 && (
-              <div className="product-option">
-                <label>Color:</label>
-                <div className="color-swatches">
-                  {product.colors.map((colorData) => (
-                    <div
-                      key={colorData.color.id}
-                      className={`color-swatch ${
-                        selectedColor?.id === colorData.color.id ? "active" : ""
-                      }`}
-                      style={{
-                        backgroundColor: colorData.color.hex_code || "#F4C2C2",
-                      }}
-                      onClick={() => handleColorChange(colorData)}
-                      title={colorData.color.name}
-                    >
-                      <span className="sr-only">{colorData.color.name}</span>
-                    </div>
-                  ))}
-                </div>
-                {selectedColor && (
-                  <span className="selected-color-name">
-                    {selectedColor.name}
-                  </span>
-                )}
-              </div>
-            )}
+  <div className="product-option">
+    <label>Color:</label>
+    <div className="color-swatches-container">
+      <div className="color-swatches">
+        {product.colors.map((colorData) => (
+          <button
+            key={colorData.color.id}
+            className={`color-swatch ${
+              selectedColor?.id === colorData.color.id ? "active" : ""
+            }`}
+            style={{
+              backgroundColor: colorData.color.hex_code || "#F4C2C2",
+            }}
+            onClick={() => handleColorChange(colorData)}
+            aria-label={colorData.color.name}
+          />
+        ))}
+      </div>
+      {selectedColor && (
+        <div className="selected-color-info">
+          <span className="selected-color-name">
+            {selectedColor.name}
+          </span>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
             {/* Size Selection */}
             {product.sizes?.length > 0 && (
