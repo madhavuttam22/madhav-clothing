@@ -269,11 +269,7 @@ const Header = () => {
         <span>Brand</span>
       </Link>
     </li>
-              <li className="nav-item">
-                <Link  className={`nav-link nav-hover `}>
-                  <span>Blogs</span>
-                </Link>
-              </li>
+              
               <li className="nav-item">
       <Link 
         to="/contactus" 

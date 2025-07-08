@@ -101,33 +101,54 @@ const ContactPage = () => {
         <div className="contact-container">
           <div className="contact-content">
             <div className="contact-info">
-              <div className="info-card">
-                <div className="info-icon">
-                  <EmailIcon />
-                </div>
-                <h3>Email Us</h3>
-                <p>info@yourcompany.com</p>
-                <a href="mailto:info@yourcompany.com" className="contact-link">Send an email</a>
-              </div>
-              
-              <div className="info-card">
-                <div className="info-icon">
-                  <PhoneIcon />
-                </div>
-                <h3>Call Us</h3>
-                <p>+1 (123) 456-7890</p>
-                <a href="tel:+11234567890" className="contact-link">Call now</a>
-              </div>
-              
-              <div className="info-card">
-                <div className="info-icon">
-                  <LocationIcon />
-                </div>
-                <h3>Visit Us</h3>
-                <p>123 Business Street, City, Country</p>
-                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="contact-link">Get directions</a>
-              </div>
-            </div>
+  <div className="info-card">
+    <div className="info-icon">
+      <EmailIcon />
+    </div>
+    <div className="info-content">
+      <h3>Email Us</h3>
+      <p>info@yourcompany.com</p>
+      <a href="mailto:info@yourcompany.com" className="contact-link">
+        <span>Send an email</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+  
+  <div className="info-card">
+    <div className="info-icon">
+      <PhoneIcon />
+    </div>
+    <div className="info-content">
+      <h3>Call Us</h3>
+      <p>+1 (123) 456-7890</p>
+      <a href="tel:+11234567890" className="contact-link">
+        <span>Call now</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+  
+  <div className="info-card">
+    <div className="info-icon">
+      <LocationIcon />
+    </div>
+    <div className="info-content">
+      <h3>Visit Us</h3>
+      <p>123 Business Street, City, Country</p>
+      <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="contact-link">
+        <span>Get directions</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
             
             <div className="contact-form-container">
               <div className="form-header">
