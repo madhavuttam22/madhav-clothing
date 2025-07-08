@@ -3,6 +3,7 @@ import axios from "axios";
 import "./ContactPage.css";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
+import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationModal";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,6 +54,7 @@ const ContactPage = () => {
         success: true,
         message: "Thank you! We'll contact you soon.",
       });
+      setShowConfirmation(true);
       setFormData({
         name: "",
         email: "",
@@ -68,6 +71,10 @@ const ContactPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const closeConfirmation = () => {
+    setShowConfirmation(false);
   };
 
   // SVG Icons
@@ -364,6 +371,17 @@ const ContactPage = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmation}
+        onClose={closeConfirmation}
+        onConfirm={closeConfirmation}
+        title="Message Sent Successfully!"
+        message="Thank you for contacting us. We'll get back to you soon."
+        confirmText="OK"
+        type="success"
+      />
     </>
   );
 };
