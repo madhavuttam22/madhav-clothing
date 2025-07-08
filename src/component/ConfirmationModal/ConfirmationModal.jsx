@@ -3,7 +3,7 @@ import axios from "axios";
 import "./ContactPage.css";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
-import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationModal";
+import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
