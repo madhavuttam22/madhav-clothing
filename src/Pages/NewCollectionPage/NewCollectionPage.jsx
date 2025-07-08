@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import axios from "axios";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Notification from "../../component/Notification/Notification";
 import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import './NewCollectionPage.css';
+import './NewCollectionPage.css'
 
 const NewCollectionPage = () => {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const NewCollectionPage = () => {
     const fetchNewCollection = async () => {
       try {
         const res = await axios.get(
-          "https://ecco-back-4j3f.onrender.com/api/products/?is_top=true"
+          "https://ecco-back-4j3f.onrender.com/api/products/?is_new=true"
         );
 
         const productsWithData = res.data.map((product) => {
@@ -192,8 +192,8 @@ const NewCollectionPage = () => {
   return (
     <>
       <Header />
-      <div className="newcollection-page-container">
-        <h1 className="newcollection">New Collection</h1>
+      <div className="new-collection-page-container">
+        <h1 className="new-collection">New Collection</h1>
 
         {notification && (
           <Notification
@@ -203,7 +203,7 @@ const NewCollectionPage = () => {
           />
         )}
 
-        <div className="newcollection-content">
+        <div className="new-collection-content">
           <div className="filters-sidebar">
             <Filters products={newCollection} onApply={applyFilters} />
           </div>
