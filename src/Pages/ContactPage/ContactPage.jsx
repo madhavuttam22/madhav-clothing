@@ -26,8 +26,16 @@ const ContactPage = () => {
   };
 
   const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
-      setSubmitStatus({ success: false, message: "All fields except phone are required." });
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.subject ||
+      !formData.message
+    ) {
+      setSubmitStatus({
+        success: false,
+        message: "All fields except phone are required.",
+      });
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -50,11 +58,7 @@ const ContactPage = () => {
         formData,
         { withCredentials: true }
       );
-      setSubmitStatus({
-        success: true,
-        message: "Thank you! We'll contact you soon.",
-      });
-      setShowConfirmation(true);
+      setShowConfirmation(true); // Only show modal on success
       setFormData({
         name: "",
         email: "",
@@ -65,7 +69,8 @@ const ContactPage = () => {
     } catch (error) {
       setSubmitStatus({
         success: false,
-        message: error.response?.data?.error || "Failed to submit. Please try later.",
+        message:
+          error.response?.data?.error || "Failed to submit. Please try later.",
       });
       console.error("Error submitting form:", error);
     } finally {
@@ -278,16 +283,6 @@ const ContactPage = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="contact-form">
-                {submitStatus && (
-                  <div
-                    className={`alert ${
-                      submitStatus.success ? "alert-success" : "alert-error"
-                    }`}
-                  >
-                    {submitStatus.message}
-                  </div>
-                )}
-
                 <div className="form-group">
                   <label htmlFor="name">Name *</label>
                   <input
