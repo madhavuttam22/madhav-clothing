@@ -397,6 +397,7 @@ header:hover {
         position: absolute;
         top: 100%;
         left: 0;
+        width: 100%;
         right: 0;
         background: white;
         padding: 10px;
