@@ -18,6 +18,7 @@ import CategoryProductsPage from './Pages/CategoryProductsPage/CategoryProductsP
 import ProtectedRoute from './routes/ProtectedRoute';
 import AllProductsPage from './Pages/AllProductsPage/AllProductsPage';
 import ContactPage from './Pages/ContactPage/ContactPage';
+import BrandPage from './Pages/BrandPage/BrandPage';
 
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
       <Route path='/register/' element={<Registerpage/>}/>
       <Route path='/allproducts/' element={<AllProductsPage/>}/>
       <Route path='/contactus/' element={<ContactPage/>}/>
+      <Route path='/brand/' element={<BrandPage/>}/>
       <Route path='/cart/' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
       <Route path="/product/:id/" element={<ProductDetailPage />} />
       <Route path='/bestseller/' element={<BestSellerPage/>}/>

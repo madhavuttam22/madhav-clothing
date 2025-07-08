@@ -261,26 +261,15 @@ const Header = () => {
         <span>All Products</span>
       </Link>
     </li>
-              <li className="nav-item dropdown">
-                <a
-                  className={`nav-link dropdown-toggle nav-hover `}
-                  href="#"
-                  data-bs-toggle="dropdown"
+              <li className="nav-item ">
+                <Link 
+                  className={`nav-link nav-hover `}
+                  to={'/brand/'}
+                  
                 >
                   <span>Brand</span>
-                </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className={`dropdown-item `} to="">
-                      Verticals
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className={`dropdown-item `} to="">
-                      About Us
-                    </Link>
-                  </li>
-                </ul>
+                </Link>
+                
               </li>
               <li className="nav-item">
                 <Link  className={`nav-link nav-hover `}>
