@@ -23,16 +23,34 @@ const ContactPage = () => {
     }));
   };
 
+  const validateForm = () => {
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      setSubmitStatus({ success: false, message: "All fields except phone are required." });
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setSubmitStatus({ success: false, message: "Invalid email format." });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
     setSubmitStatus(null);
 
     try {
-      const response = await axios.post("/api/contact/", formData);
+      const response = await axios.post(
+        "https://ecco-back-4j3f.onrender.com/api/contact/",
+        formData,
+        { withCredentials: true }
+      );
       setSubmitStatus({
         success: true,
-        message: "Thank you! Your message has been sent successfully.",
+        message: "Thank you! We'll contact you soon.",
       });
       setFormData({
         name: "",
@@ -44,8 +62,7 @@ const ContactPage = () => {
     } catch (error) {
       setSubmitStatus({
         success: false,
-        message:
-          "There was an error submitting your message. Please try again.",
+        message: error.response?.data?.error || "Failed to submit. Please try later.",
       });
       console.error("Error submitting form:", error);
     } finally {
