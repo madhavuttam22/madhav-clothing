@@ -1,9 +1,13 @@
 import React from 'react';
 import './BrandPage.css';
+import Header from '../../component/Header/Header';
+import Footer from '../../component/Footer/Footer';
 
 const BrandPage = () => {
   return (
-    <div className="brand-page">
+    <>
+    <Header/>
+    <div className="brand-page mt-5">
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Our Brand Story</h1>
@@ -119,6 +123,8 @@ const BrandPage = () => {
         </div>
       </section>
     </div>
+    <Footer/>
+    </>
   );
 };
 
