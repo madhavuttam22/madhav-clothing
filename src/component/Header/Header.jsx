@@ -226,31 +226,13 @@ const Header = () => {
       </Link>
     </li>
     
-    <li className="nav-item dropdown">
-      <Link
-        
-        className={`nav-link dropdown-toggle nav-hover `}
+    <li className="nav-item">
+      <Link 
+        to="/newcollection" 
+        className={`nav-link nav-hover ${isActive('/newcollection') ? 'active' : ''}`}
       >
         <span>New Collection</span>
       </Link>
-      <ul className="dropdown-menu">
-        <li>
-          <Link 
-             
-            className={`dropdown-item `}
-          >
-            Winter
-          </Link>
-        </li>
-        <li>
-          <Link 
-             
-            className={`dropdown-item `}
-          >
-            Summer
-          </Link>
-        </li>
-      </ul>
     </li>
     
     <li className="nav-item">
