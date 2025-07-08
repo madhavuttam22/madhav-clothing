@@ -255,32 +255,33 @@ const Header = () => {
     
     <li className="nav-item">
       <Link 
-        to={'/allproducts/'}
-        className={`nav-link nav-hover `}
+        to="/allproducts" 
+        className={`nav-link nav-hover ${isActive('/allproducts') ? 'active' : ''}`}
       >
         <span>All Products</span>
       </Link>
     </li>
-              <li className="nav-item ">
-                <Link 
-                  className={`nav-link nav-hover `}
-                  to={'/brand/'}
-                  
-                >
-                  <span>Brand</span>
-                </Link>
-                
-              </li>
+              <li className="nav-item">
+      <Link 
+        to="/brand" 
+        className={`nav-link nav-hover ${isActive('/brand') ? 'active' : ''}`}
+      >
+        <span>Brand</span>
+      </Link>
+    </li>
               <li className="nav-item">
                 <Link  className={`nav-link nav-hover `}>
                   <span>Blogs</span>
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to={"/contactus/"} className={`nav-link nav-hover`}>
-                  <span>Contact</span>
-                </Link>
-              </li>
+      <Link 
+        to="/contactus" 
+        className={`nav-link nav-hover ${isActive('/contactus') ? 'active' : ''}`}
+      >
+        <span>Contact</span>
+      </Link>
+    </li>
             </ul>
           </nav>
         </div>

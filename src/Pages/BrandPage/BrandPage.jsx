@@ -7,7 +7,7 @@ const BrandPage = () => {
   return (
     <>
     <Header/>
-    <div className="brand-page mt-5">
+    <div className="brand-page">
       <section className="hero-section">
         <div className="hero-content">
           <h1 className="hero-title">Our Brand Story</h1>
