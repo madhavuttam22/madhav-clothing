@@ -21,6 +21,7 @@ import ContactPage from './Pages/ContactPage/ContactPage';
 import BrandPage from './Pages/BrandPage/BrandPage';
 import NewCollectionPage from './Pages/NewCollectionPage/NewCollectionPage';
 import CheckoutPage from './Pages/CheckoutPage/CheckoutPage';
+import OrderSuccessPage from './Pages/OrderSuccessPage/OrderSuccessPage';
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
     <Routes>
 
       <Route path='/' element={<Homepage/>}/>
+      <Route path='/order-success' element={<OrderSuccessPage/>}/>
       <Route path='/login/' element={<Accountpage/>}/>
       <Route path='/register/' element={<Registerpage/>}/>
       <Route path='/allproducts/' element={<AllProductsPage/>}/>
