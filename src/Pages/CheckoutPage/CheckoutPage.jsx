@@ -6,7 +6,7 @@ import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const location = useLocation();
-  const [cartItems, setCartItems] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
   const [isDirectPurchase, setIsDirectPurchase] = useState(false);
   const [directPurchaseItem, setDirectPurchaseItem] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,12 +26,10 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if this is a direct purchase from product page
     if (location.state?.directPurchase) {
       setIsDirectPurchase(true);
       setDirectPurchaseItem(location.state.product);
       
-      // Pre-fill form with available user data
       const user = auth.currentUser;
       if (user) {
         setFormData(prev => ({
@@ -42,7 +40,6 @@ const CheckoutPage = () => {
         }));
       }
     } else {
-      // Regular cart checkout - fetch cart items
       fetchCartItems();
     }
   }, [location.state]);
@@ -55,10 +52,11 @@ const CheckoutPage = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setCartItems(response.data.items);
+      setCartItems(response.data.items || []);
     } catch (err) {
       console.error('Error fetching cart items:', err);
       setError('Failed to load your cart. Please try again.');
+      setCartItems([]);
     }
   };
 
@@ -71,15 +69,14 @@ const CheckoutPage = () => {
   };
 
   const calculateTotal = () => {
-  if (isDirectPurchase && directPurchaseItem) {
-    return (directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2);
-  }
-  return (cartItems?.reduce((total, item) => total + (item.price * item.quantity), 0) || 0).toFixed(2);
-};
+    if (isDirectPurchase && directPurchaseItem) {
+      return (directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2);
+    }
+    return (cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)).toFixed(2);
+  };
 
   const processPayment = async (orderId, amount) => {
     if (formData.paymentMethod === 'credit_card') {
-      // Razorpay integration
       const options = {
         key: "rzp_test_y4SrKO8SkuVv9g",
         amount: amount * 100,
@@ -123,7 +120,6 @@ const CheckoutPage = () => {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } else {
-      // Cash on delivery
       navigate('/order-success', { 
         state: { 
           orderId,
@@ -163,7 +159,7 @@ const CheckoutPage = () => {
           items: cartItems.map(item => ({
             product_id: item.id,
             quantity: item.quantity,
-            size_id: item.size.id,
+            size_id: item.size?.id || null,
             color_id: item.color?.id || null
           })),
           total_amount: calculateTotal()
@@ -311,10 +307,10 @@ const CheckoutPage = () => {
                 />
                 <span>Credit/Debit Card</span>
                 <div className="payment-icons">
-  <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" />
-  <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" />
-  <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="Rupay" />
-</div>
+                  <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" />
+                  <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" />
+                  <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="Rupay" />
+                </div>
               </label>
 
               <label className="payment-option">
@@ -338,9 +334,9 @@ const CheckoutPage = () => {
                 />
                 <span>UPI Payment</span>
                 <div className="payment-icons">
-  <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Pay" />
-  <img src="https://cdn-icons-png.flaticon.com/512/825/825462.png" alt="PhonePe" />
-</div>
+                  <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Pay" />
+                  <img src="https://cdn-icons-png.flaticon.com/512/825/825462.png" alt="PhonePe" />
+                </div>
               </label>
             </div>
 
@@ -367,34 +363,38 @@ const CheckoutPage = () => {
           <div className="order-items">
             {isDirectPurchase ? (
               <div className="order-item">
-                <img src={directPurchaseItem.image} alt={directPurchaseItem.name} />
+                <img src={directPurchaseItem?.image} alt={directPurchaseItem?.name} />
                 <div className="item-details">
-                  <h4>{directPurchaseItem.name}</h4>
-                  <p>Size: {directPurchaseItem.selectedSize.name}</p>
-                  {directPurchaseItem.selectedColor && (
+                  <h4>{directPurchaseItem?.name}</h4>
+                  <p>Size: {directPurchaseItem?.selectedSize?.name}</p>
+                  {directPurchaseItem?.selectedColor && (
                     <p>Color: {directPurchaseItem.selectedColor.name}</p>
                   )}
-                  <p>Qty: {directPurchaseItem.quantity}</p>
+                  <p>Qty: {directPurchaseItem?.quantity}</p>
                 </div>
                 <div className="item-price">
-                  ₹{(directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2)}
+                  ₹{(directPurchaseItem?.price * directPurchaseItem?.quantity).toFixed(2)}
                 </div>
               </div>
             ) : (
-              cartItems.map(item => (
-                <div key={item.id} className="order-item">
-                  <img src={item.image} alt={item.name} />
-                  <div className="item-details">
-                    <h4>{item.name}</h4>
-                    <p>Size: {item.size}</p>
-                    {item.color && <p>Color: {item.color}</p>}
-                    <p>Qty: {item.quantity}</p>
+              cartItems.length > 0 ? (
+                cartItems.map(item => (
+                  <div key={item.id} className="order-item">
+                    <img src={item.image} alt={item.name} />
+                    <div className="item-details">
+                      <h4>{item.name}</h4>
+                      <p>Size: {item.size?.name || item.size}</p>
+                      {item.color && <p>Color: {item.color?.name || item.color}</p>}
+                      <p>Qty: {item.quantity}</p>
+                    </div>
+                    <div className="item-price">
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </div>
                   </div>
-                  <div className="item-price">
-                    ₹{(item.price * item.quantity).toFixed(2)}
-                  </div>
-                </div>
-              ))
+                ))
+              ) : (
+                <div className="empty-cart-message">Your cart is empty</div>
+              )
             )}
           </div>
 
