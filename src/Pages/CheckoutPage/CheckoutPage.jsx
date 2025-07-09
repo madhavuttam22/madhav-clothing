@@ -89,7 +89,7 @@ const CheckoutPage = () => {
         order_id: orderId,
         handler: async (response) => {
           try {
-            await axios.post('/api/payments/verify/', {
+            await axios.post('https://ecco-back-4j3f.onrender.com/api/payments/verify/', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature
