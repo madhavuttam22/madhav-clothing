@@ -169,6 +169,7 @@ const ProductDetailPage = () => {
           selectedColor,
           quantity,
           price: product.currentprice,
+          image: mainImage || "", // ✅ Pass the image here
         },
       },
     });
