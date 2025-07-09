@@ -6,7 +6,7 @@ import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const location = useLocation();
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(null);
   const [isDirectPurchase, setIsDirectPurchase] = useState(false);
   const [directPurchaseItem, setDirectPurchaseItem] = useState(null);
   const [formData, setFormData] = useState({
@@ -50,7 +50,7 @@ const CheckoutPage = () => {
   const fetchCartItems = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await axios.get('/api/cart/', {
+      const response = await axios.get('https://ecco-back-4j3f.onrender.com/api/cart/', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -71,17 +71,17 @@ const CheckoutPage = () => {
   };
 
   const calculateTotal = () => {
-    if (isDirectPurchase) {
-      return (directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2);
-    }
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
-  };
+  if (isDirectPurchase && directPurchaseItem) {
+    return (directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2);
+  }
+  return (cartItems?.reduce((total, item) => total + (item.price * item.quantity), 0) || 0).toFixed(2);
+};
 
   const processPayment = async (orderId, amount) => {
     if (formData.paymentMethod === 'credit_card') {
       // Razorpay integration
       const options = {
-        key: rzp_test_y4SrKO8SkuVv9g,
+        key: "rzp_test_y4SrKO8SkuVv9g",
         amount: amount * 100,
         currency: 'INR',
         name: 'ZU Clothing',
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
         };
       }
 
-      const response = await axios.post('/api/orders/create/', orderData, {
+      const response = await axios.post('https://ecco-back-4j3f.onrender.com/api/orders/create/', orderData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -311,10 +311,10 @@ const CheckoutPage = () => {
                 />
                 <span>Credit/Debit Card</span>
                 <div className="payment-icons">
-                  <img src="/icons/visa.png" alt="Visa" />
-                  <img src="/icons/mastercard.png" alt="Mastercard" />
-                  <img src="/icons/rupay.png" alt="Rupay" />
-                </div>
+  <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" />
+  <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" />
+  <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="Rupay" />
+</div>
               </label>
 
               <label className="payment-option">
@@ -338,9 +338,9 @@ const CheckoutPage = () => {
                 />
                 <span>UPI Payment</span>
                 <div className="payment-icons">
-                  <img src="/icons/gpay.png" alt="Google Pay" />
-                  <img src="/icons/phonepe.png" alt="PhonePe" />
-                </div>
+  <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Pay" />
+  <img src="https://cdn-icons-png.flaticon.com/512/825/825462.png" alt="PhonePe" />
+</div>
               </label>
             </div>
 
