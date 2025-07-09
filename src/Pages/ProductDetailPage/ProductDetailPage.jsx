@@ -116,7 +116,7 @@ const ProductDetailPage = () => {
     }
   };
 
- const handleBuyNow = async () => {
+const handleBuyNow = async () => {
   if (!selectedSize) {
     showNotification("Please select a size", "error");
     return;
@@ -138,10 +138,11 @@ const ProductDetailPage = () => {
       quantity: quantity,
       size_id: selectedSize.id,
       color_id: selectedColor?.id || null,
+      is_direct_purchase: true // Add this flag
     };
 
     const response = await fetch(
-      `https://ecco-back-4j3f.onrender.com/api/orders/create-direct/`,
+      `https://ecco-back-4j3f.onrender.com/api/orders/create/`, // Use the correct endpoint
       {
         method: "POST",
         headers: {
@@ -152,11 +153,12 @@ const ProductDetailPage = () => {
       }
     );
 
-    const data = await response.json();
-
     if (!response.ok) {
-      throw new Error(data.message || "Failed to create order");
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create order");
     }
+
+    const data = await response.json();
 
     // Navigate to checkout with required order & product details
     navigate("/checkout", {
@@ -169,7 +171,7 @@ const ProductDetailPage = () => {
           selectedColor,
           quantity,
           price: product.currentprice,
-          image: mainImage || "", // ✅ Pass the image here
+          image: mainImage || "",
         },
       },
     });
