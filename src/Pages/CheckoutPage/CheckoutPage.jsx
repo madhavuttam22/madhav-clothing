@@ -25,6 +25,27 @@ const CheckoutPage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Load Razorpay script
+  useEffect(() => {
+    const loadRazorpay = () => {
+      return new Promise((resolve) => {
+        if (window.Razorpay) {
+          resolve(true);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+    };
+
+    loadRazorpay();
+  }, []);
+
+  // Initialize checkout data
   useEffect(() => {
     if (location.state?.directPurchase) {
       setIsDirectPurchase(true);
@@ -68,66 +89,83 @@ const CheckoutPage = () => {
     }));
   };
 
-  const calculateTotal = () => {
-    if (isDirectPurchase && directPurchaseItem) {
-      return (directPurchaseItem.price * directPurchaseItem.quantity).toFixed(2);
+  const calculateTotals = () => {
+    const subtotal = isDirectPurchase && directPurchaseItem 
+      ? directPurchaseItem.price * directPurchaseItem.quantity
+      : cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    
+    const shipping = 50; // Flat rate shipping
+    const discount = subtotal > 1000 ? subtotal * 0.1 : 0;
+    const tax = subtotal * 0.18; // 18% tax
+    const total = subtotal + shipping + tax - discount;
+    
+    return { subtotal, shipping, discount, tax, total };
+  };
+
+  const processPayment = async (orderResponse) => {
+    const { order_id, order_number, total, razorpay_order_id } = orderResponse.data;
+    
+    if (formData.paymentMethod === 'cod') {
+      navigate('/order-success', { 
+        state: { 
+          orderId: order_id, 
+          orderNumber: order_number, 
+          amount: total,
+          paymentMethod: 'cod'
+        } 
+      });
+      return;
     }
-    return (cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)).toFixed(2);
-  };
 
-  // Add this useEffect to load Razorpay script
-useEffect(() => {
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => {
-        resolve(true);
-      };
-      script.onerror = () => {
-        resolve(false);
-      };
-      document.body.appendChild(script);
-    });
-  };
-
-  loadRazorpay();
-}, []);
-
-// Modified processPayment function
-const processPayment = async (orderId, razorpayOrderId, amount) => {
-  if (formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'upi') {
     try {
       const options = {
         key: "rzp_test_y4SrKO8SkuVv9g",
-        amount: amount * 100, // In paise
+        amount: Math.round(total * 100), // Convert to paise
         currency: 'INR',
         name: 'ZU Clothing',
-        description: 'ZU Order Payment',
-        order_id: razorpayOrderId,
-        handler: function (response) {
-          alert(`Payment ID: ${response.razorpay_payment_id}`);
-          navigate('/order-success', {
-            state: {
-              orderId,
-              amount,
-              paymentMethod: formData.paymentMethod,
-              razorpayPaymentId: response.razorpay_payment_id,
-            }
-          });
+        description: `Order #${order_number}`,
+        order_id: razorpay_order_id,
+        handler: async (response) => {
+          try {
+            // Verify payment with backend
+            await axios.post('https://ecco-back-4j3f.onrender.com/api/payments/verify/', {
+              order_id: order_id,
+              payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              signature: response.razorpay_signature
+            }, {
+              headers: {
+                Authorization: `Bearer ${await auth.currentUser.getIdToken()}`
+              }
+            });
+
+            navigate('/order-success', {
+              state: {
+                orderId: order_id,
+                orderNumber: order_number,
+                amount: total,
+                paymentId: response.razorpay_payment_id,
+                paymentMethod: formData.paymentMethod
+              }
+            });
+          } catch (err) {
+            console.error('Payment verification failed:', err);
+            setError('Payment verification failed. Please contact support.');
+            setLoading(false);
+          }
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          contact: formData.phone,
+          contact: formData.phone
         },
         theme: {
           color: '#3399cc'
         },
         modal: {
-          ondismiss: function () {
+          ondismiss: () => {
             setLoading(false);
-            alert('Payment window closed');
+            setError('Payment window was closed. Please try again.');
           }
         }
       };
@@ -136,79 +174,68 @@ const processPayment = async (orderId, razorpayOrderId, amount) => {
       rzp.open();
     } catch (err) {
       console.error('Razorpay error:', err);
-      setError('Payment failed. Please try again.');
+      setError('Payment processing failed. Please try again.');
       setLoading(false);
     }
-  } else {
-    navigate('/order-success', {
-      state: {
-        orderId,
-        amount,
-        paymentMethod: 'cod',
-      }
-    });
-  }
-};
-
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  try {
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) {
-      navigate('/login', { state: { from: '/checkout' } });
-      return;
-    }
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        navigate('/login', { state: { from: '/checkout' } });
+        return;
+      }
 
-    let orderData;
-    if (isDirectPurchase) {
-      orderData = {
+      const { subtotal, shipping, discount, tax, total } = calculateTotals();
+
+      const orderData = {
         ...formData,
-        product_id: directPurchaseItem.id,
-        quantity: directPurchaseItem.quantity,
-        size_id: directPurchaseItem.selectedSize.id,
-        color_id: directPurchaseItem.selectedColor?.id || null,
-        total_amount: calculateTotal(),
-        is_direct_purchase: true
+        subtotal: subtotal.toFixed(2),
+        shipping: shipping.toFixed(2),
+        discount: discount.toFixed(2),
+        tax: tax.toFixed(2),
+        total: total.toFixed(2),
       };
-    } else {
-      orderData = {
-        ...formData,
-        items: cartItems.map(item => ({
+
+      if (isDirectPurchase) {
+        orderData.product_id = directPurchaseItem.id;
+        orderData.quantity = directPurchaseItem.quantity;
+        orderData.size_id = directPurchaseItem.selectedSize.id;
+        orderData.color_id = directPurchaseItem.selectedColor?.id || null;
+        orderData.is_direct_purchase = true;
+      } else {
+        orderData.items = cartItems.map(item => ({
           product_id: item.id,
           quantity: item.quantity,
           size_id: item.size?.id || null,
           color_id: item.color?.id || null
-        })),
-        total_amount: calculateTotal()
-      };
-    }
-
-    // 🔥 Create order via backend and get Razorpay order ID
-    const response = await axios.post(
-      'https://ecco-back-4j3f.onrender.com/api/orders/create/',
-      orderData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        }));
       }
-    );
 
-    const { order_id, razorpay_order_id } = response.data;
+      const response = await axios.post(
+        'https://ecco-back-4j3f.onrender.com/api/orders/create/',
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-    await processPayment(order_id, razorpay_order_id, calculateTotal());
+      await processPayment(response);
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
+      setLoading(false);
+    }
+  };
 
-  } catch (err) {
-    console.error('Checkout error:', err);
-    setError(err.response?.data?.message || 'Checkout failed. Please try again.');
-    setLoading(false);
-  }
-};
-
+  const { subtotal, shipping, discount, tax, total } = calculateTotals();
 
   return (
     <div className="checkout-container">
@@ -347,17 +374,6 @@ const processPayment = async (orderId, razorpayOrderId, amount) => {
                 <input
                   type="radio"
                   name="paymentMethod"
-                  value="cod"
-                  checked={formData.paymentMethod === 'cod'}
-                  onChange={handleInputChange}
-                />
-                <span>Cash on Delivery</span>
-              </label>
-
-              <label className="payment-option">
-                <input
-                  type="radio"
-                  name="paymentMethod"
                   value="upi"
                   checked={formData.paymentMethod === 'upi'}
                   onChange={handleInputChange}
@@ -367,6 +383,17 @@ const processPayment = async (orderId, razorpayOrderId, amount) => {
                   <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Pay" />
                   <img src="https://cdn-icons-png.flaticon.com/512/825/825462.png" alt="PhonePe" />
                 </div>
+              </label>
+
+              <label className="payment-option">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={formData.paymentMethod === 'cod'}
+                  onChange={handleInputChange}
+                />
+                <span>Cash on Delivery</span>
               </label>
             </div>
 
@@ -382,7 +409,7 @@ const processPayment = async (orderId, razorpayOrderId, amount) => {
                   <span className="spinner"></span> Processing...
                 </>
               ) : (
-                `Pay ₹${calculateTotal()}`
+                `Pay ₹${total.toFixed(2)}`
               )}
             </button>
           </form>
@@ -431,25 +458,25 @@ const processPayment = async (orderId, razorpayOrderId, amount) => {
           <div className="order-totals">
             <div className="total-row">
               <span>Subtotal</span>
-              <span>₹{calculateTotal()}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="total-row">
               <span>Shipping</span>
-              <span>FREE</span>
+              <span>₹{shipping.toFixed(2)}</span>
             </div>
-            {Number(calculateTotal()) > 1000 && (
+            <div className="total-row">
+              <span>Tax (18%)</span>
+              <span>₹{tax.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
               <div className="total-row discount">
-                <span>Discount (10%)</span>
-                <span>-₹{(Number(calculateTotal()) * 0.1).toFixed(2)}</span>
+                <span>Discount</span>
+                <span>-₹{discount.toFixed(2)}</span>
               </div>
             )}
             <div className="total-row grand-total">
               <span>Total</span>
-              <span>
-                ₹{Number(calculateTotal()) > 1000 ? 
-                  (Number(calculateTotal()) * 0.9).toFixed(2) : 
-                  calculateTotal()}
-              </span>
+              <span>₹{total.toFixed(2)}</span>
             </div>
           </div>
         </div>
