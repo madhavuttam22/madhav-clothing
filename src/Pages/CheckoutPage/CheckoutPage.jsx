@@ -101,10 +101,23 @@ const processPayment = async (orderId, amount) => {
       // First create a Razorpay order on your server
       const token = await auth.currentUser?.getIdToken();
       const orderResponse = await axios.post(
-        'https://ecco-back-4j3f.onrender.com/api/payments/create-order/',
-        { amount: amount * 100, currency: 'INR' },
-        { headers: { Authorization: `Bearer ${token}` } }
+        'https://ecco-back-4j3f.onrender.com/api/orders/create-razorpay-order/', // Changed endpoint
+        { 
+          amount: amount * 100, 
+          currency: 'INR',
+          order_id: orderId // Your internal order ID
+        },
+        { 
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
       );
+
+      if (!orderResponse.data || !orderResponse.data.id) {
+        throw new Error('Failed to create Razorpay order');
+      }
 
       const razorpayOrderId = orderResponse.data.id;
 
@@ -117,20 +130,35 @@ const processPayment = async (orderId, amount) => {
         order_id: razorpayOrderId,
         handler: async (response) => {
           try {
-            await axios.post('https://ecco-back-4j3f.onrender.com/api/payments/verify/', {
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              order_id: orderId // your backend order ID
-            });
-            navigate('/order-success', { 
-              state: { 
-                orderId,
-                amount,
-                paymentMethod: formData.paymentMethod
+            const verificationResponse = await axios.post(
+              'https://ecco-back-4j3f.onrender.com/api/orders/verify-payment/', // Changed endpoint
+              {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                order_id: orderId // your backend order ID
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
               }
-            });
+            );
+
+            if (verificationResponse.data.success) {
+              navigate('/order-success', { 
+                state: { 
+                  orderId,
+                  amount,
+                  paymentMethod: formData.paymentMethod
+                }
+              });
+            } else {
+              throw new Error('Payment verification failed');
+            }
           } catch (err) {
+            console.error('Verification error:', err);
             setError('Payment verification failed. Please contact support.');
             setLoading(false);
           }
@@ -154,7 +182,7 @@ const processPayment = async (orderId, amount) => {
       rzp.open();
     } catch (err) {
       console.error('Razorpay error:', err);
-      setError('Failed to initialize payment gateway. Please try again.');
+      setError(err.response?.data?.message || 'Failed to initialize payment. Please try again.');
       setLoading(false);
     }
   } else {
