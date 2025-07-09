@@ -98,70 +98,28 @@ useEffect(() => {
 const processPayment = async (orderId, amount) => {
   if (formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'upi') {
     try {
-      // First create a Razorpay order on your server
-      const token = await auth.currentUser?.getIdToken();
-      const orderResponse = await axios.post(
-        'https://ecco-back-4j3f.onrender.com/api/orders/create-razorpay-order/', // Changed endpoint
-        { 
-          amount: amount * 100, 
-          currency: 'INR',
-          order_id: orderId // Your internal order ID
-        },
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
-
-      if (!orderResponse.data || !orderResponse.data.id) {
-        throw new Error('Failed to create Razorpay order');
-      }
-
-      const razorpayOrderId = orderResponse.data.id;
-
+      // For testing without backend - generate a static test order ID
+      const testOrderId = 'order_LO8jzL2q7lR7VQ'; // Static test order ID from Razorpay
+      
       const options = {
-        key: "rzp_test_y4SrKO8SkuVv9g",
-        amount: amount * 100,
+        key: "rzp_test_y4SrKO8SkuVv9g", // Your test API key
+        amount: amount * 100, // Amount in paise
         currency: 'INR',
         name: 'ZU Clothing',
-        description: 'Order Payment',
-        order_id: razorpayOrderId,
-        handler: async (response) => {
-          try {
-            const verificationResponse = await axios.post(
-              'https://ecco-back-4j3f.onrender.com/api/orders/verify-payment/', // Changed endpoint
-              {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                order_id: orderId // your backend order ID
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json'
-                }
-              }
-            );
-
-            if (verificationResponse.data.success) {
-              navigate('/order-success', { 
-                state: { 
-                  orderId,
-                  amount,
-                  paymentMethod: formData.paymentMethod
-                }
-              });
-            } else {
-              throw new Error('Payment verification failed');
+        description: 'Test Transaction',
+        order_id: testOrderId, // Using static test order ID
+        handler: function(response) {
+          // This will be executed after successful payment
+          // For testing, we'll assume payment is always successful
+          alert(`Payment ID: ${response.razorpay_payment_id}`);
+          navigate('/order-success', { 
+            state: { 
+              orderId,
+              amount,
+              paymentMethod: formData.paymentMethod,
+              razorpayPaymentId: response.razorpay_payment_id
             }
-          } catch (err) {
-            console.error('Verification error:', err);
-            setError('Payment verification failed. Please contact support.');
-            setLoading(false);
-          }
+          });
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`,
@@ -172,17 +130,24 @@ const processPayment = async (orderId, amount) => {
           color: '#3399cc'
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: function() {
             setLoading(false);
+            alert('Payment window closed');
           }
         }
       };
       
       const rzp = new window.Razorpay(options);
       rzp.open();
+      
+      // For testing, you can simulate successful payment
+      // rzp.on('payment.success', function(response) {
+      //   console.log(response);
+      // });
+      
     } catch (err) {
       console.error('Razorpay error:', err);
-      setError(err.response?.data?.message || 'Failed to initialize payment. Please try again.');
+      setError('Payment failed. Please try again.');
       setLoading(false);
     }
   } else {
