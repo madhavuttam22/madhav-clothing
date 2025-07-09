@@ -81,7 +81,7 @@ const CheckoutPage = () => {
     if (formData.paymentMethod === 'credit_card') {
       // Razorpay integration
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY,
+        key: rzp_test_y4SrKO8SkuVv9g,
         amount: amount * 100,
         currency: 'INR',
         name: 'ZU Clothing',
