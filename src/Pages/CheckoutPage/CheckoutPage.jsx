@@ -75,31 +75,64 @@ const CheckoutPage = () => {
     return (cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)).toFixed(2);
   };
 
-  const processPayment = async (orderId, amount) => {
-    if (formData.paymentMethod === 'credit_card') {
+  // Add this useEffect to load Razorpay script
+useEffect(() => {
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  loadRazorpay();
+}, []);
+
+// Modified processPayment function
+const processPayment = async (orderId, amount) => {
+  if (formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'upi') {
+    try {
+      // First create a Razorpay order on your server
+      const token = await auth.currentUser?.getIdToken();
+      const orderResponse = await axios.post(
+        'https://ecco-back-4j3f.onrender.com/api/payments/create-order/',
+        { amount: amount * 100, currency: 'INR' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const razorpayOrderId = orderResponse.data.id;
+
       const options = {
         key: "rzp_test_y4SrKO8SkuVv9g",
         amount: amount * 100,
         currency: 'INR',
         name: 'ZU Clothing',
         description: 'Order Payment',
-        order_id: orderId,
+        order_id: razorpayOrderId,
         handler: async (response) => {
           try {
             await axios.post('https://ecco-back-4j3f.onrender.com/api/payments/verify/', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature
+              razorpay_signature: response.razorpay_signature,
+              order_id: orderId // your backend order ID
             });
             navigate('/order-success', { 
               state: { 
                 orderId,
                 amount,
-                paymentMethod: 'card'
+                paymentMethod: formData.paymentMethod
               }
             });
           } catch (err) {
             setError('Payment verification failed. Please contact support.');
+            setLoading(false);
           }
         },
         prefill: {
@@ -119,16 +152,22 @@ const CheckoutPage = () => {
       
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } else {
-      navigate('/order-success', { 
-        state: { 
-          orderId,
-          amount,
-          paymentMethod: 'cod'
-        }
-      });
+    } catch (err) {
+      console.error('Razorpay error:', err);
+      setError('Failed to initialize payment gateway. Please try again.');
+      setLoading(false);
     }
-  };
+  } else {
+    // For COD
+    navigate('/order-success', { 
+      state: { 
+        orderId,
+        amount,
+        paymentMethod: 'cod'
+      }
+    });
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
