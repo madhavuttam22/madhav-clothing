@@ -20,6 +20,7 @@ import AllProductsPage from './Pages/AllProductsPage/AllProductsPage';
 import ContactPage from './Pages/ContactPage/ContactPage';
 import BrandPage from './Pages/BrandPage/BrandPage';
 import NewCollectionPage from './Pages/NewCollectionPage/NewCollectionPage';
+import CheckoutPage from './Pages/CheckoutPage/CheckoutPage';
 
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
       <Route path='/allproducts/' element={<AllProductsPage/>}/>
       <Route path='/contactus/' element={<ContactPage/>}/>
       <Route path='/brand/' element={<BrandPage/>}/>
+      <Route path='/checkout/' element={<CheckoutPage/>}/>
       <Route path='/newcollection/' element={<NewCollectionPage/>}/>
       <Route path='/cart/' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
       <Route path="/product/:id/" element={<ProductDetailPage />} />
