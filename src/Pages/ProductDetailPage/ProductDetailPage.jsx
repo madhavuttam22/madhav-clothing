@@ -132,39 +132,10 @@ const handleBuyNow = async () => {
       return;
     }
 
-    const token = await user.getIdToken();
-    const payload = {
-      product_id: product.id,
-      quantity: quantity,
-      size_id: selectedSize.id,
-      color_id: selectedColor?.id || null,
-      is_direct_purchase: true // Add this flag
-    };
-
-    const response = await fetch(
-      `https://ecco-back-4j3f.onrender.com/api/orders/create/`, // Use the correct endpoint
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to create order");
-    }
-
-    const data = await response.json();
-
-    // Navigate to checkout with required order & product details
+    // Navigate directly to checkout with product details
     navigate("/checkout", {
       state: {
         directPurchase: true,
-        orderId: data.order_id,
         product: {
           ...product,
           selectedSize,
