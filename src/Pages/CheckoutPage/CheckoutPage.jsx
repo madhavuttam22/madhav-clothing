@@ -95,122 +95,120 @@ useEffect(() => {
 }, []);
 
 // Modified processPayment function
-const processPayment = async (orderId, amount) => {
+const processPayment = async (orderId, razorpayOrderId, amount) => {
   if (formData.paymentMethod === 'credit_card' || formData.paymentMethod === 'upi') {
     try {
-      // For testing without backend - generate a static test order ID
-      const testOrderId = 'order_LO8jzL2q7lR7VQ'; // Static test order ID from Razorpay
-      
       const options = {
-        key: "rzp_test_y4SrKO8SkuVv9g", // Your test API key
-        amount: amount * 100, // Amount in paise
+        key: "rzp_test_y4SrKO8SkuVv9g",
+        amount: amount * 100, // In paise
         currency: 'INR',
         name: 'ZU Clothing',
-        description: 'Test Transaction',
-        order_id: testOrderId, // Using static test order ID
-        handler: function(response) {
-          // This will be executed after successful payment
-          // For testing, we'll assume payment is always successful
+        description: 'ZU Order Payment',
+        order_id: razorpayOrderId,
+        handler: function (response) {
           alert(`Payment ID: ${response.razorpay_payment_id}`);
-          navigate('/order-success', { 
-            state: { 
+          navigate('/order-success', {
+            state: {
               orderId,
               amount,
               paymentMethod: formData.paymentMethod,
-              razorpayPaymentId: response.razorpay_payment_id
+              razorpayPaymentId: response.razorpay_payment_id,
             }
           });
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          contact: formData.phone
+          contact: formData.phone,
         },
         theme: {
           color: '#3399cc'
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             setLoading(false);
             alert('Payment window closed');
           }
         }
       };
-      
+
       const rzp = new window.Razorpay(options);
       rzp.open();
-      
-      // For testing, you can simulate successful payment
-      // rzp.on('payment.success', function(response) {
-      //   console.log(response);
-      // });
-      
     } catch (err) {
       console.error('Razorpay error:', err);
       setError('Payment failed. Please try again.');
       setLoading(false);
     }
   } else {
-    // For COD
-    navigate('/order-success', { 
-      state: { 
+    navigate('/order-success', {
+      state: {
         orderId,
         amount,
-        paymentMethod: 'cod'
+        paymentMethod: 'cod',
       }
     });
   }
 };
 
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
-    try {
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) {
-        navigate('/login', { state: { from: '/checkout' } });
-        return;
-      }
+  try {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) {
+      navigate('/login', { state: { from: '/checkout' } });
+      return;
+    }
 
-      let orderData;
-      if (isDirectPurchase) {
-        orderData = {
-          ...formData,
-          product_id: directPurchaseItem.id,
-          quantity: directPurchaseItem.quantity,
-          size_id: directPurchaseItem.selectedSize.id,
-          color_id: directPurchaseItem.selectedColor?.id || null,
-          total_amount: calculateTotal(),
-          is_direct_purchase: true
-        };
-      } else {
-        orderData = {
-          ...formData,
-          items: cartItems.map(item => ({
-            product_id: item.id,
-            quantity: item.quantity,
-            size_id: item.size?.id || null,
-            color_id: item.color?.id || null
-          })),
-          total_amount: calculateTotal()
-        };
-      }
+    let orderData;
+    if (isDirectPurchase) {
+      orderData = {
+        ...formData,
+        product_id: directPurchaseItem.id,
+        quantity: directPurchaseItem.quantity,
+        size_id: directPurchaseItem.selectedSize.id,
+        color_id: directPurchaseItem.selectedColor?.id || null,
+        total_amount: calculateTotal(),
+        is_direct_purchase: true
+      };
+    } else {
+      orderData = {
+        ...formData,
+        items: cartItems.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          size_id: item.size?.id || null,
+          color_id: item.color?.id || null
+        })),
+        total_amount: calculateTotal()
+      };
+    }
 
-      const response = await axios.post('https://ecco-back-4j3f.onrender.com/api/orders/create/', orderData, {
+    // 🔥 Create order via backend and get Razorpay order ID
+    const response = await axios.post(
+      'https://ecco-back-4j3f.onrender.com/api/orders/create/',
+      orderData,
+      {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      });
+      }
+    );
 
-      await processPayment(response.data.order_id, calculateTotal());
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
-      setLoading(false);
-    }
-  };
+    const { order_id, razorpay_order_id } = response.data;
+
+    await processPayment(order_id, razorpay_order_id, calculateTotal());
+
+  } catch (err) {
+    console.error('Checkout error:', err);
+    setError(err.response?.data?.message || 'Checkout failed. Please try again.');
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="checkout-container">
