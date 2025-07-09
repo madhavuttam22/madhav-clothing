@@ -116,7 +116,7 @@ const ProductDetailPage = () => {
     }
   };
 
-  const handleBuyNow = async () => {
+ const handleBuyNow = async () => {
   if (!selectedSize) {
     showNotification("Please select a size", "error");
     return;
@@ -124,14 +124,22 @@ const ProductDetailPage = () => {
 
   try {
     setIsAddingToCart(true);
-    const token = await auth.currentUser?.getIdToken();
-    if (!token) {
-      showNotification("You need to be logged in to proceed", "error");
+
+    const user = auth.currentUser;
+    if (!user) {
+      showNotification("Please login to continue", "error");
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
 
-    // Create a temporary direct purchase order
+    const token = await user.getIdToken();
+    const payload = {
+      product_id: product.id,
+      quantity: quantity,
+      size_id: selectedSize.id,
+      color_id: selectedColor?.id || null,
+    };
+
     const response = await fetch(
       `https://ecco-back-4j3f.onrender.com/api/orders/create-direct/`,
       {
@@ -140,23 +148,19 @@ const ProductDetailPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          product_id: product.id,
-          quantity: quantity,
-          size_id: selectedSize.id,
-          color_id: selectedColor?.id || null,
-        }),
+        body: JSON.stringify(payload),
       }
     );
 
     const data = await response.json();
+
     if (!response.ok) {
       throw new Error(data.message || "Failed to create order");
     }
 
-    // Navigate to checkout with the direct purchase data
-    navigate("/checkout", { 
-      state: { 
+    // Navigate to checkout with required order & product details
+    navigate("/checkout", {
+      state: {
         directPurchase: true,
         orderId: data.order_id,
         product: {
@@ -164,20 +168,21 @@ const ProductDetailPage = () => {
           selectedSize,
           selectedColor,
           quantity,
-          price: product.currentprice
-        }
-      } 
+          price: product.currentprice,
+        },
+      },
     });
   } catch (error) {
     console.error("Buy Now Error:", error);
     showNotification(
-      error.message || "Failed to process your order. Please try again.",
+      error.message || "Something went wrong. Please try again.",
       "error"
     );
   } finally {
     setIsAddingToCart(false);
   }
 };
+
 
   useEffect(() => {
     const fetchProduct = async () => {
