@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Cart.css";
 import Footer from "../Footer/Footer";
 import Header from "../Header/Header";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Notification from "../Notification/Notification";
 import { getAuth } from "firebase/auth";
 
@@ -15,6 +15,8 @@ const Cart = () => {
     error: null,
   });
   const [notification, setNotification] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const navigate = useNavigate();
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -32,7 +34,7 @@ const Cart = () => {
         throw new Error("User not authenticated");
       }
 
-      const token = await user.getIdToken(); // Firebase ID token
+      const token = await user.getIdToken();
 
       const response = await fetch(
         "https://ecco-back-4j3f.onrender.com/api/cart/",
@@ -50,8 +52,6 @@ const Cart = () => {
       }
 
       const data = await response.json();
-      // console.log("Cart API response:", data);
-
       const items = data.items || [];
       const total = data.total || 0;
       const item_count = data.item_count || 0;
@@ -60,13 +60,11 @@ const Cart = () => {
         ...item,
         image: item.image || "/placeholder-product.jpg",
         color_name: item.color || item.color_name || "",
-        color_id: item.color_id || item.color?.id || null,  // ✅ Ensure color_id is captured
+        color_id: item.color_id || item.color?.id || null,
         size_name: item.size_name || "",
         size_id: item.size_id || null,
         product_id: item.product_id || item.id || null,
       }));
-
-
 
       setCartData({
         items: processedItems,
@@ -92,12 +90,6 @@ const Cart = () => {
     fetchCartData();
   }, []);
 
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-  };
-
   const handleCartAction = async (
     productId,
     action,
@@ -106,6 +98,7 @@ const Cart = () => {
     colorId = null
   ) => {
     try {
+      setIsProcessing(true);
       const auth = getAuth();
       const user = auth.currentUser;
 
@@ -114,7 +107,6 @@ const Cart = () => {
       }
 
       const token = await user.getIdToken();
-
       let endpoint = "";
       let body = {};
 
@@ -123,14 +115,19 @@ const Cart = () => {
         body = { size_id: sizeId, color_id: colorId };
       } else if (action === "update") {
         endpoint = `https://ecco-back-4j3f.onrender.com/api/cart/update/${productId}/`;
-        body = { quantity, size_id: sizeId, color_id: colorId };
+        body = { 
+          quantity, 
+          size_id: sizeId, 
+          color_id: colorId,
+          update_quantity: true 
+        };
       }
 
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Firebase token only
+          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
         body: JSON.stringify(body),
@@ -148,10 +145,25 @@ const Cart = () => {
       );
 
       await fetchCartData();
+      
+      // Update cart count in header
+      if (window.updateCartCount) {
+        window.updateCartCount();
+      }
     } catch (error) {
       console.error(`Cart ${action} error:`, error);
       showNotification(error.message || "Something went wrong", "error");
+    } finally {
+      setIsProcessing(false);
     }
+  };
+
+  const handleCheckout = () => {
+    if (cartData.item_count === 0) {
+      showNotification("Your cart is empty", "error");
+      return;
+    }
+    navigate('/checkout');
   };
 
   if (cartData.isLoading) return <div className="loading">Loading cart...</div>;
@@ -186,20 +198,19 @@ const Cart = () => {
                   <div className="item-info">
                     <div className="item-image-container">
                       <img
-  src={item.image}
-  alt={`${item.name} - ${item.color_name || item.color}`}
-  className="item-image"
-  onError={(e) => {
-    e.target.src = "/placeholder-product.jpg";
-  }}
-/>
-
+                        src={item.image}
+                        alt={`${item.name} - ${item.color_name || item.color}`}
+                        className="item-image"
+                        onError={(e) => {
+                          e.target.src = "/placeholder-product.jpg";
+                        }}
+                      />
                     </div>
                     <div className="item-details">
                       <h3 className="item-name">{item.name}</h3>
                       {(item.color_name || item.color) && (
-  <p className="item-variant">Color: {item.color_name || item.color}</p>
-)}
+                        <p className="item-variant">Color: {item.color_name || item.color}</p>
+                      )}
                       {item.size_name && (
                         <p className="item-variant">Size: {item.size_name}</p>
                       )}
@@ -219,7 +230,7 @@ const Cart = () => {
                             item.color_id
                           )
                         }
-                        disabled={item.quantity <= 1}
+                        disabled={item.quantity <= 1 || isProcessing}
                       >
                         -
                       </button>
@@ -234,6 +245,7 @@ const Cart = () => {
                             item.color_id
                           )
                         }
+                        disabled={isProcessing}
                       >
                         +
                       </button>
@@ -249,6 +261,7 @@ const Cart = () => {
                           item.color_id
                         )
                       }
+                      disabled={isProcessing}
                     >
                       Remove
                     </button>
@@ -269,9 +282,13 @@ const Cart = () => {
                 <p className="shipping-note">
                   Shipping & taxes calculated at checkout
                 </p>
-                <Link to="/checkout" className="checkout-btn">
-                  CHECKOUT
-                </Link>
+                <button 
+                  onClick={handleCheckout} 
+                  className="checkout-btn"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Processing...' : 'CHECKOUT'}
+                </button>
               </div>
             </div>
           </>
