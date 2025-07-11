@@ -293,54 +293,12 @@ const Profile = () => {
                 </div>
               )}
 
-              {/* {editMode && (
-                <div className="avatar-upload">
-                  <label htmlFor="avatar-upload" className="upload-button">
-                    <FiUpload className="icon" />
-                    {user.avatar ? "Change Photo" : "Upload Photo"}
-                  </label>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    name="avatar"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    ref={fileInputRef}
-                    hidden
-                  />
-                  {user.avatar && (
-                    <button
-                      type="button"
-                      className="remove-avatar"
-                      onClick={() => {
-                        setUser((prev) => ({ ...prev, avatar: "" }));
-                        const nameParts = user.name.split(" ");
-                        const initials = nameParts
-                          .map((part) => part[0])
-                          .join("")
-                          .toUpperCase();
-                        setUser((prev) => ({ ...prev, initials }));
-                      }}
-                    >
-                      <FiTrash2 className="icon" /> Remove
-                    </button>
-                  )}
-                </div>
-              )} */}
+              
             </div>
 
             <nav className="profile-menu">
               <Link to="" className="menu-item">
                 My Orders
-              </Link>
-              <Link to="" className="menu-item">
-                Wishlist
-              </Link>
-              <Link to="" className="menu-item">
-                Saved Addresses
-              </Link>
-              <Link to="" className="menu-item">
-                Account Settings
               </Link>
             </nav>
           </div>

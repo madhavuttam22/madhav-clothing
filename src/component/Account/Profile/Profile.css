@@ -121,16 +121,21 @@
 }
 
 .menu-item {
-  padding: 0.75rem 1rem;
-  color: #555;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  text-align: center;
+  background: linear-gradient(to right, #d4a3ff, #9d7aff); 
+  color: white !important;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
+
 .menu-item:hover {
-  background-color: #f5f7ff;
-  color: #4a6bff;
+  transform: translateY(-2px);
 }
 
 .profile-details {
