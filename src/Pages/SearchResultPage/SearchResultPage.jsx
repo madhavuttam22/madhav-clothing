@@ -56,31 +56,36 @@ const SearchResults = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://ecco-back-4j3f.onrender.com/api/products/enhanced-search/`,
+        `https://web-production-2449.up.railway.app/api/products/enhanced-search/`,
         { params: { q: searchTerm } }
       );
 
-      const productsWithImagesAndSizes = response.data.results.map((product) => {
-        let imageUrl = "/placeholder-product.jpg";
+      const productsWithImagesAndSizes = response.data.results.map(
+        (product) => {
+          let imageUrl = "/placeholder-product.jpg";
 
-        if (product.colors?.length > 0) {
-          const firstColor = product.colors[0];
-          if (firstColor.images?.length > 0) {
-            const defaultImage = firstColor.images.find((img) => img.is_default);
-            imageUrl = defaultImage?.image_url || firstColor.images[0].image_url;
+          if (product.colors?.length > 0) {
+            const firstColor = product.colors[0];
+            if (firstColor.images?.length > 0) {
+              const defaultImage = firstColor.images.find(
+                (img) => img.is_default
+              );
+              imageUrl =
+                defaultImage?.image_url || firstColor.images[0].image_url;
+            }
           }
+
+          const firstAvailableSize =
+            product.sizes?.find((size) => size.stock > 0)?.size ||
+            product.sizes?.[0]?.size;
+
+          return {
+            ...product,
+            image: imageUrl,
+            defaultSize: firstAvailableSize,
+          };
         }
-
-        const firstAvailableSize =
-          product.sizes?.find((size) => size.stock > 0)?.size ||
-          product.sizes?.[0]?.size;
-
-        return {
-          ...product,
-          image: imageUrl,
-          defaultSize: firstAvailableSize,
-        };
-      });
+      );
 
       setProducts(productsWithImagesAndSizes);
       setFilteredProducts(productsWithImagesAndSizes);
@@ -98,7 +103,7 @@ const SearchResults = () => {
       setError("Failed to load search results. Please try again.");
       try {
         const basicResponse = await axios.get(
-          `https://ecco-back-4j3f.onrender.com/api/products/search/`,
+          `https://web-production-2449.up.railway.app/api/products/search/`,
           { params: { q: searchTerm } }
         );
         setProducts(basicResponse.data.results || []);
@@ -114,7 +119,7 @@ const SearchResults = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `https://ecco-back-4j3f.onrender.com/api/search/suggestions/`,
+        `https://web-production-2449.up.railway.app/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -189,7 +194,7 @@ const SearchResults = () => {
       const colorId = product.colors?.[0]?.color?.id || null;
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -354,7 +359,7 @@ const SearchResults = () => {
               <div className="filters-sidebar">
                 <Filters products={products} onApply={applyFilters} />
               </div>
-              
+
               <div className="products-grid-container">
                 {filteredProducts.length > 0 ? (
                   <>
@@ -379,12 +384,17 @@ const SearchResults = () => {
                           </Link>
                           <div className="best-seller-info">
                             <h3 className="best-seller-title">
-                              <Link to={`/product/${item.id}/`} className="best-seller-title-link">
+                              <Link
+                                to={`/product/${item.id}/`}
+                                className="best-seller-title-link"
+                              >
                                 {item.name}
                               </Link>
                             </h3>
                             <div className="best-seller-price-wrapper d-flex justify-content-center">
-                              <span className="best-seller-current-price">₹{item.currentprice}</span>
+                              <span className="best-seller-current-price">
+                                ₹{item.currentprice}
+                              </span>
                               {item.orignalprice &&
                                 item.orignalprice > item.currentprice && (
                                   <span className="best-seller-original-price">
@@ -397,7 +407,9 @@ const SearchResults = () => {
                               <div className="size-selector">
                                 <select
                                   value={selectedSizes[item.id] || ""}
-                                  onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                                  onChange={(e) =>
+                                    handleSizeChange(item.id, e.target.value)
+                                  }
                                   className="size-dropdown"
                                 >
                                   {item.sizes.map(({ size, stock }) => (
@@ -406,7 +418,8 @@ const SearchResults = () => {
                                       value={size.id}
                                       disabled={stock <= 0}
                                     >
-                                      {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                                      {size.name}{" "}
+                                      {stock <= 0 ? "(Out of Stock)" : ""}
                                     </option>
                                   ))}
                                 </select>
@@ -416,9 +429,14 @@ const SearchResults = () => {
                             <button
                               className="best-seller-add-to-cart"
                               onClick={() => addToCart(item.id)}
-                              disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+                              disabled={
+                                addingToCartId === item.id ||
+                                !selectedSizes[item.id]
+                              }
                             >
-                              {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                              {addingToCartId === item.id
+                                ? "Adding..."
+                                : "Add to Cart"}
                             </button>
                           </div>
                         </div>

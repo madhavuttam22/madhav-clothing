@@ -45,7 +45,7 @@ const ProductItems = () => {
       if (!token) return; // User not logged in, redirected
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -82,7 +82,7 @@ const ProductItems = () => {
     const fetchTopProducts = async () => {
       try {
         const res = await axios.get(
-          "https://ecco-back-4j3f.onrender.com/api/products/?is_top=true"
+          "https://web-production-2449.up.railway.app/api/products/?is_top=true"
         );
 
         const productsWithDetails = res.data.map((product) => {
@@ -98,7 +98,9 @@ const ProductItems = () => {
                 (img) => img.is_default
               );
               imageUrl =
-                defaultImage?.image_url || firstColor.images[0].image_url || imageUrl;
+                defaultImage?.image_url ||
+                firstColor.images[0].image_url ||
+                imageUrl;
             }
           }
 
@@ -170,12 +172,17 @@ const ProductItems = () => {
             </Link>
             <div className="top-product-info">
               <h3 className="top-product-title text-center">
-                <Link to={`/product/${item.id}/`} className="top-product-title-link">
+                <Link
+                  to={`/product/${item.id}/`}
+                  className="top-product-title-link"
+                >
                   {item.name}
                 </Link>
               </h3>
               <div className="top-product-price-wrapper d-flex justify-content-center">
-                <span className="top-product-current-price">₹{item.currentprice}</span>
+                <span className="top-product-current-price">
+                  ₹{item.currentprice}
+                </span>
                 {item.orignalprice && item.orignalprice > item.currentprice && (
                   <span className="top-product-original-price">
                     ₹{item.orignalprice}

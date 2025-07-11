@@ -8,7 +8,7 @@ import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
-import './AllProductsPage.css'
+import "./AllProductsPage.css";
 
 const AllProductsPage = () => {
   const navigate = useNavigate();
@@ -33,16 +33,20 @@ const AllProductsPage = () => {
     const fetchAllProducts = async () => {
       try {
         const res = await axios.get(
-          "https://ecco-back-4j3f.onrender.com/api/products/"
+          "https://web-production-2449.up.railway.app/api/products/"
         );
 
         const productsWithData = res.data.map((product) => {
           let imageUrl = "/placeholder-product.jpg";
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
-            const defaultImage = firstColor.images.find((img) => img.is_default);
+            const defaultImage = firstColor.images.find(
+              (img) => img.is_default
+            );
             imageUrl =
-              defaultImage?.image_url || firstColor.images?.[0]?.image_url || imageUrl;
+              defaultImage?.image_url ||
+              firstColor.images?.[0]?.image_url ||
+              imageUrl;
           }
 
           const firstAvailableSize =
@@ -76,16 +80,19 @@ const AllProductsPage = () => {
     fetchAllProducts();
   }, []);
 
-  const lastProductRef = useCallback(node => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
+  const lastProductRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -125,7 +132,7 @@ const AllProductsPage = () => {
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -146,7 +153,9 @@ const AllProductsPage = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
-      showNotification(data.message || `${product.name} added to cart successfully!`);
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
       }
@@ -207,14 +216,18 @@ const AllProductsPage = () => {
           <div className="filters-sidebar">
             <Filters products={allProducts} onApply={applyFilters} />
           </div>
-          
+
           <div className="products-grid-container">
             <div className="products-grid">
               {filteredProducts.map((item, index) => (
-                <div 
-                  className="product-card" 
+                <div
+                  className="product-card"
                   key={item.id}
-                  ref={index === filteredProducts.length - 1 ? lastProductRef : null}
+                  ref={
+                    index === filteredProducts.length - 1
+                      ? lastProductRef
+                      : null
+                  }
                 >
                   <Link to={`/product/${item.id}/`}>
                     <div className="product-image-container">
@@ -227,21 +240,30 @@ const AllProductsPage = () => {
                         }}
                       />
                       {item.is_best_seller && (
-                        <span className="product-badge best-seller">Best Seller</span>
+                        <span className="product-badge best-seller">
+                          Best Seller
+                        </span>
                       )}
                       {item.is_top_product && (
-                        <span className="product-badge top-product">Top Product</span>
+                        <span className="product-badge top-product">
+                          Top Product
+                        </span>
                       )}
                     </div>
                   </Link>
                   <div className="product-info w-100 text-center">
                     <h3 className="product-title">
-                      <Link to={`/product/${item.id}/`} className="product-title-link">
+                      <Link
+                        to={`/product/${item.id}/`}
+                        className="product-title-link"
+                      >
                         {item.name}
                       </Link>
                     </h3>
                     <div className="product-price-wrapper">
-                      <span className="product-current-price">₹{item.currentprice}</span>
+                      <span className="product-current-price">
+                        ₹{item.currentprice}
+                      </span>
                       {item.orignalprice &&
                         item.orignalprice > item.currentprice && (
                           <span className="product-original-price">
@@ -254,7 +276,9 @@ const AllProductsPage = () => {
                       <div className="size-selector">
                         <select
                           value={selectedSizes[item.id] || ""}
-                          onChange={(e) => handleSizeChange(item.id, e.target.value)}
+                          onChange={(e) =>
+                            handleSizeChange(item.id, e.target.value)
+                          }
                           className="size-dropdown"
                         >
                           {item.sizes.map(({ size, stock }) => (
@@ -273,7 +297,9 @@ const AllProductsPage = () => {
                     <button
                       className="add-to-cart-btn"
                       onClick={() => addToCart(item.id)}
-                      disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+                      disabled={
+                        addingToCartId === item.id || !selectedSizes[item.id]
+                      }
                     >
                       {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
                     </button>

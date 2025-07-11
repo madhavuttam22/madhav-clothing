@@ -24,7 +24,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://ecco-back-4j3f.onrender.com/api/password-reset/",
+        "https://web-production-2449.up.railway.app/api/password-reset/",
         {
           method: "POST",
           headers: {
@@ -71,7 +71,7 @@ const ForgotPassword = () => {
       const token = segments[segments.length - 1];
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/password-reset-confirm/${uidb64}/${token}/`,
+        `https://web-production-2449.up.railway.app/api/password-reset-confirm/${uidb64}/${token}/`,
         {
           method: "POST",
           headers: {

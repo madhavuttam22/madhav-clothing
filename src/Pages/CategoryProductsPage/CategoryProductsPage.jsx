@@ -8,7 +8,7 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
-import './CategoryProductsPage.css';
+import "./CategoryProductsPage.css";
 
 const CategoryProductsPage = () => {
   const { category_id } = useParams();
@@ -35,11 +35,17 @@ const CategoryProductsPage = () => {
     const fetchCategoryProducts = async () => {
       try {
         const [productsRes, categoriesRes] = await Promise.all([
-          axios.get(`https://ecco-back-4j3f.onrender.com/api/categories/${category_id}/products/`),
-          axios.get("https://ecco-back-4j3f.onrender.com/api/categories/"),
+          axios.get(
+            `https://web-production-2449.up.railway.app/api/categories/${category_id}/products/`
+          ),
+          axios.get(
+            "https://web-production-2449.up.railway.app/api/categories/"
+          ),
         ]);
 
-        const category = categoriesRes.data.find(cat => cat.id === parseInt(category_id));
+        const category = categoriesRes.data.find(
+          (cat) => cat.id === parseInt(category_id)
+        );
 
         if (!category) {
           setError("Category not found");
@@ -52,11 +58,18 @@ const CategoryProductsPage = () => {
 
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
-            const defaultImage = firstColor.images.find((img) => img.is_default);
-            imageUrl = defaultImage?.image_url || firstColor.images?.[0]?.image_url || imageUrl;
+            const defaultImage = firstColor.images.find(
+              (img) => img.is_default
+            );
+            imageUrl =
+              defaultImage?.image_url ||
+              firstColor.images?.[0]?.image_url ||
+              imageUrl;
           }
 
-          const firstAvailableSize = product.sizes?.find((size) => size.stock > 0)?.size || product.sizes?.[0]?.size;
+          const firstAvailableSize =
+            product.sizes?.find((size) => size.stock > 0)?.size ||
+            product.sizes?.[0]?.size;
 
           return {
             ...product,
@@ -87,16 +100,19 @@ const CategoryProductsPage = () => {
     fetchCategoryProducts();
   }, [category_id]);
 
-  const lastProductRef = useCallback(node => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
+  const lastProductRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
@@ -133,10 +149,11 @@ const CategoryProductsPage = () => {
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
 
-      const colorId = product.colors?.length > 0 ? product.colors[0].color.id : null;
+      const colorId =
+        product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -157,7 +174,9 @@ const CategoryProductsPage = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
-      showNotification(data.message || `${product.name} added to cart successfully!`);
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
 
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
@@ -219,14 +238,18 @@ const CategoryProductsPage = () => {
           <div className="filters-sidebar">
             <Filters products={products} onApply={applyFilters} />
           </div>
-          
+
           <div className="products-grid-container">
             <div className="category-grid">
               {filteredProducts.map((product, index) => (
-                <div 
-                  className="category-card" 
+                <div
+                  className="category-card"
                   key={product.id}
-                  ref={index === filteredProducts.length - 1 ? lastProductRef : null}
+                  ref={
+                    index === filteredProducts.length - 1
+                      ? lastProductRef
+                      : null
+                  }
                 >
                   <Link to={`/product/${product.id}/`}>
                     <div className="category-image-container">
@@ -243,18 +266,25 @@ const CategoryProductsPage = () => {
                         <span className="category-badge">Best Seller</span>
                       )}
                       {product.is_top_product && (
-                        <span className="category-badge top-product">Top Product</span>
+                        <span className="category-badge top-product">
+                          Top Product
+                        </span>
                       )}
                     </div>
                   </Link>
                   <div className="category-info">
                     <h3 className="category-product-title">
-                      <Link to={`/product/${product.id}/`} className="category-title-link">
+                      <Link
+                        to={`/product/${product.id}/`}
+                        className="category-title-link"
+                      >
                         {product.name}
                       </Link>
                     </h3>
                     <div className="category-price-wrapper d-flex justify-content-center">
-                      <span className="category-current-price">₹{product.currentprice}</span>
+                      <span className="category-current-price">
+                        ₹{product.currentprice}
+                      </span>
                       {product.orignalprice > product.currentprice && (
                         <span className="category-original-price">
                           ₹{product.orignalprice}
@@ -266,7 +296,9 @@ const CategoryProductsPage = () => {
                       <div className="size-selector">
                         <select
                           value={selectedSizes[product.id] || ""}
-                          onChange={(e) => handleSizeChange(product.id, e.target.value)}
+                          onChange={(e) =>
+                            handleSizeChange(product.id, e.target.value)
+                          }
                           className="size-dropdown"
                         >
                           {product.sizes.map(({ size, stock }) => (
@@ -285,9 +317,14 @@ const CategoryProductsPage = () => {
                     <button
                       className="category-add-to-cart"
                       onClick={() => addToCart(product.id)}
-                      disabled={addingToCartId === product.id || !selectedSizes[product.id]}
+                      disabled={
+                        addingToCartId === product.id ||
+                        !selectedSizes[product.id]
+                      }
                     >
-                      {addingToCartId === product.id ? "Adding..." : "Add to Cart"}
+                      {addingToCartId === product.id
+                        ? "Adding..."
+                        : "Add to Cart"}
                     </button>
                   </div>
                 </div>

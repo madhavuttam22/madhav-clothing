@@ -37,7 +37,7 @@ const Cart = () => {
       const token = await user.getIdToken();
 
       const response = await fetch(
-        "https://ecco-back-4j3f.onrender.com/api/cart/",
+        "https://web-production-2449.up.railway.app/api/cart/",
         {
           method: "GET",
           headers: {
@@ -111,15 +111,15 @@ const Cart = () => {
       let body = {};
 
       if (action === "remove") {
-        endpoint = `https://ecco-back-4j3f.onrender.com/api/cart/remove/${productId}/`;
+        endpoint = `https://web-production-2449.up.railway.app/api/cart/remove/${productId}/`;
         body = { size_id: sizeId, color_id: colorId };
       } else if (action === "update") {
-        endpoint = `https://ecco-back-4j3f.onrender.com/api/cart/update/${productId}/`;
-        body = { 
-          quantity, 
-          size_id: sizeId, 
+        endpoint = `https://web-production-2449.up.railway.app/api/cart/update/${productId}/`;
+        body = {
+          quantity,
+          size_id: sizeId,
           color_id: colorId,
-          update_quantity: true 
+          update_quantity: true,
         };
       }
 
@@ -145,7 +145,7 @@ const Cart = () => {
       );
 
       await fetchCartData();
-      
+
       // Update cart count in header
       if (window.updateCartCount) {
         window.updateCartCount();
@@ -163,7 +163,7 @@ const Cart = () => {
       showNotification("Your cart is empty", "error");
       return;
     }
-    navigate('/checkout');
+    navigate("/checkout");
   };
 
   if (cartData.isLoading) return <div className="loading">Loading cart...</div>;
@@ -209,7 +209,9 @@ const Cart = () => {
                     <div className="item-details">
                       <h3 className="item-name">{item.name}</h3>
                       {(item.color_name || item.color) && (
-                        <p className="item-variant">Color: {item.color_name || item.color}</p>
+                        <p className="item-variant">
+                          Color: {item.color_name || item.color}
+                        </p>
                       )}
                       {item.size_name && (
                         <p className="item-variant">Size: {item.size_name}</p>
@@ -282,12 +284,12 @@ const Cart = () => {
                 <p className="shipping-note">
                   Shipping & taxes calculated at checkout
                 </p>
-                <button 
-                  onClick={handleCheckout} 
+                <button
+                  onClick={handleCheckout}
                   className="checkout-btn"
                   disabled={isProcessing}
                 >
-                  {isProcessing ? 'Processing...' : 'CHECKOUT'}
+                  {isProcessing ? "Processing..." : "CHECKOUT"}
                 </button>
               </div>
             </div>

@@ -27,7 +27,7 @@ const BestSeller = () => {
     const fetchBestSellers = async () => {
       try {
         const res = await axios.get(
-          "https://ecco-back-4j3f.onrender.com/api/products/?is_best=true"
+          "https://web-production-2449.up.railway.app/api/products/?is_best=true"
         );
 
         const productsWithImagesAndSizes = res.data.map((product) => {
@@ -90,68 +90,67 @@ const BestSeller = () => {
   };
 
   const addToCart = async (productId) => {
-  const selectedSizeId = selectedSizes[productId];
-  if (!selectedSizeId) {
-    showNotification("Please select a size", "error");
-    return;
-  }
+    const selectedSizeId = selectedSizes[productId];
+    if (!selectedSizeId) {
+      showNotification("Please select a size", "error");
+      return;
+    }
 
-  const product = bestSellers.find((p) => p.id === productId);
-  if (!product) {
-    showNotification("Product not found", "error");
-    return;
-  }
+    const product = bestSellers.find((p) => p.id === productId);
+    if (!product) {
+      showNotification("Product not found", "error");
+      return;
+    }
 
-  try {
-    // 🔐 Check login and get token
-    const token = await checkAuthAndRedirect(navigate, location.pathname);
-    if (!token) return;
+    try {
+      // 🔐 Check login and get token
+      const token = await checkAuthAndRedirect(navigate, location.pathname);
+      if (!token) return;
 
-    setAddingToCartId(productId);
+      setAddingToCartId(productId);
 
-    const colorId =
-      product.colors?.length > 0 ? product.colors[0].color.id : null;
+      const colorId =
+        product.colors?.length > 0 ? product.colors[0].color.id : null;
 
-    const response = await fetch(
-      `https://ecco-back-4j3f.onrender.com/api/cart/add/${productId}/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          quantity: 1,
-          size_id: selectedSizeId,
-          color_id: colorId,
-          update_quantity: true,
-        }),
+      const response = await fetch(
+        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            quantity: 1,
+            size_id: selectedSizeId,
+            color_id: colorId,
+            update_quantity: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to add to cart");
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to add to cart");
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
+
+      if (typeof window.updateCartCount === "function") {
+        window.updateCartCount();
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      showNotification(
+        error.message || "Failed to add to cart. Please try again.",
+        "error"
+      );
+    } finally {
+      setAddingToCartId(null);
     }
-
-    showNotification(
-      data.message || `${product.name} added to cart successfully!`
-    );
-
-    if (typeof window.updateCartCount === "function") {
-      window.updateCartCount();
-    }
-  } catch (error) {
-    console.error("Add to cart error:", error);
-    showNotification(
-      error.message || "Failed to add to cart. Please try again.",
-      "error"
-    );
-  } finally {
-    setAddingToCartId(null);
-  }
-};
-
+  };
 
   if (loading) return <div className="loading">Loading best sellers...</div>;
   if (error) return <div className="error">{error}</div>;

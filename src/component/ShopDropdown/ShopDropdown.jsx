@@ -11,7 +11,7 @@ const ShopDropdown = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "https://ecco-back-4j3f.onrender.com/api/categories/"
+          "https://web-production-2449.up.railway.app/api/categories/"
         );
         setCategories(response.data);
       } catch (error) {
@@ -29,7 +29,9 @@ const ShopDropdown = () => {
   return (
     <>
       <a
-        className={`nav-link dropdown-toggle ${isActive('/category') ? 'active' : ''}`}
+        className={`nav-link dropdown-toggle ${
+          isActive("/category") ? "active" : ""
+        }`}
         href="#"
         data-bs-toggle="dropdown"
       >
@@ -44,7 +46,9 @@ const ShopDropdown = () => {
           categories.map((category) => (
             <li key={category.id}>
               <Link
-                className={`dropdown-item ${isActive(`/category/${category.id}`) ? 'active-category' : ''}`}
+                className={`dropdown-item ${
+                  isActive(`/category/${category.id}`) ? "active-category" : ""
+                }`}
                 to={`/category/${category.id}/products/`}
               >
                 {category.category}

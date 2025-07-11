@@ -8,7 +8,6 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 import { auth } from "../../../firebase"; // Make sure path is correct
 
-
 const Register = () => {
   const [formData, setFormData] = useState({
     first_name: "",
@@ -40,36 +39,41 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const { user } = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-    
-    await updateProfile(user, {
-      displayName: `${formData.first_name} ${formData.last_name}`,
-    });
+    try {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
 
-    const idToken = await user.getIdToken();
+      await updateProfile(user, {
+        displayName: `${formData.first_name} ${formData.last_name}`,
+      });
 
-    // 🔥 Save to Django backend
-    await fetch("https://ecco-back-4j3f.onrender.com/api/register/", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
+      const idToken = await user.getIdToken();
 
-    setShowSuccessModal(true);
-  } catch (error) {
-    console.error("Registration error:", error);
-    showNotification(error.message || "Registration failed. Please try again.", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+      // 🔥 Save to Django backend
+      await fetch("https://web-production-2449.up.railway.app/api/register/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
 
-
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Registration error:", error);
+      showNotification(
+        error.message || "Registration failed. Please try again.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleConfirmSuccess = () => {
     setShowSuccessModal(false);
@@ -144,35 +148,36 @@ const Register = () => {
 
           <p className="text-center">Or</p>
           <button
-  type="button"
-  className="google-login-button"
-  onClick={async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+            type="button"
+            className="google-login-button"
+            onClick={async () => {
+              try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
 
-      const idToken = await user.getIdToken();
+                const idToken = await user.getIdToken();
 
-      // 🔥 Send token to your Django backend to register/save user
-      await fetch("https://ecco-back-4j3f.onrender.com/api/register/", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+                // 🔥 Send token to your Django backend to register/save user
+                await fetch(
+                  "https://web-production-2449.up.railway.app/api/register/",
+                  {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${idToken}`,
+                    },
+                  }
+                );
 
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Google sign-up error:", error);
-      showNotification("Google sign-up failed", "error");
-    }
-  }}
->
-  Continue with Google
-</button>
-
-
+                setShowSuccessModal(true);
+              } catch (error) {
+                console.error("Google sign-up error:", error);
+                showNotification("Google sign-up failed", "error");
+              }
+            }}
+          >
+            Continue with Google
+          </button>
         </form>
 
         <div className="login-link">

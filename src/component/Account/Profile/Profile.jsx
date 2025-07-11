@@ -46,45 +46,47 @@ const Profile = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
- useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-    if (firebaseUser) {
-      try {
-        const idToken = await firebaseUser.getIdToken();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const idToken = await firebaseUser.getIdToken();
 
-        const res = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/me/", {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
+          const res = await fetch(
+            "https://web-production-2449.up.railway.app/api/profile/me/",
+            {
+              headers: {
+                Authorization: `Bearer ${idToken}`,
+              },
+            }
+          );
 
-        const data = await res.json();
+          const data = await res.json();
 
-        setUser({
-          name: data.name || firebaseUser.displayName || "",
-          email: data.email || firebaseUser.email || "",
-          phone: data.phone || firebaseUser.phoneNumber || "",
-          address: data.address || "",
-          avatar: data.avatar || firebaseUser.photoURL || "",
-          initials: (data.name || firebaseUser.displayName || "")
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase(),
-        });
-      } catch (error) {
-        console.error("Error fetching profile from backend:", error);
+          setUser({
+            name: data.name || firebaseUser.displayName || "",
+            email: data.email || firebaseUser.email || "",
+            phone: data.phone || firebaseUser.phoneNumber || "",
+            address: data.address || "",
+            avatar: data.avatar || firebaseUser.photoURL || "",
+            initials: (data.name || firebaseUser.displayName || "")
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase(),
+          });
+        } catch (error) {
+          console.error("Error fetching profile from backend:", error);
+        }
+      } else {
+        navigate("/login/");
       }
-    } else {
-      navigate("/login/");
-    }
 
-    setLoading(false);
-  });
+      setLoading(false);
+    });
 
-  return () => unsubscribe();
-}, [navigate]);
-
+    return () => unsubscribe();
+  }, [navigate]);
 
   // Get CSRF token from cookies
   const getCSRFToken = () => {
@@ -134,108 +136,113 @@ const Profile = () => {
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    if (!user.name.trim()) throw new Error("Full name is required");
-    if (!user.email.trim()) throw new Error("Email is required");
-
-    const formData = new FormData();
-    const nameParts = user.name.trim().split(/\s+/);
-    formData.append("first_name", nameParts[0] || "");
-    formData.append("last_name", nameParts.slice(1).join(" ") || "");
-    formData.append("email", user.email.trim());
-    if (user.phone) formData.append("phone", user.phone.trim());
-    if (user.address) formData.append("address", user.address.trim());
-
-    if (fileInputRef.current?.files[0]) {
-      const file = fileInputRef.current.files[0];
-      if (!file.type.startsWith("image/")) throw new Error("Please upload an image file");
-      if (file.size > 2 * 1024 * 1024) throw new Error("Image size should be less than 2MB");
-      formData.append("avatar", file);
-    }
-
-    const idToken = await auth.currentUser.getIdToken();
-
-    console.log("📤 Sending formData to backend...");
-    for (let pair of formData.entries()) {
-      console.log(`🧾 ${pair[0]}: ${pair[1]}`);
-    }
-
-    console.log("🔐 Firebase ID Token:", idToken);
-
-    const response = await fetch("https://ecco-back-4j3f.onrender.com/api/profile/update/", {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: formData,
-    });
-
-    console.log("📥 Raw response:", response);
-
-    let data;
     try {
-      data = await response.json();
-      console.log("✅ Parsed response JSON:", data);
-    } catch (jsonError) {
-      console.error("❌ Failed to parse JSON response:", jsonError);
-      const text = await response.text();
-      console.error("🔍 Raw response text instead:", text);
-      throw new Error("Server did not return JSON. Check backend.");
-    }
+      if (!user.name.trim()) throw new Error("Full name is required");
+      if (!user.email.trim()) throw new Error("Email is required");
 
-    if (!response.ok) {
-      throw new Error(data?.detail || data?.message || "Profile update failed");
-    }
+      const formData = new FormData();
+      const nameParts = user.name.trim().split(/\s+/);
+      formData.append("first_name", nameParts[0] || "");
+      formData.append("last_name", nameParts.slice(1).join(" ") || "");
+      formData.append("email", user.email.trim());
+      if (user.phone) formData.append("phone", user.phone.trim());
+      if (user.address) formData.append("address", user.address.trim());
 
-    // Firebase updates
-    if (auth.currentUser) {
-      await updateProfile(auth.currentUser, {
-        displayName: user.name,
-        photoURL: user.avatar || null,
-      });
-
-      if (auth.currentUser.email !== user.email) {
-        await updateEmail(auth.currentUser, user.email);
+      if (fileInputRef.current?.files[0]) {
+        const file = fileInputRef.current.files[0];
+        if (!file.type.startsWith("image/"))
+          throw new Error("Please upload an image file");
+        if (file.size > 2 * 1024 * 1024)
+          throw new Error("Image size should be less than 2MB");
+        formData.append("avatar", file);
       }
+
+      const idToken = await auth.currentUser.getIdToken();
+
+      console.log("📤 Sending formData to backend...");
+      for (let pair of formData.entries()) {
+        console.log(`🧾 ${pair[0]}: ${pair[1]}`);
+      }
+
+      console.log("🔐 Firebase ID Token:", idToken);
+
+      const response = await fetch(
+        "https://web-production-2449.up.railway.app/api/profile/update/",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: formData,
+        }
+      );
+
+      console.log("📥 Raw response:", response);
+
+      let data;
+      try {
+        data = await response.json();
+        console.log("✅ Parsed response JSON:", data);
+      } catch (jsonError) {
+        console.error("❌ Failed to parse JSON response:", jsonError);
+        const text = await response.text();
+        console.error("🔍 Raw response text instead:", text);
+        throw new Error("Server did not return JSON. Check backend.");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data?.detail || data?.message || "Profile update failed"
+        );
+      }
+
+      // Firebase updates
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: user.name,
+          photoURL: user.avatar || null,
+        });
+
+        if (auth.currentUser.email !== user.email) {
+          await updateEmail(auth.currentUser, user.email);
+        }
+      }
+
+      setUser((prev) => ({
+        ...prev,
+        name: data.name || prev.name,
+        email: data.email || prev.email,
+        phone: data.phone || prev.phone,
+        address: data.address || prev.address,
+        avatar: data.avatar || prev.avatar,
+        initials: data.avatar
+          ? ""
+          : data.name
+          ? data.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()
+          : prev.initials,
+      }));
+
+      showNotification("Profile updated successfully!");
+      setEditMode(false);
+    } catch (error) {
+      console.error("🔥 Profile update error:", error.message);
+      showNotification(error.message || "An error occurred", "error");
+
+      if (error.message.includes("403") || error.message.includes("CSRF")) {
+        navigate("/login/");
+      }
+    } finally {
+      setLoading(false);
     }
-
-    setUser((prev) => ({
-      ...prev,
-      name: data.name || prev.name,
-      email: data.email || prev.email,
-      phone: data.phone || prev.phone,
-      address: data.address || prev.address,
-      avatar: data.avatar || prev.avatar,
-      initials: data.avatar
-        ? ""
-        : data.name
-        ? data.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-        : prev.initials,
-    }));
-
-    showNotification("Profile updated successfully!");
-    setEditMode(false);
-  } catch (error) {
-    console.error("🔥 Profile update error:", error.message);
-    showNotification(error.message || "An error occurred", "error");
-
-    if (error.message.includes("403") || error.message.includes("CSRF")) {
-      navigate("/login/");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
- 
-
+  };
 
   const handleCloseModal = () => {
     setShowLogoutModal(false);

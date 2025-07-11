@@ -54,7 +54,7 @@ const ContactPage = () => {
 
     try {
       const response = await axios.post(
-        "https://ecco-back-4j3f.onrender.com/api/contact/",
+        "https://web-production-2449.up.railway.app/api/contact/",
         formData,
         { withCredentials: true }
       );

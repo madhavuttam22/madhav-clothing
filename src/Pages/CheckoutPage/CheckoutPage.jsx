@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { auth } from '../../firebase';
-import './CheckoutPage.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { auth } from "../../firebase";
+import "./CheckoutPage.css";
 
 const CheckoutPage = () => {
   const location = useLocation();
@@ -10,16 +10,16 @@ const CheckoutPage = () => {
   const [isDirectPurchase, setIsDirectPurchase] = useState(false);
   const [directPurchaseItem, setDirectPurchaseItem] = useState(null);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'India',
-    paymentMethod: 'credit_card'
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "India",
+    paymentMethod: "credit_card",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -34,8 +34,8 @@ const CheckoutPage = () => {
           return;
         }
 
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
         script.onload = () => resolve(true);
         script.onerror = () => resolve(false);
         document.body.appendChild(script);
@@ -50,14 +50,14 @@ const CheckoutPage = () => {
     if (location.state?.directPurchase) {
       setIsDirectPurchase(true);
       setDirectPurchaseItem(location.state.product);
-      
+
       const user = auth.currentUser;
       if (user) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          email: user.email || '',
-          firstName: user.displayName?.split(' ')[0] || '',
-          lastName: user.displayName?.split(' ')[1] || ''
+          email: user.email || "",
+          firstName: user.displayName?.split(" ")[0] || "",
+          lastName: user.displayName?.split(" ")[1] || "",
         }));
       }
     } else {
@@ -68,51 +68,59 @@ const CheckoutPage = () => {
   const fetchCartItems = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
-      const response = await axios.get('https://ecco-back-4j3f.onrender.com/api/cart/', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        "https://web-production-2449.up.railway.app/api/cart/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
       setCartItems(response.data.items || []);
     } catch (err) {
-      console.error('Error fetching cart items:', err);
-      setError('Failed to load your cart. Please try again.');
+      console.error("Error fetching cart items:", err);
+      setError("Failed to load your cart. Please try again.");
       setCartItems([]);
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const calculateTotals = () => {
-    const subtotal = isDirectPurchase && directPurchaseItem 
-      ? directPurchaseItem.price * directPurchaseItem.quantity
-      : cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    
+    const subtotal =
+      isDirectPurchase && directPurchaseItem
+        ? directPurchaseItem.price * directPurchaseItem.quantity
+        : cartItems.reduce(
+            (total, item) => total + item.price * item.quantity,
+            0
+          );
+
     const shipping = 50; // Flat rate shipping
     const discount = subtotal > 1000 ? subtotal * 0.1 : 0;
     const tax = subtotal * 0.18; // 18% tax
     const total = subtotal + shipping + tax - discount;
-    
+
     return { subtotal, shipping, discount, tax, total };
   };
 
   const processPayment = async (orderResponse) => {
-    const { order_id, order_number, total, razorpay_order_id } = orderResponse.data;
-    
-    if (formData.paymentMethod === 'cod') {
-      navigate('/order-success', { 
-        state: { 
-          orderId: order_id, 
-          orderNumber: order_number, 
+    const { order_id, order_number, total, razorpay_order_id } =
+      orderResponse.data;
+
+    if (formData.paymentMethod === "cod") {
+      navigate("/order-success", {
+        state: {
+          orderId: order_id,
+          orderNumber: order_number,
           amount: total,
-          paymentMethod: 'cod'
-        } 
+          paymentMethod: "cod",
+        },
       });
       return;
     }
@@ -121,60 +129,64 @@ const CheckoutPage = () => {
       const options = {
         key: "rzp_test_y4SrKO8SkuVv9g",
         amount: Math.round(total * 100), // Convert to paise
-        currency: 'INR',
-        name: 'ZU Clothing',
+        currency: "INR",
+        name: "ZU Clothing",
         description: `Order #${order_number}`,
         order_id: razorpay_order_id,
         handler: async (response) => {
           try {
             // Verify payment with backend
-            await axios.post('https://ecco-back-4j3f.onrender.com/api/payments/verify/', {
-              order_id: order_id,
-              payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              signature: response.razorpay_signature
-            }, {
-              headers: {
-                Authorization: `Bearer ${await auth.currentUser.getIdToken()}`
+            await axios.post(
+              "https://web-production-2449.up.railway.app/api/payments/verify/",
+              {
+                order_id: order_id,
+                payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${await auth.currentUser.getIdToken()}`,
+                },
               }
-            });
+            );
 
-            navigate('/order-success', {
+            navigate("/order-success", {
               state: {
                 orderId: order_id,
                 orderNumber: order_number,
                 amount: total,
                 paymentId: response.razorpay_payment_id,
-                paymentMethod: formData.paymentMethod
-              }
+                paymentMethod: formData.paymentMethod,
+              },
             });
           } catch (err) {
-            console.error('Payment verification failed:', err);
-            setError('Payment verification failed. Please contact support.');
+            console.error("Payment verification failed:", err);
+            setError("Payment verification failed. Please contact support.");
             setLoading(false);
           }
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          contact: formData.phone
+          contact: formData.phone,
         },
         theme: {
-          color: '#3399cc'
+          color: "#3399cc",
         },
         modal: {
           ondismiss: () => {
             setLoading(false);
-            setError('Payment window was closed. Please try again.');
-          }
-        }
+            setError("Payment window was closed. Please try again.");
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
-      console.error('Razorpay error:', err);
-      setError('Payment processing failed. Please try again.');
+      console.error("Razorpay error:", err);
+      setError("Payment processing failed. Please try again.");
       setLoading(false);
     }
   };
@@ -187,7 +199,7 @@ const CheckoutPage = () => {
     try {
       const token = await auth.currentUser?.getIdToken();
       if (!token) {
-        navigate('/login', { state: { from: '/checkout' } });
+        navigate("/login", { state: { from: "/checkout" } });
         return;
       }
 
@@ -209,28 +221,30 @@ const CheckoutPage = () => {
         orderData.color_id = directPurchaseItem.selectedColor?.id || null;
         orderData.is_direct_purchase = true;
       } else {
-        orderData.items = cartItems.map(item => ({
+        orderData.items = cartItems.map((item) => ({
           product_id: item.id,
           quantity: item.quantity,
           size_id: item.size?.id || null,
-          color_id: item.color?.id || null
+          color_id: item.color?.id || null,
         }));
       }
 
       const response = await axios.post(
-        'https://ecco-back-4j3f.onrender.com/api/orders/create/',
+        "https://web-production-2449.up.railway.app/api/orders/create/",
         orderData,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       await processPayment(response);
     } catch (err) {
-      console.error('Checkout error:', err);
-      setError(err.response?.data?.message || 'Checkout failed. Please try again.');
+      console.error("Checkout error:", err);
+      setError(
+        err.response?.data?.message || "Checkout failed. Please try again."
+      );
       setLoading(false);
     }
   };
@@ -359,14 +373,23 @@ const CheckoutPage = () => {
                   type="radio"
                   name="paymentMethod"
                   value="credit_card"
-                  checked={formData.paymentMethod === 'credit_card'}
+                  checked={formData.paymentMethod === "credit_card"}
                   onChange={handleInputChange}
                 />
                 <span>Credit/Debit Card</span>
                 <div className="payment-icons">
-                  <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" />
-                  <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="Mastercard" />
-                  <img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="Rupay" />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/196/196578.png"
+                    alt="Visa"
+                  />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/196/196561.png"
+                    alt="Mastercard"
+                  />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/825/825454.png"
+                    alt="Rupay"
+                  />
                 </div>
               </label>
 
@@ -375,13 +398,19 @@ const CheckoutPage = () => {
                   type="radio"
                   name="paymentMethod"
                   value="upi"
-                  checked={formData.paymentMethod === 'upi'}
+                  checked={formData.paymentMethod === "upi"}
                   onChange={handleInputChange}
                 />
                 <span>UPI Payment</span>
                 <div className="payment-icons">
-                  <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Pay" />
-                  <img src="https://cdn-icons-png.flaticon.com/512/825/825462.png" alt="PhonePe" />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
+                    alt="Google Pay"
+                  />
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/825/825462.png"
+                    alt="PhonePe"
+                  />
                 </div>
               </label>
 
@@ -390,7 +419,7 @@ const CheckoutPage = () => {
                   type="radio"
                   name="paymentMethod"
                   value="cod"
-                  checked={formData.paymentMethod === 'cod'}
+                  checked={formData.paymentMethod === "cod"}
                   onChange={handleInputChange}
                 />
                 <span>Cash on Delivery</span>
@@ -399,9 +428,9 @@ const CheckoutPage = () => {
 
             {error && <div className="error-message">{error}</div>}
 
-            <button 
-              type="submit" 
-              className="checkout-button" 
+            <button
+              type="submit"
+              className="checkout-button"
               disabled={loading}
             >
               {loading ? (
@@ -420,7 +449,10 @@ const CheckoutPage = () => {
           <div className="order-items">
             {isDirectPurchase ? (
               <div className="order-item">
-                <img src={directPurchaseItem?.image} alt={directPurchaseItem?.name} />
+                <img
+                  src={directPurchaseItem?.image}
+                  alt={directPurchaseItem?.name}
+                />
                 <div className="item-details">
                   <h4>{directPurchaseItem?.name}</h4>
                   <p>Size: {directPurchaseItem?.selectedSize?.name}</p>
@@ -430,28 +462,31 @@ const CheckoutPage = () => {
                   <p>Qty: {directPurchaseItem?.quantity}</p>
                 </div>
                 <div className="item-price">
-                  ₹{(directPurchaseItem?.price * directPurchaseItem?.quantity).toFixed(2)}
+                  ₹
+                  {(
+                    directPurchaseItem?.price * directPurchaseItem?.quantity
+                  ).toFixed(2)}
                 </div>
               </div>
-            ) : (
-              cartItems.length > 0 ? (
-                cartItems.map(item => (
-                  <div key={item.id} className="order-item">
-                    <img src={item.image} alt={item.name} />
-                    <div className="item-details">
-                      <h4>{item.name}</h4>
-                      <p>Size: {item.size?.name || item.size}</p>
-                      {item.color && <p>Color: {item.color?.name || item.color}</p>}
-                      <p>Qty: {item.quantity}</p>
-                    </div>
-                    <div className="item-price">
-                      ₹{(item.price * item.quantity).toFixed(2)}
-                    </div>
+            ) : cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <div key={item.id} className="order-item">
+                  <img src={item.image} alt={item.name} />
+                  <div className="item-details">
+                    <h4>{item.name}</h4>
+                    <p>Size: {item.size?.name || item.size}</p>
+                    {item.color && (
+                      <p>Color: {item.color?.name || item.color}</p>
+                    )}
+                    <p>Qty: {item.quantity}</p>
                   </div>
-                ))
-              ) : (
-                <div className="empty-cart-message">Your cart is empty</div>
-              )
+                  <div className="item-price">
+                    ₹{(item.price * item.quantity).toFixed(2)}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-cart-message">Your cart is empty</div>
             )}
           </div>
 

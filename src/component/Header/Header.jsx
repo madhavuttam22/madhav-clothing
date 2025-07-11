@@ -20,7 +20,7 @@ const Header = () => {
 
   // Check active routes
   const isActive = (path, exact = false) => {
-    return exact 
+    return exact
       ? location.pathname === path
       : location.pathname.startsWith(path);
   };
@@ -40,7 +40,7 @@ const Header = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `https://ecco-back-4j3f.onrender.com/api/search/suggestions/`,
+        `https://web-production-2449.up.railway.app/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -88,7 +88,10 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -129,7 +132,10 @@ const Header = () => {
             </button>
             <div className="fill w-25"></div>
 
-            <Link to={"/"} className="navbar-brand mx-auto d-md-block d-none w-25 logo-container">
+            <Link
+              to={"/"}
+              className="navbar-brand mx-auto d-md-block d-none w-25 logo-container"
+            >
               <img
                 src="https://www.zuclothing.com/cdn/shop/files/ZU_438ede84-8d3d-4544-95ca-ceaafda670cf_70x.png?v=1703589164"
                 alt="ZU Clothing Logo"
@@ -145,7 +151,11 @@ const Header = () => {
                 onClick={handleProfileClick}
                 style={{ textDecoration: "none" }}
               >
-                <i className={`bi bi-person profile-icon ${isActive('/profile') ? 'active-icon' : ''}`}></i>
+                <i
+                  className={`bi bi-person profile-icon ${
+                    isActive("/profile") ? "active-icon" : ""
+                  }`}
+                ></i>
               </a>
 
               <div className="search-container" ref={suggestionsRef}>
@@ -189,77 +199,104 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <a href="#" className="text-dark icon-hover" onClick={handleSearchClick}>
-                    <i className={`bi bi-search search-icon ${isActive('/search') ? 'active-icon' : ''}`}></i>
+                  <a
+                    href="#"
+                    className="text-dark icon-hover"
+                    onClick={handleSearchClick}
+                  >
+                    <i
+                      className={`bi bi-search search-icon ${
+                        isActive("/search") ? "active-icon" : ""
+                      }`}
+                    ></i>
                   </a>
                 )}
               </div>
 
-              <Link to={"/cart/"} className="position-relative text-dark icon-hover">
-                <i className={`bi bi-cart cart-icon ${isActive('/cart') ? 'active-icon' : ''}`}></i>
+              <Link
+                to={"/cart/"}
+                className="position-relative text-dark icon-hover"
+              >
+                <i
+                  className={`bi bi-cart cart-icon ${
+                    isActive("/cart") ? "active-icon" : ""
+                  }`}
+                ></i>
                 <span className="cart-badge"></span>
               </Link>
             </div>
           </div>
 
           <nav className="d-none d-md-flex justify-content-center mt-3">
-  <ul className="nav">
-    <li className="nav-item">
-      <Link 
-        to="/" 
-        className={`nav-link nav-hover ${isActive('/', true) ? 'active' : ''}`}
-      >
-        <span>Home</span>
-      </Link>
-    </li>
-    
-    <li className="nav-item dropdown">
-      <ShopDropdown />
-    </li>
-    
-    <li className="nav-item">
-      <Link 
-        to="/bestseller" 
-        className={`nav-link nav-hover ${isActive('/bestseller') ? 'active' : ''}`}
-      >
-        <span>Best Sellers</span>
-      </Link>
-    </li>
-    
-    <li className="nav-item">
-      <Link 
-        to="/newcollection" 
-        className={`nav-link nav-hover ${isActive('/newcollection') ? 'active' : ''}`}
-      >
-        <span>New Collection</span>
-      </Link>
-    </li>
-    
-    <li className="nav-item">
-      <Link 
-        to="/allproducts" 
-        className={`nav-link nav-hover ${isActive('/allproducts') ? 'active' : ''}`}
-      >
-        <span>All Products</span>
-      </Link>
-    </li>
+            <ul className="nav">
               <li className="nav-item">
-      <Link 
-        to="/brand" 
-        className={`nav-link nav-hover ${isActive('/brand') ? 'active' : ''}`}
-      >
-        <span>Brand</span>
-      </Link>
-    </li>
-              
+                <Link
+                  to="/"
+                  className={`nav-link nav-hover ${
+                    isActive("/", true) ? "active" : ""
+                  }`}
+                >
+                  <span>Home</span>
+                </Link>
+              </li>
+
+              <li className="nav-item dropdown">
+                <ShopDropdown />
+              </li>
+
               <li className="nav-item">
-      <Link 
-        to="/contactus" 
-        className={`nav-link nav-hover ${isActive('/contactus') ? 'active' : ''}`}
-      >
-        <span>Contact</span>
-      </Link>
-    </li>
+                <Link
+                  to="/bestseller"
+                  className={`nav-link nav-hover ${
+                    isActive("/bestseller") ? "active" : ""
+                  }`}
+                >
+                  <span>Best Sellers</span>
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  to="/newcollection"
+                  className={`nav-link nav-hover ${
+                    isActive("/newcollection") ? "active" : ""
+                  }`}
+                >
+                  <span>New Collection</span>
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  to="/allproducts"
+                  className={`nav-link nav-hover ${
+                    isActive("/allproducts") ? "active" : ""
+                  }`}
+                >
+                  <span>All Products</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/brand"
+                  className={`nav-link nav-hover ${
+                    isActive("/brand") ? "active" : ""
+                  }`}
+                >
+                  <span>Brand</span>
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  to="/contactus"
+                  className={`nav-link nav-hover ${
+                    isActive("/contactus") ? "active" : ""
+                  }`}
+                >
+                  <span>Contact</span>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
