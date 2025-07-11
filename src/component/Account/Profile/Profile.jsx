@@ -297,7 +297,7 @@ const Profile = () => {
             </div>
 
             <nav className="profile-menu">
-              <Link to="" className="menu-item">
+              <Link to={'/myorders/'} className="menu-item">
                 My Orders
               </Link>
             </nav>

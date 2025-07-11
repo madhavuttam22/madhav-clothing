@@ -22,6 +22,7 @@ import BrandPage from './Pages/BrandPage/BrandPage';
 import NewCollectionPage from './Pages/NewCollectionPage/NewCollectionPage';
 import CheckoutPage from './Pages/CheckoutPage/CheckoutPage';
 import OrderSuccessPage from './Pages/OrderSuccessPage/OrderSuccessPage';
+import MyOrders from './component/Account/MyOrders/MyOrders';
 
 
 const App = () => {
@@ -41,6 +42,7 @@ const App = () => {
       <Route path='/allproducts/' element={<AllProductsPage/>}/>
       <Route path='/contactus/' element={<ContactPage/>}/>
       <Route path='/brand/' element={<BrandPage/>}/>
+      <Route path='/myorders/' element={<MyOrders/>}/>
       <Route path='/checkout/' element={<CheckoutPage/>}/>
       <Route path='/newcollection/' element={<NewCollectionPage/>}/>
       <Route path='/cart/' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
