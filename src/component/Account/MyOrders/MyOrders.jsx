@@ -193,12 +193,7 @@ const MyOrders = () => {
                         {formatCurrency(order.total)}
                       </span>
                     </div>
-                    <Link
-                      to={`/orders/${order.id}/`}
-                      className="view-order-btn"
-                    >
-                      View Details <FiChevronRight />
-                    </Link>
+                    
                   </div>
                 </div>
               ))}
