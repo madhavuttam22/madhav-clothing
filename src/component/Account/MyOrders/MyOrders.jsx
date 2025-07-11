@@ -6,6 +6,7 @@ import Footer from "../../Footer/Footer";
 import "./MyOrders.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
+import { formatCurrency } from "../../../utils/numbers";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -13,6 +14,7 @@ const MyOrders = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  
  useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
@@ -34,9 +36,18 @@ const MyOrders = () => {
         
         const data = await response.json();
         
-        // Ensure we're working with an array
+        // Validate and normalize orders data
         const ordersArray = Array.isArray(data.orders) ? data.orders : [];
-        setOrders(ordersArray);
+        const validatedOrders = ordersArray.map(order => ({
+          ...order,
+          total: order.total ? Number(order.total) : 0,
+          items: order.items ? order.items.map(item => ({
+            ...item,
+            price: item.price ? Number(item.price) : 0
+          })) : []
+        }));
+        
+        setOrders(validatedOrders);
         
       } catch (err) {
         setError(err.message);
@@ -161,7 +172,7 @@ const MyOrders = () => {
                 <div className="order-footer">
                   <div className="order-total">
                     <span>Total:</span>
-                    <span className="total-amount">₹{order.total.toFixed(2)}</span>
+                    <span className="total-amount">₹{formatCurrency(order.total)}</span>
                   </div>
                   <Link to={`/orders/${order.id}/`} className="view-order-btn">
                     View Details <FiChevronRight />
