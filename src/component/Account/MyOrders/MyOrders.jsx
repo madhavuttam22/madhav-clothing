@@ -190,7 +190,7 @@ const MyOrders = () => {
                     <div className="order-total">
                       <span>Total:</span>
                       <span className="total-amount">
-                        ₹{formatCurrency(order.total)}
+                        {formatCurrency(order.total)}
                       </span>
                     </div>
                     <Link
