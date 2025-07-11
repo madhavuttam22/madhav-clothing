@@ -12,7 +12,7 @@ import Footer from "../../Footer/Footer";
 import "./MyOrders.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
-import { formatCurrency } from "../../../utils/numbers";
+import { formatCurrency, getProductImage } from "../../../utils/numbers";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
