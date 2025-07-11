@@ -13,39 +13,43 @@ const MyOrders = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const idToken = await firebaseUser.getIdToken();
-          
-          const response = await fetch(
-            "https://web-production-2449.up.railway.app/api/orders/",
-            {
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            }
-          );
-          
-          if (!response.ok) {
-            throw new Error("Failed to fetch orders");
+ useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    if (firebaseUser) {
+      try {
+        const idToken = await firebaseUser.getIdToken();
+        
+        const response = await fetch(
+          "https://web-production-2449.up.railway.app/api/orders/",
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
           }
-          
-          const data = await response.json();
-          setOrders(data);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
+        );
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders");
         }
-      } else {
-        navigate("/login/");
+        
+        const data = await response.json();
+        
+        // Ensure we're working with an array
+        const ordersArray = Array.isArray(data.orders) ? data.orders : [];
+        setOrders(ordersArray);
+        
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    });
+    } else {
+      navigate("/login/");
+    }
+  });
 
-    return () => unsubscribe();
-  }, [navigate]);
+  return () => unsubscribe();
+}, [navigate]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -93,7 +97,7 @@ const MyOrders = () => {
           <p>View and manage your recent purchases</p>
         </div>
 
-        {orders.length === 0 ? (
+        {Array.isArray(orders) && orders.length === 0 ? (
           <div className="empty-orders">
             <div className="empty-orders-content">
               <img 
@@ -110,7 +114,7 @@ const MyOrders = () => {
           </div>
         ) : (
           <div className="orders-list">
-            {orders.map((order) => (
+            {Array.isArray(orders) && orders.map((order) => (
               <div key={order.id} className="order-card">
                 <div className="order-header">
                   <div className="order-meta">
