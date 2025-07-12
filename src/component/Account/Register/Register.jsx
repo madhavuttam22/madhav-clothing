@@ -46,41 +46,47 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
+  try {
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
 
-      await updateProfile(user, {
-        displayName: `${formData.first_name} ${formData.last_name}`,
-      });
+    await updateProfile(user, {
+      displayName: `${formData.first_name} ${formData.last_name}`,
+    });
 
-      const idToken = await user.getIdToken();
+    const idToken = await user.getIdToken();
 
-      await fetch("https://web-production-2449.up.railway.app/api/register/", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
+    await fetch("https://web-production-2449.up.railway.app/api/register/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
 
-      setShowSuccessModal(true);
-    } catch (error) {
-      console.error("Registration error:", error);
+    setShowSuccessModal(true);
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    if (error.code === "auth/email-already-in-use") {
+      showNotification("This email is already registered.", "error");
+    } else {
       showNotification(
         error.message || "Registration failed. Please try again.",
         "error"
       );
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleGoogleSignup = () => {
     const provider = new GoogleAuthProvider();
