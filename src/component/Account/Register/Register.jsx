@@ -36,9 +36,13 @@ const [isNewGoogleUser, setIsNewGoogleUser] = useState(true); // ✅ default to 
   };
 
   const handleConfirmSuccess = () => {
-    setShowSuccessModal(false);
+  setShowSuccessModal(false);
+  if (isNewGoogleUser) {
     navigate("/login/");
-  };
+  } else {
+    navigate("/"); // or dashboard
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
