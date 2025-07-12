@@ -9,6 +9,7 @@ import {
   updateProfile,
   GoogleAuthProvider,
   signInWithPopup,
+  getAdditionalUserInfo,
 } from "firebase/auth";
 import { auth } from "../../../firebase";
 
@@ -89,27 +90,38 @@ const Register = () => {
 
 
   const handleGoogleSignup = () => {
-    const provider = new GoogleAuthProvider();
+  const provider = new GoogleAuthProvider();
 
-    signInWithPopup(auth, provider)
-      .then(async (result) => {
-        const user = result.user;
-        const idToken = await user.getIdToken();
+  signInWithPopup(auth, provider)
+    .then(async (result) => {
+      const user = result.user;
+      const isNewUser = getAdditionalUserInfo(result).isNewUser;
 
-        await fetch("https://web-production-2449.up.railway.app/api/register/", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
+      const idToken = await user.getIdToken();
 
-        setShowSuccessModal(true);
-      })
-      .catch((error) => {
-        console.error("Google sign-up error:", error);
-        showNotification("Google sign-up failed", "error");
+      // Send token to Django backend (if needed for both new + existing)
+      await fetch("https://web-production-2449.up.railway.app/api/register/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
       });
-  };
+
+      if (isNewUser) {
+        // ✅ Show registration success only for new users
+        setShowSuccessModal(true);
+      } else {
+        // ✅ Show login notification instead
+        showNotification("You are already registered. Logging you in...", "success");
+        navigate("/"); // Or navigate to dashboard/home
+      }
+    })
+    .catch((error) => {
+      console.error("Google sign-up error:", error);
+      showNotification("Google sign-up failed", "error");
+    });
+};
+
 
   return (
     <>
