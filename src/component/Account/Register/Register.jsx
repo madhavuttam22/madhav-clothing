@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Notification from "../../Notification/Notification";
 import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
 import { FiCheckCircle } from "react-icons/fi";
-import { createUserWithEmailAndPassword, GoogleAuthProvider, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
 
 import { auth } from "../../../firebase"; // Make sure path is correct
 
