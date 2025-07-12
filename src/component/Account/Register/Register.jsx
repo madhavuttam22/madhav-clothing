@@ -24,6 +24,7 @@ const Register = () => {
   const [notification, setNotification] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
+const [isNewGoogleUser, setIsNewGoogleUser] = useState(true); // ✅ default to true
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -89,17 +90,17 @@ const Register = () => {
 };
 
 
-  const handleGoogleSignup = () => {
+const handleGoogleSignup = () => {
   const provider = new GoogleAuthProvider();
 
   signInWithPopup(auth, provider)
     .then(async (result) => {
       const user = result.user;
       const isNewUser = getAdditionalUserInfo(result).isNewUser;
+      setIsNewGoogleUser(isNewUser); // ✅ Set state
 
       const idToken = await user.getIdToken();
 
-      // Send token to Django backend (if needed for both new + existing)
       await fetch("https://web-production-2449.up.railway.app/api/register/", {
         method: "POST",
         headers: {
@@ -107,21 +108,13 @@ const Register = () => {
         },
       });
 
-      if (isNewUser) {
-        // ✅ Show registration success only for new users
-        setShowSuccessModal(true);
-      } else {
-        // ✅ Show login notification instead
-        showNotification("You are already registered. Logging you in...", "success");
-        navigate("/"); // Or navigate to dashboard/home
-      }
+      setShowSuccessModal(true); // ✅ Show modal in both cases now
     })
     .catch((error) => {
       console.error("Google sign-up error:", error);
       showNotification("Google sign-up failed", "error");
     });
 };
-
 
   return (
     <>
@@ -232,15 +225,20 @@ const Register = () => {
       )}
 
       <ConfirmationModal
-        isOpen={showSuccessModal}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmSuccess}
-        title="Registration Successful!"
-        message="Your account has been created successfully."
-        confirmText="Continue to Login"
-        icon={FiCheckCircle}
-        type="success"
-      />
+  isOpen={showSuccessModal}
+  onClose={handleCloseModal}
+  onConfirm={handleConfirmSuccess}
+  title={isNewGoogleUser ? "Registration Successful!" : "Welcome Back!"}
+  message={
+    isNewGoogleUser
+      ? "Your account has been created successfully."
+      : "You are already registered. Redirecting you to the home page."
+  }
+  confirmText={isNewGoogleUser ? "Continue to Login" : "Go to Home"}
+  icon={FiCheckCircle}
+  type="success"
+/>
+
     </>
   );
 };
