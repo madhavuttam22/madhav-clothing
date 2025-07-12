@@ -127,7 +127,7 @@ const MyOrders = () => {
                 You haven't placed any orders yet. Start shopping to see them
                 here!
               </p>
-              <Link to="/products/" className="shop-now-btn">
+              <Link to="/allproducts/" className="shop-now-btn">
                 Shop Now
               </Link>
             </div>
