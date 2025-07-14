@@ -1,83 +1,108 @@
-/* MinimalSuccessPage.css */
+/* 
+  OrderSuccessPage.css
+  Styles for the order success confirmation page
+  Features a clean, minimal design with subtle animations
+*/
 
+/* Main container styling - centers content vertically and horizontally */
 .minimal-success-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  padding: 20px;
+  min-height: 100vh; /* Full viewport height */
+  background: #f5f5f5; /* Light gray background */
+  padding: 20px; /* Responsive padding */
 }
 
+/* Success card styling */
 .minimal-success-card {
-  background: white;
-  border-radius: 10px;
-  padding: 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
+  background: white; /* White card background */
+  border-radius: 10px; /* Rounded corners */
+  padding: 40px; /* Generous padding */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  text-align: center; /* Center-aligned content */
+  max-width: 400px; /* Maximum width */
+  width: 100%; /* Full width up to max-width */
 }
 
+/* Success icon styling */
 .minimal-success-icon {
-  font-size: 60px;
-  color: #4CAF50;
-  margin-bottom: 20px;
+  font-size: 60px; /* Large icon size */
+  color: #4CAF50; /* Green success color */
+  margin-bottom: 20px; /* Space below icon */
 }
 
+/* Success heading styling */
 .minimal-success-card h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: #333;
+  font-size: 28px; /* Large heading size */
+  margin-bottom: 10px; /* Space below heading */
+  color: #333; /* Dark gray text */
 }
 
+/* Success message text styling */
 .minimal-success-message {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
+  font-size: 16px; /* Standard text size */
+  color: #666; /* Medium gray text */
+  margin-bottom: 30px; /* Space above button */
 }
 
+/* Home button styling */
 .minimal-home-button {
-  padding: 12px 25px;
-  border-radius: 6px;
-  background: #2196F3;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
+  padding: 12px 25px; /* Comfortable button size */
+  border-radius: 6px; /* Rounded corners */
+  background: #2196F3; /* Blue button color */
+  color: white; /* White text */
+  text-decoration: none; /* Remove underline */
+  font-weight: 600; /* Semi-bold text */
+  display: inline-flex; /* For icon alignment */
+  align-items: center; /* Vertical icon alignment */
+  gap: 8px; /* Space between icon and text */
+  transition: all 0.3s ease; /* Smooth hover transitions */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Pointer cursor */
 }
 
+/* Home button hover state */
 .minimal-home-button:hover {
-  background: #0d8bf2;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #0d8bf2; /* Slightly darker blue */
+  transform: translateY(-2px); /* Lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-/* Animation */
+/* 
+  Animation for the success card
+  Creates a gentle fade-in and slide-up effect
+*/
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; /* Start invisible */
+    transform: translateY(20px); /* Start 20px down */
+  }
+  to { 
+    opacity: 1; /* Fade to full visibility */
+    transform: translateY(0); /* Move to normal position */
+  }
 }
 
+/* Apply animation to success card */
 .minimal-success-card {
-  animation: fadeIn 0.6s ease-out;
+  animation: fadeIn 0.6s ease-out; /* Animation duration and easing */
 }
 
+/* 
+  Responsive adjustments for mobile devices
+  (Screen widths up to 480px)
+*/
 @media (max-width: 480px) {
   .minimal-success-card {
-    padding: 30px 20px;
+    padding: 30px 20px; /* Reduced padding */
   }
   
   .minimal-success-icon {
-    font-size: 50px;
+    font-size: 50px; /* Slightly smaller icon */
   }
   
   .minimal-success-card h1 {
-    font-size: 24px;
+    font-size: 24px; /* Slightly smaller heading */
   }
 }

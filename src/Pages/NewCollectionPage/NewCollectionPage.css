@@ -1,10 +1,17 @@
-/* New Collection Page Layout */
+/* 
+  NewCollectionPage.css
+  Styles for the New Collection page component
+  Includes responsive design for various screen sizes
+*/
+
+/* Main container for the new collection page */
 .new-collection-page-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Page title styling */
 .new-collection {
   text-align: center;
   margin: 20px 0 30px;
@@ -12,23 +19,27 @@
   color: #333;
 }
 
+/* Layout for content area (filters + products) */
 .new-collection-content {
   display: flex;
   gap: 30px;
 }
 
+/* Filters sidebar styling */
 .filters-sidebar {
-  flex: 0 0 280px;
+  flex: 0 0 280px; /* Fixed width */
   position: sticky;
   top: 20px;
   height: fit-content;
   align-self: flex-start;
 }
 
+/* Container for product grid */
 .products-grid-container {
-  flex: 1;
+  flex: 1; /* Takes remaining space */
 }
 
+/* Grid layout for products */
 .new-collection-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -36,6 +47,7 @@
   padding-bottom: 40px;
 }
 
+/* Individual product card styling */
 .new-collection-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
@@ -44,18 +56,21 @@
   background: white;
 }
 
+/* Hover effect for product cards */
 .new-collection-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Container for product image with aspect ratio preservation */
 .new-collection-image-container {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  padding-top: 100%; /* Creates 1:1 aspect ratio */
   overflow: hidden;
 }
 
+/* Product image styling */
 .new-collection-image {
   position: absolute;
   top: 0;
@@ -66,15 +81,17 @@
   transition: transform 0.5s ease;
 }
 
+/* Image zoom effect on hover */
 .new-collection-card:hover .new-collection-image {
   transform: scale(1.05);
 }
 
+/* New arrival badge styling */
 .new-collection-badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -82,35 +99,42 @@
   font-weight: bold;
 }
 
+/* Product info section styling */
 .new-collection-info {
   padding: 15px;
 }
 
+/* Product title styling */
 .new-collection-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
 }
 
+/* Product title link styling */
 .new-collection-title-link {
   color: #333;
   text-decoration: none;
 }
 
+/* Product title hover effect */
 .new-collection-title-link:hover {
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Price container styling */
 .new-collection-price-wrapper {
   margin-bottom: 12px;
 }
 
+/* Current price styling */
 .new-collection-current-price {
   font-weight: bold;
   font-size: 1.1rem;
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Original (discounted) price styling */
 .new-collection-original-price {
   text-decoration: line-through;
   color: #999;
@@ -118,10 +142,12 @@
   margin-left: 8px;
 }
 
+/* Size selector dropdown container */
 .size-selector {
   margin-bottom: 12px;
 }
 
+/* Size dropdown styling */
 .size-dropdown {
   width: 100%;
   padding: 8px;
@@ -130,28 +156,36 @@
   font-size: 0.9rem;
 }
 
+/* Add to cart button styling */
 .new-collection-add-to-cart {
   width: 100%;
   padding: 10px;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
+/* Add to cart button hover effect */
 .new-collection-add-to-cart:hover {
-  background-color: #7a0191;
+  background: #7a0191;
 }
 
+/* Disabled state for add to cart button */
 .new-collection-add-to-cart:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
 }
 
-/* Responsive styles */
+/* 
+  Responsive styles
+  Adjust layout for different screen sizes
+*/
+
+/* Tablet and smaller desktop screens */
 @media (max-width: 992px) {
   .new-collection-content {
     flex-direction: column;
@@ -169,6 +203,7 @@
   }
 }
 
+/* Mobile screens */
 @media (max-width: 576px) {
   .new-collection-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

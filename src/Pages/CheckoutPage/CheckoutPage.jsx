@@ -4,11 +4,21 @@ import axios from "axios";
 import { auth } from "../../firebase";
 import "./CheckoutPage.css";
 
+/**
+ * CheckoutPage Component - Handles the checkout process for both cart items and direct purchases.
+ * Manages form state, payment processing, and order summary display.
+ */
 const CheckoutPage = () => {
+  // Router hooks for navigation and location state
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // State for cart items and direct purchase information
   const [cartItems, setCartItems] = useState([]);
   const [isDirectPurchase, setIsDirectPurchase] = useState(false);
   const [directPurchaseItem, setDirectPurchaseItem] = useState(null);
+
+  // Form state management
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -21,11 +31,15 @@ const CheckoutPage = () => {
     country: "India",
     paymentMethod: "credit_card",
   });
+
+  // UI state management
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
-  // Load Razorpay script
+  /**
+   * Effect to load Razorpay script when component mounts
+   * Ensures payment gateway is available when needed
+   */
   useEffect(() => {
     const loadRazorpay = () => {
       return new Promise((resolve) => {
@@ -45,12 +59,16 @@ const CheckoutPage = () => {
     loadRazorpay();
   }, []);
 
-  // Initialize checkout data
+  /**
+   * Effect to initialize checkout data based on route state
+   * Handles both direct purchases and cart checkout scenarios
+   */
   useEffect(() => {
     if (location.state?.directPurchase) {
       setIsDirectPurchase(true);
       setDirectPurchaseItem(location.state.product);
 
+      // Pre-fill user data if available
       const user = auth.currentUser;
       if (user) {
         setFormData((prev) => ({
@@ -65,6 +83,9 @@ const CheckoutPage = () => {
     }
   }, [location.state]);
 
+  /**
+   * Fetches cart items from the API for logged-in users
+   */
   const fetchCartItems = async () => {
     try {
       const token = await auth.currentUser?.getIdToken();
@@ -84,6 +105,10 @@ const CheckoutPage = () => {
     }
   };
 
+  /**
+   * Handles input changes for the checkout form
+   * @param {Object} e - The event object from the input field
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -92,7 +117,12 @@ const CheckoutPage = () => {
     }));
   };
 
+  /**
+   * Calculates order totals including subtotal, shipping, tax, and discounts
+   * @returns {Object} An object containing all calculated totals
+   */
   const calculateTotals = () => {
+    // Calculate subtotal based on direct purchase or cart items
     const subtotal =
       isDirectPurchase && directPurchaseItem
         ? directPurchaseItem.price * directPurchaseItem.quantity
@@ -102,17 +132,22 @@ const CheckoutPage = () => {
           );
 
     const shipping = 50; // Flat rate shipping
-    const discount = subtotal > 1000 ? subtotal * 0.1 : 0;
+    const discount = subtotal > 1000 ? subtotal * 0.1 : 0; // 10% discount for orders over 1000
     const tax = subtotal * 0.18; // 18% tax
     const total = subtotal + shipping + tax - discount;
 
     return { subtotal, shipping, discount, tax, total };
   };
 
+  /**
+   * Processes payment based on selected method (COD or online payment)
+   * @param {Object} orderResponse - Response from order creation API
+   */
   const processPayment = async (orderResponse) => {
     const { order_id, order_number, total, razorpay_order_id } =
       orderResponse.data;
 
+    // Handle Cash on Delivery (COD) directly
     if (formData.paymentMethod === "cod") {
       navigate("/order-success", {
         state: {
@@ -125,9 +160,10 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Handle online payment with Razorpay
     try {
       const options = {
-        key: "rzp_test_y4SrKO8SkuVv9g",
+        key: "rzp_test_y4SrKO8SkuVv9g", // Razorpay test key
         amount: Math.round(total * 100), // Convert to paise
         currency: "INR",
         name: "ZU Clothing",
@@ -151,6 +187,7 @@ const CheckoutPage = () => {
               }
             );
 
+            // Navigate to success page on successful verification
             navigate("/order-success", {
               state: {
                 orderId: order_id,
@@ -191,6 +228,10 @@ const CheckoutPage = () => {
     }
   };
 
+  /**
+   * Handles form submission for the checkout process
+   * @param {Object} e - The form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -203,8 +244,10 @@ const CheckoutPage = () => {
         return;
       }
 
+      // Calculate order totals
       const { subtotal, shipping, discount, tax, total } = calculateTotals();
 
+      // Prepare order data for API
       const orderData = {
         ...formData,
         subtotal: subtotal.toFixed(2),
@@ -214,6 +257,7 @@ const CheckoutPage = () => {
         total: total.toFixed(2),
       };
 
+      // Add product-specific data based on purchase type
       if (isDirectPurchase) {
         orderData.product_id = directPurchaseItem.id;
         orderData.quantity = directPurchaseItem.quantity;
@@ -229,6 +273,7 @@ const CheckoutPage = () => {
         }));
       }
 
+      // Create order via API
       const response = await axios.post(
         "https://web-production-2449.up.railway.app/api/orders/create/",
         orderData,
@@ -239,6 +284,7 @@ const CheckoutPage = () => {
         }
       );
 
+      // Process payment with the created order
       await processPayment(response);
     } catch (err) {
       console.error("Checkout error:", err);
@@ -249,14 +295,17 @@ const CheckoutPage = () => {
     }
   };
 
+  // Calculate totals for display
   const { subtotal, shipping, discount, tax, total } = calculateTotals();
 
   return (
     <div className="checkout-container">
       <div className="checkout-grid">
+        {/* Checkout Form Section */}
         <div className="checkout-form-section">
           <h2>Shipping Information</h2>
           <form onSubmit={handleSubmit}>
+            {/* Name Fields */}
             <div className="form-row">
               <div className="form-group">
                 <label>First Name</label>
@@ -280,6 +329,7 @@ const CheckoutPage = () => {
               </div>
             </div>
 
+            {/* Email Field */}
             <div className="form-group">
               <label>Email</label>
               <input
@@ -291,6 +341,7 @@ const CheckoutPage = () => {
               />
             </div>
 
+            {/* Phone Field */}
             <div className="form-group">
               <label>Phone Number</label>
               <input
@@ -304,6 +355,7 @@ const CheckoutPage = () => {
               />
             </div>
 
+            {/* Address Field */}
             <div className="form-group">
               <label>Address</label>
               <input
@@ -315,6 +367,7 @@ const CheckoutPage = () => {
               />
             </div>
 
+            {/* City and State Fields */}
             <div className="form-row">
               <div className="form-group">
                 <label>City</label>
@@ -338,6 +391,7 @@ const CheckoutPage = () => {
               </div>
             </div>
 
+            {/* ZIP Code and Country Fields */}
             <div className="form-row">
               <div className="form-group">
                 <label>ZIP Code</label>
@@ -366,6 +420,7 @@ const CheckoutPage = () => {
               </div>
             </div>
 
+            {/* Payment Method Selection */}
             <h2>Payment Method</h2>
             <div className="payment-methods">
               <label className="payment-option">
@@ -426,8 +481,10 @@ const CheckoutPage = () => {
               </label>
             </div>
 
+            {/* Error Display */}
             {error && <div className="error-message">{error}</div>}
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="checkout-button"
@@ -444,9 +501,11 @@ const CheckoutPage = () => {
           </form>
         </div>
 
+        {/* Order Summary Section */}
         <div className="order-summary-section">
           <h2>Order Summary</h2>
           <div className="order-items">
+            {/* Display items based on purchase type */}
             {isDirectPurchase ? (
               <div className="order-item">
                 <img
@@ -490,6 +549,7 @@ const CheckoutPage = () => {
             )}
           </div>
 
+          {/* Order Totals Display */}
           <div className="order-totals">
             <div className="total-row">
               <span>Subtotal</span>

@@ -1,8 +1,22 @@
-// Hero.jsx
+/**
+ * Hero Component
+ * 
+ * This component displays a responsive image carousel/slider at the top of the page
+ * with the following features:
+ * - Auto-playing slides with smooth transitions
+ * - Different images for mobile and desktop views
+ * - Dots navigation indicator
+ * - Hover effects on images
+ * - Trusted customers counter section
+ * 
+ * Uses react-slick library for the carousel functionality
+ */
+
 import React from 'react';
 import Slider from 'react-slick';
 import './Hero.css';
 
+// Array of slide objects containing image URLs for mobile and desktop
 const slides = [
   {
     href: '',
@@ -26,49 +40,56 @@ const slides = [
   },
 ];
 
+// Configuration settings for the react-slick carousel
 const settings = {
-  dots: true,
-  infinite: true,
-  speed: 800,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  autoplay: true,
-  autoplaySpeed: 3000,
-  arrows: false,
-  pauseOnHover: false,
-  adaptiveHeight: true,
+  dots: true,                   // Show dots navigation
+  infinite: true,               // Infinite loop sliding
+  speed: 800,                   // Transition speed in ms
+  slidesToShow: 1,              // Number of slides to show at once
+  slidesToScroll: 1,            // Number of slides to scroll
+  autoplay: true,               // Auto-play slides
+  autoplaySpeed: 3000,          // Auto-play interval in ms
+  arrows: false,                // Hide navigation arrows
+  pauseOnHover: false,          // Continue autoplay on hover
+  adaptiveHeight: true,         // Adjust height to current slide
 };
 
 const Hero = () => {
   return (
     <>
-    <section id="zu-carousel-section" className="bg-dark">
-      <Slider {...settings}>
-        {slides.map((slide, index) => (
-          <a
-            key={index}
-            href={slide.href}
-            className="carousel-cell"
-            style={{ display: 'block', width: '100%' }}
-          >
-            <picture>
-              <source media="(min-width: 768px)" srcSet={slide.desktop} />
-              <img
-                src={slide.mobile}
-                alt={`ZU Slide ${index + 1}`}
-                className="img-fluid w-100"
-                style={{ minHeight: '400px', objectFit: 'cover' }}
-              />
-            </picture>
-          </a>
-        ))}
-      </Slider>
-    </section>
-    <div className="hero-bottom">
+      {/* Main carousel section */}
+      <section id="zu-carousel-section" className="bg-dark">
+        <Slider {...settings}>
+          {slides.map((slide, index) => (
+            <a
+              key={index}
+              href={slide.href}
+              className="carousel-cell"
+              style={{ display: 'block', width: '100%' }}
+            >
+              {/* Responsive image with different sources for mobile/desktop */}
+              <picture>
+                <source media="(min-width: 768px)" srcSet={slide.desktop} />
+                <img
+                  src={slide.mobile}
+                  alt={`ZU Slide ${index + 1}`}
+                  className="img-fluid w-100"
+                  style={{ minHeight: '400px', objectFit: 'cover' }}
+                />
+              </picture>
+            </a>
+          ))}
+        </Slider>
+      </section>
+
+      {/* Trusted customers counter section */}
+      <div className="hero-bottom">
         <h3>Trusted by</h3>
         <h2>1LAC+ CUSTOMERS</h2>
-    </div>
-    <div className="height"></div>
+      </div>
+
+      {/* Spacer div (adjust height as needed) */}
+      <div className="height"></div>
     </>
   );
 };

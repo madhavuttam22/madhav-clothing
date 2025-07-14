@@ -1,15 +1,33 @@
 import React from 'react';
-import './Footer.css'; // We'll create this CSS file next
+import './Footer.css'; // Importing the associated CSS file for styling
 
+/**
+ * Footer Component
+ * 
+ * A responsive footer section with multiple columns including:
+ * - Social media links
+ * - About section
+ * - Top categories
+ * - Quick access links
+ * - Newsletter subscription
+ * 
+ * Designed with accessibility in mind (role="contentinfo") and follows modern React practices.
+ */
 const Footer = () => {
   return (
+    // Main footer element with ARIA landmark role for accessibility
     <footer id="section-footer" className="Footer" role="contentinfo">
+      {/* Container for centering content with max-width */}
       <div className="Container">
+        {/* Inner wrapper for footer content sections */}
         <div className="Footer__Inner">
-          {/* Stay Connected Block */}
+          
+          {/* Social Media Block */}
           <div className="Footer__Block Footer__Block--text">
             <h2 className="Footer__Title Heading u-h6">STAY CONNECTED</h2>
+            {/* Horizontal list of social media icons */}
             <ul className="Footer__Social HorizontalList HorizontalList--spacingLoose">
+              {/* Facebook Icon */}
               <li className="HorizontalList__Item">
                 <a href="" className="Link Link--primary" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                   <span className="Icon-Wrapper--clickable">
@@ -20,6 +38,7 @@ const Footer = () => {
                 </a>
               </li>
               
+              {/* Twitter Icon */}
               <li className="HorizontalList__Item">
                 <a href="" className="Link Link--primary" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                   <span className="Icon-Wrapper--clickable">
@@ -30,6 +49,7 @@ const Footer = () => {
                 </a>
               </li>
               
+              {/* Instagram Icon */}
               <li className="HorizontalList__Item">
                 <a href="" className="Link Link--primary" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                   <span className="Icon-Wrapper--clickable">
@@ -40,6 +60,7 @@ const Footer = () => {
                 </a>
               </li>
               
+              {/* YouTube Icon */}
               <li className="HorizontalList__Item">
                 <a href="" className="Link Link--primary" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
                   <span className="Icon-Wrapper--clickable">
@@ -50,6 +71,7 @@ const Footer = () => {
                 </a>
               </li>
               
+              {/* LinkedIn Icon */}
               <li className="HorizontalList__Item">
                 <a href="" className="Link Link--primary" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <span className="Icon-Wrapper--clickable">
@@ -62,7 +84,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* About Block */}
+          {/* About Links Block */}
           <div className="Footer__Block Footer__Block--links">
             <h2 className="Footer__Title Heading u-h6">ABOUT</h2>
             <ul className="Linklist">
@@ -78,7 +100,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Top Categories Block */}
+          {/* Top Categories Links Block */}
           <div className="Footer__Block Footer__Block--links">
             <h2 className="Footer__Title Heading u-h6">Top Categories</h2>
             <ul className="Linklist">
@@ -106,7 +128,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Quick Access Block */}
+          {/* Quick Access Links Block */}
           <div className="Footer__Block Footer__Block--links">
             <h2 className="Footer__Title Heading u-h6">QUICK ACCESS</h2>
             <ul className="Linklist">
@@ -128,12 +150,13 @@ const Footer = () => {
             </ul>
           </div>
           
-          {/* Newsletter Block */}
+          {/* Newsletter Subscription Block */}
           <div className="Footer__Block Footer__Block--newsletter">
             <h2 className="Footer__Title Heading u-h6">NEWSLETTER</h2>
             <div className="Footer__Content Rte">
               <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
             </div>
+            {/* Newsletter subscription form */}
             <form method="post" action="/contact#footer-newsletter" id="footer-newsletter" className="Footer__Newsletter Form">
               <input type="hidden" name="form_type" value="customer" />
               <input type="hidden" name="utf8" value="✓" />
@@ -151,7 +174,7 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Footer Bottom */}
+        {/* Footer Copyright Section */}
         <div className="Footer__Aside">
           <div className="Footer__Copyright">
             <a href="" className="Footer__StoreName Heading u-h7 Link Link--secondary">© ZU Clothing</a>

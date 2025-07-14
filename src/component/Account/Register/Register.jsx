@@ -13,37 +13,61 @@ import {
 } from "firebase/auth";
 import { auth } from "../../../firebase";
 
+/**
+ * Register Component
+ * Handles user registration through both email/password and Google authentication.
+ * Manages form state, validation, and submission to both Firebase and backend API.
+ */
 const Register = () => {
+  // Form data state
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     password: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const navigate = useNavigate();
-const [isNewGoogleUser, setIsNewGoogleUser] = useState(true); // ✅ default to true
 
+  // Component state variables
+  const [loading, setLoading] = useState(false); // Loading state during form submission
+  const [notification, setNotification] = useState(null); // Notification message state
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Success modal visibility
+  const navigate = useNavigate(); // Navigation hook for routing
+  const [isNewGoogleUser, setIsNewGoogleUser] = useState(true); // Tracks if Google user is new
+
+  /**
+   * Displays a notification message
+   * @param {string} message - The message to display
+   * @param {string} type - The type of notification ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
   };
 
+  /**
+   * Handles closing the success modal
+   */
   const handleCloseModal = () => {
     setShowSuccessModal(false);
   };
 
+  /**
+   * Handles confirmation of successful registration
+   * Navigates to appropriate route based on user type
+   */
   const handleConfirmSuccess = () => {
-  setShowSuccessModal(false);
-  if (isNewGoogleUser) {
-    navigate("/login/");
-  } else {
-    navigate("/"); // or dashboard
-  }
-};
+    setShowSuccessModal(false);
+    if (isNewGoogleUser) {
+      navigate("/login/"); // New users go to login
+    } else {
+      navigate("/"); // Existing users go to home/dashboard
+    }
+  };
 
+  /**
+   * Handles form input changes
+   * @param {Object} e - The event object
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -52,59 +76,31 @@ const [isNewGoogleUser, setIsNewGoogleUser] = useState(true); // ✅ default to 
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  /**
+   * Handles form submission for email/password registration
+   * @param {Object} e - The event object
+   */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const { user } = await createUserWithEmailAndPassword(
-      auth,
-      formData.email,
-      formData.password
-    );
-
-    await updateProfile(user, {
-      displayName: `${formData.first_name} ${formData.last_name}`,
-    });
-
-    const idToken = await user.getIdToken();
-
-    await fetch("https://web-production-2449.up.railway.app/api/register/", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
-
-    setShowSuccessModal(true);
-  } catch (error) {
-    console.error("Registration error:", error);
-
-    if (error.code === "auth/email-already-in-use") {
-      showNotification("This email is already registered.", "error");
-    } else {
-      showNotification(
-        error.message || "Registration failed. Please try again.",
-        "error"
+    try {
+      // Create user with Firebase Auth
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
       );
-    }
-  } finally {
-    setLoading(false);
-  }
-};
 
+      // Update user profile with display name
+      await updateProfile(user, {
+        displayName: `${formData.first_name} ${formData.last_name}`,
+      });
 
-const handleGoogleSignup = () => {
-  const provider = new GoogleAuthProvider();
-
-  signInWithPopup(auth, provider)
-    .then(async (result) => {
-      const user = result.user;
-      const isNewUser = getAdditionalUserInfo(result).isNewUser;
-      setIsNewGoogleUser(isNewUser); // ✅ Set state
-
+      // Get Firebase ID token for backend authentication
       const idToken = await user.getIdToken();
 
+      // Register user with backend API
       await fetch("https://web-production-2449.up.railway.app/api/register/", {
         method: "POST",
         headers: {
@@ -112,21 +108,67 @@ const handleGoogleSignup = () => {
         },
       });
 
-      setShowSuccessModal(true); // ✅ Show modal in both cases now
-    })
-    .catch((error) => {
-      console.error("Google sign-up error:", error);
-      showNotification("Google sign-up failed", "error");
-    });
-};
+      // Show success modal
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      // Handle specific Firebase errors
+      if (error.code === "auth/email-already-in-use") {
+        showNotification("This email is already registered.", "error");
+      } else {
+        showNotification(
+          error.message || "Registration failed. Please try again.",
+          "error"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Handles Google OAuth registration/sign-in
+   */
+  const handleGoogleSignup = () => {
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        const user = result.user;
+        const isNewUser = getAdditionalUserInfo(result).isNewUser;
+        setIsNewGoogleUser(isNewUser); // Set whether user is new
+
+        // Get Firebase ID token for backend authentication
+        const idToken = await user.getIdToken();
+
+        // Register user with backend API
+        await fetch("https://web-production-2449.up.railway.app/api/register/", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+
+        // Show success modal
+        setShowSuccessModal(true);
+      })
+      .catch((error) => {
+        console.error("Google sign-up error:", error);
+        showNotification("Google sign-up failed", "error");
+      });
+  };
 
   return (
     <>
+      {/* Registration Form Container */}
       <div className="register-form-container my-3">
         <h1 className="register-title">Create Account</h1>
         <p className="register-subtitle">Please fill in the information below:</p>
 
+        {/* Registration Form */}
         <form onSubmit={handleSubmit} className="register-form">
+          {/* Name Fields Row */}
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="first_name">First Name</label>
@@ -153,6 +195,7 @@ const handleGoogleSignup = () => {
             </div>
           </div>
 
+          {/* Email Field */}
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -166,6 +209,7 @@ const handleGoogleSignup = () => {
             />
           </div>
 
+          {/* Password Field */}
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -180,12 +224,20 @@ const handleGoogleSignup = () => {
             />
           </div>
 
+          {/* Submit Button */}
           <button type="submit" className="register-button" disabled={loading}>
             {loading ? "Creating Account..." : "CREATE ACCOUNT"}
           </button>
 
+          {/* OAuth Divider */}
           <p className="text-center">Or</p>
-          <button type="button" className="google-login-button" onClick={handleGoogleSignup}>
+
+          {/* Google Sign-in Button */}
+          <button
+            type="button"
+            className="google-login-button"
+            onClick={handleGoogleSignup}
+          >
             <svg
               width="18"
               height="18"
@@ -194,6 +246,7 @@ const handleGoogleSignup = () => {
               xmlns="http://www.w3.org/2000/svg"
               className="google-icon"
             >
+              {/* Google Logo SVG Paths */}
               <path
                 d="M17.5781 9.20578C17.5781 8.56641 17.5273 7.95312 17.4305 7.35938H9.14062V10.8398H13.8984C13.7344 11.8945 13.1367 12.8086 12.1992 13.4062V15.5039H14.9609C16.4531 14.1211 17.5781 11.918 17.5781 9.20578Z"
                 fill="#4285F4"
@@ -215,11 +268,13 @@ const handleGoogleSignup = () => {
           </button>
         </form>
 
+        {/* Login Link */}
         <div className="login-link">
           Already have an account? <Link to="/login/">Login</Link>
         </div>
       </div>
 
+      {/* Notification Component */}
       {notification && (
         <Notification
           message={notification.message}
@@ -228,21 +283,21 @@ const handleGoogleSignup = () => {
         />
       )}
 
+      {/* Success Confirmation Modal */}
       <ConfirmationModal
-  isOpen={showSuccessModal}
-  onClose={handleCloseModal}
-  onConfirm={handleConfirmSuccess}
-  title={isNewGoogleUser ? "Registration Successful!" : "Welcome Back!"}
-  message={
-    isNewGoogleUser
-      ? "Your account has been created successfully."
-      : "You are already registered. Redirecting you to the home page."
-  }
-  confirmText={isNewGoogleUser ? "Continue to Login" : "Go to Home"}
-  icon={FiCheckCircle}
-  type="success"
-/>
-
+        isOpen={showSuccessModal}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmSuccess}
+        title={isNewGoogleUser ? "Registration Successful!" : "Welcome Back!"}
+        message={
+          isNewGoogleUser
+            ? "Your account has been created successfully."
+            : "You are already registered. Redirecting you to the home page."
+        }
+        confirmText={isNewGoogleUser ? "Continue to Login" : "Go to Home"}
+        icon={FiCheckCircle}
+        type="success"
+      />
     </>
   );
 };

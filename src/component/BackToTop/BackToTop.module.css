@@ -1,36 +1,58 @@
-/* components/BackToTop.module.css */
+/* 
+  BackToTop Component Styles
+  This module contains all the styles for the BackToTop floating button component.
+  The button appears when users scroll down and provides smooth scrolling back to top.
+*/
+
+/* Base styles for the back-to-top button */
 .backToTop {
+  /* Fixed positioning to keep it visible during scrolling */
   position: fixed;
   bottom: 2rem;
   right: 2rem;
+  
+  /* Circular button dimensions */
   width: 56px;
   height: 56px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #9702b0, #9602b0e6);
+  
+  /* Gradient background for visual appeal */
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+  
+  /* Shadow for depth effect */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  
+  /* Cursor and interaction properties */
   cursor: pointer;
   opacity: 1;
   transform: translateY(20px);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Center the content */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+  
+  /* Ensure it stays above other content */
   z-index: 100;
   overflow: hidden;
 }
 
+/* Visible state when scrolled down */
 .backToTop.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* Hover effects for better interactivity */
 .backToTop:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
 }
 
+/* Container for the circular progress indicator */
 .progressRing {
   position: relative;
   width: 100%;
@@ -40,26 +62,30 @@
   justify-content: center;
 }
 
+/* SVG element for the progress ring */
 .ringSvg {
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg);
+  transform: rotate(-90deg); /* Rotate to start progress from top */
 }
 
+/* Background track of the progress ring */
 .ringTrack {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
+  stroke: rgba(255, 255, 255, 0.2); /* Semi-transparent track */
   stroke-width: 3;
 }
 
+/* Foreground fill of the progress ring */
 .ringFill {
   fill: none;
-  stroke: white;
+  stroke: white; /* White progress indicator */
   stroke-width: 3;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.1s linear;
+  stroke-linecap: round; /* Rounded line ends */
+  transition: stroke-dashoffset 0.1s linear; /* Smooth progress animation */
 }
 
+/* Container for the arrow icon */
 .arrowContainer {
   position: absolute;
   display: flex;
@@ -67,28 +93,31 @@
   justify-content: center;
 }
 
+/* Arrow icon styling */
 .arrowIcon {
   width: 24px;
   height: 24px;
-  stroke: white;
+  stroke: white; /* White arrow */
   stroke-width: 2;
   fill: none;
 }
 
+/* Tooltip that appears on hover */
 .tooltip {
   position: absolute;
-  bottom: -30px;
-  background: rgba(0, 0, 0, 0.7);
+  bottom: -30px; /* Position below the button */
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   opacity: 1;
   transition: opacity 0.2s;
-  white-space: nowrap;
-  pointer-events: none;
+  white-space: nowrap; /* Prevent text wrapping */
+  pointer-events: none; /* Allow clicks to pass through */
 }
 
+/* Show tooltip on hover */
 .backToTop:hover .tooltip {
   opacity: 1;
 }

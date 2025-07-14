@@ -1,10 +1,24 @@
-/* Category Products Page Layout */
+
+/**
+ * CSS Styles for CategoryProductsPage
+ * 
+ * Responsive layout with:
+ * - Category title
+ * - Sidebar filters
+ * - Product grid with hover effects
+ * - Price styling
+ * - Badges for special products
+ * - Responsive breakpoints
+ */
+
+/* Main container for the category page */
 .category-page-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Category title styling */
 .category-title {
   text-align: center;
   margin: 20px 0 30px;
@@ -12,11 +26,13 @@
   color: #333;
 }
 
+/* Layout for content area (filters + products) */
 .category-content {
   display: flex;
   gap: 30px;
 }
 
+/* Fixed sidebar for filters */
 .filters-sidebar {
   flex: 0 0 280px;
   position: sticky;
@@ -25,10 +41,12 @@
   align-self: flex-start;
 }
 
+/* Container for products grid */
 .products-grid-container {
   flex: 1;
 }
 
+/* Grid layout for products */
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -36,6 +54,7 @@
   padding-bottom: 40px;
 }
 
+/* Individual product card styling */
 .category-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
@@ -44,11 +63,13 @@
   background: white;
 }
 
+/* Hover effects for product cards */
 .category-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Container for product image with aspect ratio */
 .category-image-container {
   position: relative;
   width: 100%;
@@ -56,6 +77,7 @@
   overflow: hidden;
 }
 
+/* Product image styling */
 .category-image {
   position: absolute;
   top: 0;
@@ -66,15 +88,17 @@
   transition: transform 0.5s ease;
 }
 
+/* Image zoom effect on hover */
 .category-card:hover .category-image {
   transform: scale(1.05);
 }
 
+/* Badge styling for best sellers/top products */
 .category-badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -82,39 +106,47 @@
   font-weight: bold;
 }
 
+/* Special styling for top product badge */
 .category-badge.top-product {
-  background-color: #ff6b00;
+  background: #ff6b00;
 }
 
+/* Container for product info below image */
 .category-info {
   padding: 15px;
 }
 
+/* Product title styling */
 .category-product-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
 }
 
+/* Link styling for product title */
 .category-title-link {
   color: #333;
   text-decoration: none;
 }
 
+/* Hover effect for product title link */
 .category-title-link:hover {
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Price display container */
 .category-price-wrapper {
   margin-bottom: 12px;
 }
 
+/* Current price styling */
 .category-current-price {
   font-weight: bold;
   font-size: 1.1rem;
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Original price (strikethrough) styling */
 .category-original-price {
   text-decoration: line-through;
   color: #999;
@@ -122,10 +154,12 @@
   margin-left: 8px;
 }
 
+/* Size selector dropdown container */
 .size-selector {
   margin-bottom: 12px;
 }
 
+/* Size dropdown styling */
 .size-dropdown {
   width: 100%;
   padding: 8px;
@@ -134,33 +168,38 @@
   font-size: 0.9rem;
 }
 
+/* Add to cart button styling */
 .category-add-to-cart {
   width: 100%;
   padding: 10px;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
+/* Hover effect for add to cart button */
 .category-add-to-cart:hover {
-  background-color: #7a0191;
+  background: #7a0191;
 }
 
+/* Disabled state for add to cart button */
 .category-add-to-cart:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
 }
 
+/* Loading state styling */
 .loading {
   text-align: center;
   padding: 2rem;
   font-size: 1.2rem;
 }
 
+/* Error message styling */
 .error {
   text-align: center;
   padding: 2rem;
@@ -168,7 +207,7 @@
   font-size: 1.2rem;
 }
 
-/* Responsive styles */
+/* Responsive styles for tablet devices */
 @media (max-width: 992px) {
   .category-content {
     flex-direction: column;
@@ -186,6 +225,7 @@
   }
 }
 
+/* Responsive styles for mobile devices */
 @media (max-width: 576px) {
   .category-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

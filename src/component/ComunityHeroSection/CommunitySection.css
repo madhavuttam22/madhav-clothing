@@ -1,71 +1,79 @@
+/* CommunitySection.css */
+
+/* Main section styling with gradient background */
 .community-section {
-  width: 90%;
-  border-radius: 25px;
-  margin-inline: auto;
-  padding: 0px 20px;
-  padding-top: 30px;
-  color: white;
-  background-color: #9702b0;
+  width: 90%;                        /* 90% of parent width */
+  border-radius: 25px;               /* Rounded corners */
+  margin-inline: auto;               /* Horizontal centering */
+  padding: 0px 20px;                 /* Horizontal padding */
+  padding-top: 30px;                 /* Top padding */
+  color: white;                      /* Text color */
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%); /* Blue to pink gradient */
 }
 
+/* Flex container for responsive layout */
 .feature-text {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  max-width: 1200px;
-  margin: auto;
-  gap: 20px;
+  display: flex;                     /* Flex layout */
+  flex-wrap: wrap;                   /* Allow wrapping on small screens */
+  align-items: center;               /* Vertical centering */
+  max-width: 1200px;                /* Maximum content width */
+  margin: auto;                      /* Centering */
+  gap: 20px;                        /* Spacing between flex items */
 }
 
+/* Image container styling */
 .feature-image {
-  flex: 1 1 50%;
-  max-width: 600px;
+  flex: 1 1 50%;                    /* Flexible width, minimum 50% */
+  max-width: 600px;                 /* Maximum image width */
 }
 
+/* Image styling with animation */
 .feature-image img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  animation: slideInLeft 0.8s ease-in-out;
+  width: 100%;                      /* Full container width */
+  height: auto;                     /* Maintain aspect ratio */
+  object-fit: contain;              /* Ensure full image visibility */
+  animation: slideInLeft 0.8s ease-in-out; /* Slide-in animation */
 }
 
+/* Text content container */
 .feature-content {
-  flex: 1 1 45%;
-  padding: 10px;
+  flex: 1 1 45%;                    /* Flexible width, minimum 45% */
+  padding: 10px;                    /* Internal spacing */
 }
 
+/* Subheading styling */
 .section-header .subheading {
-  font-size: 16px;
-  font-weight: 600;
-  color: whitesmoke;
-  text-transform: uppercase;
-  margin-bottom: 16px;
+  font-size: 16px;                  /* Medium font size */
+  font-weight: 600;                 /* Semi-bold weight */
+  color: whitesmoke;                /* Light text color */
+  text-transform: uppercase;        /* Uppercase text */
+  margin-bottom: 16px;              /* Bottom spacing */
 }
 
+/* Description paragraph styling */
 .section-header .description p {
-  font-size: 20px;
-  font-weight: 600;
-  color: whitesmoke;
-  line-height: 1.6;
+  font-size: 20px;                  /* Larger font size */
+  font-weight: 600;                 /* Semi-bold weight */
+  color: whitesmoke;                /* Light text color */
+  line-height: 1.6;                 /* Improved readability */
 }
 
+/* Call-to-action link styling */
 .section-header .description a {
-  color: whitesmoke !important;
-  font-size: 20px;
-  font-weight: 600;
-  text-decoration: none;
+  color: whitesmoke !important;     /* Light text color */
+  font-size: 20px;                  /* Matching paragraph size */
+  font-weight: 600;                 /* Semi-bold weight */
+  text-decoration: none;           /* Remove underline */
 }
 
-
-
-/* Optional Animation */
+/* Animation keyframes for slide-in effect */
 @keyframes slideInLeft {
   0% {
-    transform: translateX(-30px);
-    opacity: 0;
+    transform: translateX(-30px);   /* Start position (left) */
+    opacity: 0;                     /* Start invisible */
   }
   100% {
-    transform: translateX(0px);
-    opacity: 1;
+    transform: translateX(0px);     /* End position (normal) */
+    opacity: 1;                     /* Fully visible */
   }
 }

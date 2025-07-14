@@ -5,7 +5,12 @@ import Header from "../../component/Header/Header";
 import Footer from "../../component/Footer/Footer";
 import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationModal";
 
+/**
+ * ContactPage Component - Displays a contact form and contact information
+ * Allows users to submit inquiries and view company contact details
+ */
 const ContactPage = () => {
+  // State for form data with initial empty values
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,10 +18,16 @@ const ContactPage = () => {
     subject: "",
     message: "",
   });
+
+  // State for form submission status
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
+  /**
+   * Handles input changes and updates form state
+   * @param {Object} e - The event object from the input field
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -25,7 +36,12 @@ const ContactPage = () => {
     }));
   };
 
+  /**
+   * Validates form inputs before submission
+   * @returns {boolean} - Returns true if form is valid, false otherwise
+   */
   const validateForm = () => {
+    // Check required fields
     if (
       !formData.name ||
       !formData.email ||
@@ -38,6 +54,8 @@ const ContactPage = () => {
       });
       return false;
     }
+    
+    // Validate email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setSubmitStatus({ success: false, message: "Invalid email format." });
       return false;
@@ -45,6 +63,10 @@ const ContactPage = () => {
     return true;
   };
 
+  /**
+   * Handles form submission
+   * @param {Object} e - The event object from the form
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -53,12 +75,15 @@ const ContactPage = () => {
     setSubmitStatus(null);
 
     try {
+      // Send form data to the backend API
       const response = await axios.post(
         "https://web-production-2449.up.railway.app/api/contact/",
         formData,
         { withCredentials: true }
       );
-      setShowConfirmation(true); // Only show modal on success
+      
+      // Show success modal and reset form on successful submission
+      setShowConfirmation(true);
       setFormData({
         name: "",
         email: "",
@@ -67,6 +92,7 @@ const ContactPage = () => {
         message: "",
       });
     } catch (error) {
+      // Handle submission errors
       setSubmitStatus({
         success: false,
         message:
@@ -78,11 +104,14 @@ const ContactPage = () => {
     }
   };
 
+  /**
+   * Closes the confirmation modal
+   */
   const closeConfirmation = () => {
     setShowConfirmation(false);
   };
 
-  // SVG Icons
+  // SVG Icon Components for contact information cards
   const EmailIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -152,8 +181,12 @@ const ContactPage = () => {
 
   return (
     <>
+      {/* Header Component */}
       <Header />
+      
+      {/* Main Contact Page Content */}
       <div className="contact-page">
+        {/* Hero Section with wave effect */}
         <div className="contact-hero">
           <div className="hero-content">
             <h1>Get in Touch</h1>
@@ -183,9 +216,12 @@ const ContactPage = () => {
           </div>
         </div>
 
+        {/* Contact Content Container */}
         <div className="contact-container">
           <div className="contact-content">
+            {/* Contact Information Cards */}
             <div className="contact-info">
+              {/* Email Card */}
               <div className="info-card">
                 <div className="info-icon">
                   <EmailIcon />
@@ -215,6 +251,7 @@ const ContactPage = () => {
                 </div>
               </div>
 
+              {/* Phone Card */}
               <div className="info-card">
                 <div className="info-icon">
                   <PhoneIcon />
@@ -241,6 +278,7 @@ const ContactPage = () => {
                 </div>
               </div>
 
+              {/* Location Card */}
               <div className="info-card">
                 <div className="info-icon">
                   <LocationIcon />
@@ -273,6 +311,7 @@ const ContactPage = () => {
               </div>
             </div>
 
+            {/* Contact Form Section */}
             <div className="contact-form-container">
               <div className="form-header">
                 <h2>Send Us a Message</h2>
@@ -282,7 +321,9 @@ const ContactPage = () => {
                 </p>
               </div>
 
+              {/* Contact Form */}
               <form onSubmit={handleSubmit} className="contact-form">
+                {/* Name Field */}
                 <div className="form-group">
                   <label htmlFor="name">Name *</label>
                   <input
@@ -296,6 +337,7 @@ const ContactPage = () => {
                   />
                 </div>
 
+                {/* Email Field */}
                 <div className="form-group">
                   <label htmlFor="email">Email *</label>
                   <input
@@ -309,6 +351,7 @@ const ContactPage = () => {
                   />
                 </div>
 
+                {/* Phone Field (optional) */}
                 <div className="form-group">
                   <label htmlFor="phone">Phone Number</label>
                   <input
@@ -321,6 +364,7 @@ const ContactPage = () => {
                   />
                 </div>
 
+                {/* Subject Field */}
                 <div className="form-group">
                   <label htmlFor="subject">Subject *</label>
                   <input
@@ -334,6 +378,7 @@ const ContactPage = () => {
                   />
                 </div>
 
+                {/* Message Field */}
                 <div className="form-group">
                   <label htmlFor="message">Message *</label>
                   <textarea
@@ -347,6 +392,7 @@ const ContactPage = () => {
                   ></textarea>
                 </div>
 
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -365,9 +411,11 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Footer Component */}
       <Footer />
 
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal - Shows on successful form submission */}
       <ConfirmationModal
         isOpen={showConfirmation}
         onClose={closeConfirmation}

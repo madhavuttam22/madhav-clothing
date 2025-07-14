@@ -1,5 +1,14 @@
-/* Cart.css */
+/* 
+  Cart Component Styles
+  Styles for the shopping cart page including:
+  - Cart items list
+  - Quantity controls
+  - Checkout section
+  - Empty cart state
+  - Responsive design
+*/
 
+/* Loading and error states */
 .loading, .error {
   text-align: center;
   padding: 2rem;
@@ -13,6 +22,7 @@
   border-radius: 4px;
 }
 
+/* Main cart container */
 .cart-container {
   max-width: 1000px;
   margin: 0 auto;
@@ -20,6 +30,7 @@
   min-height: 70vh;
 }
 
+/* Cart title */
 .cart-title {
   font-size: 28px;
   font-weight: 500;
@@ -30,6 +41,7 @@
   border-bottom: 1px solid #e1e1e1;
 }
 
+/* Cart header (column titles) */
 .cart-header {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -39,14 +51,17 @@
   color: #666;
 }
 
+/* Center align quantity column */
 .cart-header div:nth-child(2) {
   text-align: center;
 }
 
+/* Right align price column */
 .cart-header div:nth-child(3) {
   text-align: right;
 }
 
+/* Cart items container */
 .cart-items {
   display: flex;
   flex-direction: column;
@@ -54,6 +69,7 @@
   margin-bottom: 30px;
 }
 
+/* Individual cart item */
 .cart-item {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -62,29 +78,34 @@
   align-items: center;
 }
 
+/* Product information section */
 .item-info {
   display: flex;
   gap: 15px;
   align-items: center;
 }
 
+/* Product image container */
 .item-image-container {
   width: 80px;
   height: 80px;
   flex-shrink: 0;
 }
 
+/* Product image */
 .item-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* Product details */
 .item-details {
   display: flex;
   flex-direction: column;
 }
 
+/* Product name */
 .item-name {
   font-size: 16px;
   font-weight: 400;
@@ -92,24 +113,28 @@
   color: #000;
 }
 
+/* Product variant (color/size) */
 .item-variant {
   font-size: 14px;
   color: #666;
   margin: 0 0 5px 0;
 }
 
+/* Product price */
 .item-price {
   font-size: 14px;
   color: #000;
   margin: 0;
 }
 
+/* Quantity control section */
 .quantity-section {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* Quantity controls (plus/minus buttons) */
 .quantity-controls {
   display: flex;
   align-items: center;
@@ -117,6 +142,7 @@
   margin-bottom: 5px;
 }
 
+/* Quantity buttons */
 .quantity-controls button {
   width: 28px;
   height: 28px;
@@ -131,6 +157,7 @@
   padding: 0;
 }
 
+/* Remove item button */
 .remove-btn {
   background: none;
   border: none;
@@ -141,47 +168,33 @@
   padding: 0;
 }
 
+/* Item total price */
 .price-section {
   font-size: 16px;
   text-align: right;
   padding-right: 10px;
 }
 
-.order-note {
+/* Cart summary section */
+.cart-summary {
   margin: 30px 0;
 }
 
-.order-note h4 {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.order-note textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-height: 80px;
-  font-family: inherit;
-}
-
-.total-section {
-  text-align: right;
-}
-
+/* Total amount display */
 .total-amount {
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 5px;
 }
 
+/* Shipping information */
 .shipping-note {
   font-size: 14px;
   color: #999;
   margin-bottom: 15px;
 }
 
+/* Checkout button */
 .checkout-btn {
   display: block;
   width: 100%;
@@ -198,6 +211,7 @@
   text-transform: uppercase;
 }
 
+/* Empty cart state */
 .empty-cart {
   text-align: center;
   padding: 50px 0;
@@ -209,6 +223,7 @@
   margin-bottom: 20px;
 }
 
+/* Continue shopping button */
 .continue-shopping {
   display: inline-block;
   padding: 12px 25px;
@@ -219,31 +234,37 @@
   font-weight: 500;
 }
 
+/* Responsive design for mobile */
 @media (max-width: 768px) {
+  /* Hide desktop headers on mobile */
   .cart-header {
     display: none;
   }
   
+  /* Stack cart items vertically on mobile */
   .cart-item {
     grid-template-columns: 1fr;
     gap: 15px;
   }
   
+  /* Align quantity controls to left on mobile */
   .quantity-section {
     align-items: flex-start;
   }
   
+  /* Align price to left on mobile */
   .price-section {
     text-align: left;
     padding-right: 0;
   }
   
+  /* Adjust padding for mobile */
   .cart-container {
     padding: 15px;
   }
 }
 
-/* Add to your Cart.css */
+/* Additional styling for variants */
 .item-variant {
   margin: 5px 0;
   font-size: 14px;
@@ -254,10 +275,8 @@
   margin-top: 8px;
 }
 
-/* Update the item-details to accommodate size */
+/* Adjust item details padding */
 .item-details {
   flex: 1;
   padding-left: 15px;
 }
-
-/* Rest of your existing CSS... */

@@ -1,10 +1,17 @@
-/* All Products Page Layout */
+/* 
+  All Products Page Styles
+  Responsive layout for product grid and filters
+  Mobile-first approach with media queries for larger screens
+*/
+
+/* Main container for the page */
 .all-products-page-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Page title styling */
 .all-products-title {
   text-align: center;
   margin: 20px 0 30px;
@@ -12,11 +19,13 @@
   color: #333;
 }
 
+/* Flex layout for filters and products */
 .all-products-content {
   display: flex;
   gap: 30px;
 }
 
+/* Sticky filters sidebar */
 .filters-sidebar {
   flex: 0 0 280px;
   position: sticky;
@@ -25,10 +34,12 @@
   align-self: flex-start;
 }
 
+/* Products grid container */
 .products-grid-container {
   flex: 1;
 }
 
+/* Responsive product grid using CSS Grid */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -36,6 +47,7 @@
   padding-bottom: 40px;
 }
 
+/* Product card styling */
 .product-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
@@ -44,11 +56,13 @@
   background: white;
 }
 
+/* Hover effects for product cards */
 .product-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Image container with aspect ratio */
 .product-image-container {
   position: relative;
   width: 100%;
@@ -56,6 +70,7 @@
   overflow: hidden;
 }
 
+/* Product image styling */
 .product-image {
   position: absolute;
   top: 0;
@@ -66,10 +81,12 @@
   transition: transform 0.5s ease;
 }
 
+/* Image zoom effect on hover */
 .product-card:hover .product-image {
   transform: scale(1.05);
 }
 
+/* Badge styling for special products */
 .product-badge {
   position: absolute;
   top: 10px;
@@ -81,35 +98,42 @@
   font-weight: bold;
 }
 
+/* Best seller badge gradient */
 .best-seller {
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
 }
 
+/* Top product badge */
 .top-product {
-  background-color: #02a1b0;
+  background: #02a1b0;
   left: auto;
   right: 10px;
 }
 
+/* Product info section */
 .product-info {
   padding: 15px;
 }
 
+/* Product title styling */
 .product-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
 }
 
+/* Product title link */
 .product-title-link {
   color: #333;
   text-decoration: none;
 }
 
+/* Product title hover effect */
 .product-title-link:hover {
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Price display wrapper */
 .product-price-wrapper {
   margin-bottom: 12px;
   display: flex;
@@ -117,12 +141,14 @@
   align-items: center;
 }
 
+/* Current price styling */
 .product-current-price {
   font-weight: bold;
   font-size: 1.1rem;
-  color: #9702b0;
+  color: #DE5B9E;
 }
 
+/* Original price (strikethrough) */
 .product-original-price {
   text-decoration: line-through;
   color: #999;
@@ -130,6 +156,7 @@
   margin-left: 8px;
 }
 
+/* Size selector dropdown */
 .size-selector {
   margin-bottom: 12px;
 }
@@ -142,28 +169,31 @@
   font-size: 0.9rem;
 }
 
+/* Add to cart button styling */
 .add-to-cart-btn {
   width: 100%;
   padding: 10px;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
 }
 
+/* Button hover state */
 .add-to-cart-btn:hover {
-  background-color: #7a0191;
+  background: #7a0191;
 }
 
+/* Disabled button state */
 .add-to-cart-btn:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
 }
 
-/* Responsive styles */
+/* Responsive styles for tablet */
 @media (max-width: 992px) {
   .all-products-content {
     flex-direction: column;
@@ -181,6 +211,7 @@
   }
 }
 
+/* Responsive styles for mobile */
 @media (max-width: 576px) {
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -193,12 +224,14 @@
   }
 }
 
+/* Loading state styling */
 .loading {
   text-align: center;
   padding: 50px;
   font-size: 1.2rem;
 }
 
+/* Error state styling */
 .error {
   text-align: center;
   padding: 50px;

@@ -6,23 +6,41 @@ import { Link, useNavigate } from "react-router-dom";
 import Notification from "../Notification/Notification";
 import { getAuth } from "firebase/auth";
 
+/**
+ * Cart Component
+ * Displays the user's shopping cart with the ability to:
+ * - View cart items with images, quantities, and prices
+ * - Update item quantities
+ * - Remove items from cart
+ * - Proceed to checkout
+ * - Handle empty cart state
+ */
 const Cart = () => {
+  // State management
   const [cartData, setCartData] = useState({
-    items: [],
-    total: 0,
-    item_count: 0,
-    isLoading: true,
-    error: null,
+    items: [],          // Array of cart items
+    total: 0,           // Total cart value
+    item_count: 0,      // Total number of items
+    isLoading: true,    // Loading state
+    error: null         // Error state
   });
-  const [notification, setNotification] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [notification, setNotification] = useState(null); // Notification system
+  const [isProcessing, setIsProcessing] = useState(false); // Processing state for cart actions
   const navigate = useNavigate();
 
+  /**
+   * Shows a notification message
+   * @param {string} message - The message to display
+   * @param {string} type - The type of notification ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
   };
 
+  /**
+   * Fetches cart data from the API
+   */
   const fetchCartData = async () => {
     try {
       setCartData((prev) => ({ ...prev, isLoading: true }));
@@ -30,12 +48,14 @@ const Cart = () => {
       const auth = getAuth();
       const user = auth.currentUser;
 
+      // Check authentication
       if (!user) {
         throw new Error("User not authenticated");
       }
 
       const token = await user.getIdToken();
 
+      // API call to get cart data
       const response = await fetch(
         "https://web-production-2449.up.railway.app/api/cart/",
         {
@@ -56,9 +76,10 @@ const Cart = () => {
       const total = data.total || 0;
       const item_count = data.item_count || 0;
 
+      // Process cart items to ensure consistent structure
       const processedItems = items.map((item) => ({
         ...item,
-        image: item.image || "/placeholder-product.jpg",
+        image: item.image || "/placeholder-product.jpg", // Fallback image
         color_name: item.color || item.color_name || "",
         color_id: item.color_id || item.color?.id || null,
         size_name: item.size_name || "",
@@ -86,10 +107,19 @@ const Cart = () => {
     }
   };
 
+  // Fetch cart data on component mount
   useEffect(() => {
     fetchCartData();
   }, []);
 
+  /**
+   * Handles cart actions (update quantity or remove item)
+   * @param {string} productId - The ID of the product
+   * @param {string} action - The action to perform ('update' or 'remove')
+   * @param {number} quantity - The new quantity (for update actions)
+   * @param {string} sizeId - The size ID of the product
+   * @param {string} colorId - The color ID of the product
+   */
   const handleCartAction = async (
     productId,
     action,
@@ -110,6 +140,7 @@ const Cart = () => {
       let endpoint = "";
       let body = {};
 
+      // Determine API endpoint and request body based on action
       if (action === "remove") {
         endpoint = `https://web-production-2449.up.railway.app/api/cart/remove/${productId}/`;
         body = { size_id: sizeId, color_id: colorId };
@@ -138,15 +169,17 @@ const Cart = () => {
         throw new Error(errorData.message || `Failed to ${action} item`);
       }
 
+      // Show success notification
       showNotification(
         action === "remove"
           ? "Item removed from cart"
           : "Cart updated successfully"
       );
 
+      // Refresh cart data
       await fetchCartData();
 
-      // Update cart count in header
+      // Update cart count in header if global function exists
       if (window.updateCartCount) {
         window.updateCartCount();
       }
@@ -158,6 +191,9 @@ const Cart = () => {
     }
   };
 
+  /**
+   * Handles checkout button click
+   */
   const handleCheckout = () => {
     if (cartData.item_count === 0) {
       showNotification("Your cart is empty", "error");
@@ -166,6 +202,7 @@ const Cart = () => {
     navigate("/checkout");
   };
 
+  // Loading and error states
   if (cartData.isLoading) return <div className="loading">Loading cart...</div>;
   if (cartData.error) {
     return (
@@ -186,15 +223,18 @@ const Cart = () => {
 
         {cartData.item_count > 0 ? (
           <>
+            {/* Cart items table header */}
             <div className="cart-header">
               <div>Product</div>
               <div>Quantity</div>
               <div>Total</div>
             </div>
 
+            {/* Cart items list */}
             <div className="cart-items">
               {cartData.items.map((item) => (
                 <div key={item.id} className="cart-item">
+                  {/* Product information */}
                   <div className="item-info">
                     <div className="item-image-container">
                       <img
@@ -220,6 +260,7 @@ const Cart = () => {
                     </div>
                   </div>
 
+                  {/* Quantity controls */}
                   <div className="quantity-section">
                     <div className="quantity-controls">
                       <button
@@ -269,6 +310,7 @@ const Cart = () => {
                     </button>
                   </div>
 
+                  {/* Item total price */}
                   <div className="price-section">
                     ₹{(item.price * item.quantity).toFixed(2)}
                   </div>
@@ -276,6 +318,7 @@ const Cart = () => {
               ))}
             </div>
 
+            {/* Cart summary and checkout */}
             <div className="cart-summary">
               <div className="total-section">
                 <p className="total-amount">
@@ -295,6 +338,7 @@ const Cart = () => {
             </div>
           </>
         ) : (
+          /* Empty cart state */
           <div className="empty-cart">
             <p>Your cart is empty</p>
             <Link to="/" className="continue-shopping text-white">
@@ -305,6 +349,7 @@ const Cart = () => {
       </div>
       <Footer />
 
+      {/* Notification component */}
       {notification && (
         <Notification
           message={notification.message}

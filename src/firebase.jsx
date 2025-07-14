@@ -1,13 +1,25 @@
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
+/**
+ * Firebase Configuration and Initialization
+ * 
+ * This file configures and initializes Firebase services for the e-commerce application.
+ * Currently implements Firebase Authentication service.
+ */
+
+// Import required Firebase modules
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // ✅ THIS IMPORT IS MANDATORY
+import { getAuth } from "firebase/auth"; // Authentication service import
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+/**
+ * Firebase configuration object
+ * @constant {Object} firebaseConfig
+ * @property {string} apiKey - API key for Firebase project
+ * @property {string} authDomain - Authorized domain for authentication
+ * @property {string} projectId - Firebase project ID
+ * @property {string} storageBucket - Cloud Storage bucket
+ * @property {string} messagingSenderId - Cloud Messaging sender ID
+ * @property {string} appId - Firebase app ID
+ * @property {string} measurementId - Google Analytics measurement ID (optional)
+ */
 const firebaseConfig = {
   apiKey: "AIzaSyApAwk0A5SC5Iesj0MEIuiBu8BKbhwQc5M",
   authDomain: "ecommerce-auth-b6280.firebaseapp.com",
@@ -18,8 +30,11 @@ const firebaseConfig = {
   measurementId: "G-8YZZE3BRSX"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig); // ✅ initialize the app
-const auth = getAuth(app); // ✅ use the app here
+// Initialize Firebase application
+const app = initializeApp(firebaseConfig);
 
+// Initialize Firebase Authentication and get a reference to the service
+const auth = getAuth(app);
+
+// Export authentication service for use throughout the application
 export { auth };

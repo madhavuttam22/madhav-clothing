@@ -1,3 +1,10 @@
+/**
+ * Main Application Component
+ * 
+ * This is the root component of the React e-commerce application.
+ * It sets up routing for all pages and manages global notification state.
+ */
+
 import React, { useEffect, useState } from 'react'
 import './App.css'
 import "slick-carousel/slick/slick.css"; 
@@ -24,40 +31,41 @@ import CheckoutPage from './Pages/CheckoutPage/CheckoutPage';
 import OrderSuccessPage from './Pages/OrderSuccessPage/OrderSuccessPage';
 import MyOrders from './component/Account/MyOrders/MyOrders';
 
-
 const App = () => {
+  // Notification hook for displaying global alerts/notifications
   const { notification, hideNotification } = useNotification();
     
   return (
     <>
-    
-    <BrowserRouter>
-    
-    <Routes>
+      {/* Main application router */}
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path='/' element={<Homepage/>}/>
+          <Route path='/order-success/' element={<OrderSuccessPage/>}/>
+          <Route path='/login/' element={<Accountpage/>}/>
+          <Route path='/register/' element={<Registerpage/>}/>
+          <Route path='/allproducts/' element={<AllProductsPage/>}/>
+          <Route path='/contactus/' element={<ContactPage/>}/>
+          <Route path='/brand/' element={<BrandPage/>}/>
+          <Route path='/newcollection/' element={<NewCollectionPage/>}/>
+          <Route path="/product/:id/" element={<ProductDetailPage />} />
+          <Route path='/bestseller/' element={<BestSellerPage/>}/>
+          <Route path="/search/" element={<SearchResults />} />
+          <Route path="/category/:category_id/products/" element={<CategoryProductsPage />} />
+          <Route path="/forgot-password/" element={<ForgotPassword />} />
+          <Route path="/reset-password/:uidb64/:token/" element={<ForgotPassword />} />
 
-      <Route path='/' element={<Homepage/>}/>
-      <Route path='/order-success/' element={<OrderSuccessPage/>}/>
-      <Route path='/login/' element={<Accountpage/>}/>
-      <Route path='/register/' element={<Registerpage/>}/>
-      <Route path='/allproducts/' element={<AllProductsPage/>}/>
-      <Route path='/contactus/' element={<ContactPage/>}/>
-      <Route path='/brand/' element={<BrandPage/>}/>
-      <Route path='/myorders/' element={<MyOrders/>}/>
-      <Route path='/checkout/' element={<CheckoutPage/>}/>
-      <Route path='/newcollection/' element={<NewCollectionPage/>}/>
-      <Route path='/cart/' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
-      <Route path="/product/:id/" element={<ProductDetailPage />} />
-      <Route path='/bestseller/' element={<BestSellerPage/>}/>
-      <Route path='/profile/' element={<Profile/>}/>
-      <Route path="/search/" element={<SearchResults />} />
-      <Route path="/category/:category_id/products/" element={<CategoryProductsPage />} />
-      <Route path="/forgot-password/" element={<ForgotPassword />} />
-      <Route path="/reset-password/:uidb64/:token/" element={<ForgotPassword />} />
+          {/* Protected Routes (require authentication) */}
+          <Route path='/cart/' element={<ProtectedRoute><Cart/></ProtectedRoute>}/>
+          <Route path='/profile/' element={<Profile/>}/>
+          <Route path='/myorders/' element={<MyOrders/>}/>
+          <Route path='/checkout/' element={<CheckoutPage/>}/>
+        </Routes>
+      </BrowserRouter>
 
-    </Routes>
-      
-    </BrowserRouter>
-    {notification && (
+      {/* Global Notification Component */}
+      {notification && (
         <Notification
           message={notification.message}
           type={notification.type}

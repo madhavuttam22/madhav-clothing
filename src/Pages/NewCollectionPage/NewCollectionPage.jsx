@@ -10,33 +10,60 @@ import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
 import "./NewCollectionPage.css";
 
+/**
+ * NewCollectionPage Component
+ * Displays a grid of new arrival products with filtering, sorting, and cart functionality
+ * Features:
+ * - Infinite scroll loading
+ * - Size selection for products
+ * - Price filtering and sorting
+ * - Add to cart functionality
+ * - Responsive design
+ */
 const NewCollectionPage = () => {
+  // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
-  const [newCollection, setNewCollection] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [addingToCartId, setAddingToCartId] = useState(null);
-  const [notification, setNotification] = useState(null);
-  const [selectedSizes, setSelectedSizes] = useState({});
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+
+  // State management
+  const [newCollection, setNewCollection] = useState([]); // Original product data from API
+  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered product data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [addingToCartId, setAddingToCartId] = useState(null); // Tracks which product is being added to cart
+  const [notification, setNotification] = useState(null); // Notification state
+  const [selectedSizes, setSelectedSizes] = useState({}); // Tracks selected size for each product
+  const [page, setPage] = useState(1); // Current page for infinite scroll
+  const [hasMore, setHasMore] = useState(true); // Whether more products are available
+
+  // Intersection Observer for infinite scroll
   const observer = useRef();
 
+  /**
+   * Displays a temporary notification message
+   * @param {string} message - The notification text
+   * @param {string} type - Notification type ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
   };
 
+  /**
+   * Fetches new collection products on component mount
+   * Processes product data to include default images and sizes
+   */
   useEffect(() => {
     const fetchNewCollection = async () => {
       try {
+        // API call to get new arrival products
         const res = await axios.get(
           "https://web-production-2449.up.railway.app/api/products/?is_new=true"
         );
 
+        // Process product data to include default images and sizes
         const productsWithData = res.data.map((product) => {
+          // Set default image (fallback to placeholder if none available)
           let imageUrl = "/placeholder-product.jpg";
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
@@ -49,6 +76,7 @@ const NewCollectionPage = () => {
               imageUrl;
           }
 
+          // Set default size (first available in stock or first size)
           const firstAvailableSize =
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
@@ -60,9 +88,11 @@ const NewCollectionPage = () => {
           };
         });
 
+        // Update state with processed products
         setNewCollection(productsWithData);
         setFilteredProducts(productsWithData);
 
+        // Initialize selected sizes for each product
         const initialSizes = {};
         productsWithData.forEach((product) => {
           if (product.defaultSize) {
@@ -80,13 +110,17 @@ const NewCollectionPage = () => {
     fetchNewCollection();
   }, []);
 
+  /**
+   * Intersection Observer callback for infinite scroll
+   * Triggers when the last product element comes into view
+   */
   const lastProductRef = useCallback(
     (node) => {
       if (loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1);
+          setPage((prevPage) => prevPage + 1); // Load next page
         }
       });
       if (node) observer.current.observe(node);
@@ -94,6 +128,11 @@ const NewCollectionPage = () => {
     [loading, hasMore]
   );
 
+  /**
+   * Handles size selection change for a product
+   * @param {number} productId - The ID of the product
+   * @param {number} sizeId - The ID of the selected size
+   */
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
@@ -101,6 +140,10 @@ const NewCollectionPage = () => {
     }));
   };
 
+  /**
+   * Adds a product to the shopping cart
+   * @param {number} productId - The ID of the product to add
+   */
   const addToCart = async (productId) => {
     const selectedSizeId = parseInt(selectedSizes[productId]);
     if (!selectedSizeId) {
@@ -108,12 +151,14 @@ const NewCollectionPage = () => {
       return;
     }
 
+    // Find the product in the collection
     const product = newCollection.find((p) => p.id === productId);
     if (!product) {
       showNotification("Product not found", "error");
       return;
     }
 
+    // Check stock for selected size
     const selectedSize = product.sizes?.find(
       (size) => size.size.id === selectedSizeId
     );
@@ -124,13 +169,17 @@ const NewCollectionPage = () => {
     }
 
     try {
-      setAddingToCartId(productId);
+      setAddingToCartId(productId); // Set loading state for this product
+      
+      // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
 
+      // Get default color (first available)
       const colorId =
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
+      // API call to add to cart
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -153,9 +202,12 @@ const NewCollectionPage = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
+      // Show success notification
       showNotification(
         data.message || `${product.name} added to cart successfully!`
       );
+      
+      // Update cart count in header if function exists
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
       }
@@ -166,35 +218,47 @@ const NewCollectionPage = () => {
         "error"
       );
     } finally {
-      setAddingToCartId(null);
+      setAddingToCartId(null); // Reset loading state
     }
   };
 
+  /**
+   * Applies filters to the product collection
+   * @param {Object} filters - Filter criteria
+   * @param {number} filters.size - Size ID to filter by
+   * @param {number} filters.color - Color ID to filter by
+   * @param {string} filters.sort - Sorting method ('price_low' or 'price_high')
+   */
   const applyFilters = ({ size, color, sort }) => {
     let filtered = [...newCollection];
 
+    // Filter by size if specified
     if (size) {
       filtered = filtered.filter((product) =>
         product.sizes?.some((s) => s.size.id === parseInt(size))
       );
     }
 
+    // Filter by color if specified
     if (color) {
       filtered = filtered.filter((product) =>
         product.colors?.some((c) => c.color.id === parseInt(color))
       );
     }
 
+    // Apply sorting if specified
     if (sort === "price_low") {
       filtered.sort((a, b) => a.currentprice - b.currentprice);
     } else if (sort === "price_high") {
       filtered.sort((a, b) => b.currentprice - a.currentprice);
     }
 
+    // Update filtered products and reset pagination
     setFilteredProducts(filtered);
     setPage(1);
   };
 
+  // Loading and error states
   if (loading) return <div className="loading">Loading new collection...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -204,6 +268,7 @@ const NewCollectionPage = () => {
       <div className="new-collection-page-container">
         <h1 className="new-collection">New Collection</h1>
 
+        {/* Notification component for displaying messages */}
         {notification && (
           <Notification
             message={notification.message}
@@ -213,10 +278,12 @@ const NewCollectionPage = () => {
         )}
 
         <div className="new-collection-content">
+          {/* Filters sidebar */}
           <div className="filters-sidebar">
             <Filters products={newCollection} onApply={applyFilters} />
           </div>
 
+          {/* Product grid */}
           <div className="products-grid-container">
             <div className="new-collection-grid">
               {filteredProducts.map((item, index) => (
@@ -229,6 +296,7 @@ const NewCollectionPage = () => {
                       : null
                   }
                 >
+                  {/* Product image with link to product page */}
                   <Link to={`/product/${item.id}/`}>
                     <div className="new-collection-image-container">
                       <img
@@ -242,6 +310,8 @@ const NewCollectionPage = () => {
                       <span className="new-collection-badge">New Arrival</span>
                     </div>
                   </Link>
+                  
+                  {/* Product info section */}
                   <div className="new-collection-info">
                     <h3 className="new-collection-title">
                       <Link
@@ -251,6 +321,8 @@ const NewCollectionPage = () => {
                         {item.name}
                       </Link>
                     </h3>
+                    
+                    {/* Price display */}
                     <div className="new-collection-price-wrapper d-flex justify-content-center">
                       <span className="new-collection-current-price">
                         ₹{item.currentprice}
@@ -263,6 +335,7 @@ const NewCollectionPage = () => {
                         )}
                     </div>
 
+                    {/* Size selector dropdown */}
                     {item.sizes?.length > 0 && (
                       <div className="size-selector">
                         <select
@@ -285,6 +358,7 @@ const NewCollectionPage = () => {
                       </div>
                     )}
 
+                    {/* Add to cart button */}
                     <button
                       className="new-collection-add-to-cart"
                       onClick={() => addToCart(item.id)}

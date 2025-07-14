@@ -1,116 +1,136 @@
-/* components/ConfirmationModal/ConfirmationModal.css */
+/* src/components/ConfirmationModal/ConfirmationModal.css */
+
+/* Overlay styling - covers entire screen with semi-transparent background */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1036;
+  justify-content: center; /* Horizontal centering */
+  align-items: center;    /* Vertical centering */
+  z-index: 1036;         /* High z-index to appear above other content */
 }
 
+/* Main modal container styling */
 .modal-container {
-  background-color: white;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  width: 90%;
-  max-width: 400px;
-  animation: modalFadeIn 0.3s ease-out;
-  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+  width: 90%;            /* Responsive width */
+  max-width: 400px;      /* Maximum width */
+  animation: modalFadeIn 0.3s ease-out; /* Entrance animation */
+  overflow: hidden;      /* Contain rounded corners */
 }
 
+/* Entrance animation keyframes */
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-20px); /* Start slightly above */
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0);     /* End at normal position */
   }
 }
 
+/* Modal header styling */
 .modal-header {
   padding: 20px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #f8f9fa, white);
-  border-bottom: 1px solid #eee;
+  gap: 10px;            /* Space between icon and title */
+  background: linear-gradient(135deg, #f8f9fa, white); /* Subtle gradient */
+  border-bottom: 1px solid #eee; /* Separator line */
 }
 
+/* Header title text styling */
 .modal-header h3 {
-  margin: 0;
-  color: #333;
-  font-size: 1.3rem;
+  margin: 0;            /* Remove default margins */
+  color: #333;          /* Dark text color */
+  font-size: 1.3rem;    /* Slightly larger font */
 }
 
+/* Modal body content styling */
 .modal-body {
   padding: 20px;
-  color: #666;
-  line-height: 1.5;
+  color: #666;          /* Medium gray text */
+  line-height: 1.5;     /* Improved readability */
 }
 
+/* Footer with action buttons */
 .modal-footer {
   padding: 15px 20px;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  border-top: 1px solid #eee;
+  justify-content: flex-end; /* Right-align buttons */
+  gap: 10px;            /* Space between buttons */
+  border-top: 1px solid #eee; /* Separator line */
 }
 
+/* Cancel button styling */
 .cancel-btn {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s;
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+  transition: all 0.2s; /* Smooth hover transition */
+  background: #f0f0f0;  /* Light gray */
+  color: #333;          /* Dark text */
+  border: 1px solid #ddd; /* Subtle border */
 }
 
+/* Cancel button hover state */
 .cancel-btn:hover {
-  background-color: #e0e0e0;
+  background: #e0e0e0;  /* Slightly darker gray */
 }
 
+/* Confirm button base styling */
 .confirm-btn {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s;
-  color: white;
+  transition: all 0.2s; /* Smooth hover transition */
+  color: white;         /* White text */
   border: none;
-  background: var(--confirm-color, #ff4444);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--confirm-color, #ff4444); /* Default red color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Confirm button hover state */
 .confirm-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+  opacity: 0.9;         /* Slight transparency */
+  transform: translateY(-1px); /* Lift effect */
 }
 
-/* Success modal specific styles */
+/* Success variant styling for confirm button */
 .confirm-btn.success {
-  --confirm-color: #4CAF50;
-  background: linear-gradient(135deg, #4CAF50, #3e8e41);
+  --confirm-color: #4CAF50; /* Green color */
+  background: linear-gradient(135deg, #4CAF50, #3e8e41); /* Green gradient */
+  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3); /* Green-tinted shadow */
 }
 
-/* Danger modal specific styles */
+/* Success button hover state */
+.confirm-btn.success:hover {
+  background: linear-gradient(135deg, #3e8e41, #2e7d32); /* Darker green */
+}
+
+/* Danger variant styling for confirm button */
 .confirm-btn.danger {
-  --confirm-color: #ff4444;
-  background: linear-gradient(135deg, #ff4444, #cc0000);
+  --confirm-color: #ff4444; /* Red color */
+  background: linear-gradient(135deg, #ff4444, #cc0000); /* Red gradient */
 }
 
-/* Animation for closing */
-.modal-container.closing {
-  animation: modalFadeOut 0.3s ease-in;
+/* Success variant header styling */
+.modal-header.success {
+  background: linear-gradient(135deg, #f1f8e9, white); /* Light green gradient */
+  border-left: 4px solid #4CAF50; /* Green accent border */
 }
 
+/* Exit animation keyframes (currently unused but available) */
 @keyframes modalFadeOut {
   from {
     opacity: 1;
@@ -120,20 +140,4 @@
     opacity: 0;
     transform: translateY(-20px);
   }
-}
-
-/* Success modal specific styles */
-.confirm-btn.success {
-  background: linear-gradient(135deg, #4CAF50, #3e8e41);
-  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
-}
-
-.confirm-btn.success:hover {
-  background: linear-gradient(135deg, #3e8e41, #2e7d32);
-}
-
-/* Login success header */
-.modal-header.success {
-  background: linear-gradient(135deg, #f1f8e9, white);
-  border-left: 4px solid #4CAF50;
 }

@@ -3,26 +3,42 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./BestSeller.css";
 import axios from "axios";
 import Notification from "../Notification/Notification";
-import { auth } from "../../firebase"; // 🔁 Make sure this is imported at the top
+import { auth } from "../../firebase"; // Firebase authentication
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
-// import { checkAuth } from "../LoginRequired/checkAuth";
-
+/**
+ * BestSeller Component
+ * Displays a grid of best-selling products with the ability to add them to cart.
+ * Features include:
+ * - Product cards with images, prices, and size selection
+ * - "Add to Cart" functionality with authentication check
+ * - Responsive design with hover effects
+ * - Notification system for user feedback
+ */
 const BestSeller = () => {
+  // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
+
+  // State management
   const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [addingToCartId, setAddingToCartId] = useState(null);
-  const [notification, setNotification] = useState(null);
-  const [selectedSizes, setSelectedSizes] = useState({});
+  const [addingToCartId, setAddingToCartId] = useState(null); // Tracks which product is being added
+  const [notification, setNotification] = useState(null); // Notification state
+  const [selectedSizes, setSelectedSizes] = useState({}); // Stores selected sizes for each product
 
+  /**
+   * Displays a notification to the user
+   * @param {string} message - The message to display
+   * @param {string} type - The type of notification ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
   };
 
+  // Fetch best-selling products on component mount
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
@@ -30,7 +46,9 @@ const BestSeller = () => {
           "https://web-production-2449.up.railway.app/api/products/?is_best=true"
         );
 
+        // Process product data to include images and default sizes
         const productsWithImagesAndSizes = res.data.map((product) => {
+          // Find the first available image (default image preferred)
           let imageUrl = null;
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
@@ -75,13 +93,11 @@ const BestSeller = () => {
     fetchBestSellers();
   }, []);
 
-  const getCookie = (name) => {
-    const cookieValue = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(name + "="));
-    return cookieValue ? cookieValue.split("=")[1] : null;
-  };
-
+  /**
+   * Handles size selection change for a product
+   * @param {string} productId - The ID of the product
+   * @param {string} sizeId - The selected size ID
+   */
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
@@ -89,6 +105,10 @@ const BestSeller = () => {
     }));
   };
 
+  /**
+   * Adds a product to the user's cart
+   * @param {string} productId - The ID of the product to add
+   */
   const addToCart = async (productId) => {
     const selectedSizeId = selectedSizes[productId];
     if (!selectedSizeId) {
@@ -103,15 +123,16 @@ const BestSeller = () => {
     }
 
     try {
-      // 🔐 Check login and get token
+      // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
 
-      setAddingToCartId(productId);
+      setAddingToCartId(productId); // Show loading state for this product
 
       const colorId =
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
+      // API call to add product to cart
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -134,10 +155,12 @@ const BestSeller = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
+      // Show success notification
       showNotification(
         data.message || `${product.name} added to cart successfully!`
       );
 
+      // Update cart count if global function exists
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
       }
@@ -148,10 +171,11 @@ const BestSeller = () => {
         "error"
       );
     } finally {
-      setAddingToCartId(null);
+      setAddingToCartId(null); // Reset loading state
     }
   };
 
+  // Loading and error states
   if (loading) return <div className="loading">Loading best sellers...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -159,6 +183,7 @@ const BestSeller = () => {
     <>
       <h1 className="bestseller">Best Seller</h1>
 
+      {/* Notification component for user feedback */}
       {notification && (
         <Notification
           message={notification.message}
@@ -167,10 +192,12 @@ const BestSeller = () => {
         />
       )}
 
+      {/* Main product grid */}
       <div className="best-seller-container">
         <div className="best-seller-cards">
           {bestSellers.slice(0, 8).map((item) => (
             <div className="best-seller-card" key={item.id}>
+              {/* Product image with link to product page */}
               <Link to={`/product/${item.id}/`}>
                 <div className="best-seller-image-container">
                   {item.image ? (
@@ -185,6 +212,8 @@ const BestSeller = () => {
                   <span className="best-seller-badge">Best Seller</span>
                 </div>
               </Link>
+
+              {/* Product info section */}
               <div className="best-seller-info">
                 <h3 className="best-seller-title">
                   <Link
@@ -194,6 +223,8 @@ const BestSeller = () => {
                     {item.name}
                   </Link>
                 </h3>
+
+                {/* Price display */}
                 <div className="best-seller-price-wrapper">
                   <span className="best-seller-current-price">
                     ₹{item.currentprice}
@@ -206,7 +237,7 @@ const BestSeller = () => {
                     )}
                 </div>
 
-                {/* Size Selection Dropdown */}
+                {/* Size selection dropdown */}
                 {item.sizes?.length > 0 && (
                   <div className="size-selector">
                     <select
@@ -229,6 +260,7 @@ const BestSeller = () => {
                   </div>
                 )}
 
+                {/* Add to cart button */}
                 <button
                   className="best-seller-add-to-cart"
                   onClick={() => addToCart(item.id)}
@@ -244,6 +276,7 @@ const BestSeller = () => {
         </div>
       </div>
 
+      {/* View all button */}
       <div className="view-all-btn-div d-flex justify-content-center my-3">
         <Link to="/bestseller/" className="view-all-btn text-white">
           VIEW ALL

@@ -86,18 +86,18 @@
   border-radius: 8px;
   font-size: 16px;
   transition: all 0.2s;
-  background-color: #f8fafc;
+  background: #f8fafc;
 }
 
 .input-with-icon input:focus {
   outline: none;
   border-color: #4a6bdf;
   box-shadow: 0 0 0 3px rgba(74, 107, 223, 0.2);
-  background-color: white;
+  background: white;
 }
 
 .submit-button {
-  background-color: #4a6bdf;
+  background: #4a6bdf;
   color: white;
   border: none;
   border-radius: 8px;
@@ -105,16 +105,16 @@
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background 0.2s;
   margin-top: 12px;
 }
 
 .submit-button:hover {
-  background-color: #3a56c7;
+  background: #3a56c7;
 }
 
 .submit-button:disabled {
-  background-color: #a0aec0;
+  background: #a0aec0;
   cursor: not-allowed;
 }
 

@@ -1,14 +1,24 @@
-.bestseller{
+/* 
+  BestSeller Component Styles
+  Styles for the best-selling products grid and cards
+*/
+
+/* Section title */
+.bestseller {
     text-align: center;
-    color: #9702b0;
+    color: #DE5B9E;
     margin-top: 60px;
     font-weight: 700;
 }
-.best-seller-container{
+
+/* Main container for the product grid */
+.best-seller-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
 }
+
+/* Product cards container */
 .best-seller-cards {
   display: flex;
   flex-wrap: wrap;
@@ -17,18 +27,11 @@
   gap: 70px;
   padding: 20px;
 }
-.view-all-btn{
-    background: #9702b0;
-    color: whitesmoke;
-    border: none;
-    font-weight: 600;
-    padding: 10px 25px;
-    
-}
 
+/* Individual product card */
 .best-seller-card {
-  width: 250px; /* Bigger than original 200px */
-  background-color: #fff;
+  width: 250px;
+  background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
@@ -37,10 +40,12 @@
   transition: transform 0.3s;
 }
 
+/* Card hover effect */
 .best-seller-card:hover {
   transform: translateY(-5px);
 }
 
+/* Product image container */
 .best-seller-image-container {
   position: relative;
   width: 100%;
@@ -48,6 +53,7 @@
   overflow: hidden;
 }
 
+/* Product image */
 .best-seller-image {
   width: 100%;
   height: 100%;
@@ -55,22 +61,25 @@
   display: block;
 }
 
+/* Best seller badge */
 .best-seller-badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #009688;
+  background: #009688;
   color: white;
   font-size: 13px;
   padding: 3px 8px;
   border-radius: 4px;
 }
 
+/* Product info section */
 .best-seller-info {
   padding: 12px;
   text-align: center;
 }
 
+/* Product title */
 .best-seller-title {
   font-size: 14px;
   font-weight: 600;
@@ -80,29 +89,34 @@
   overflow: hidden;
 }
 
+/* Product title link */
 .best-seller-title-link {
   color: #000;
   text-decoration: none;
 }
 
+/* Price container */
 .best-seller-price-wrapper {
   margin-bottom: 10px;
 }
 
+/* Current (discounted) price */
 .best-seller-current-price {
   font-size: 15px;
   font-weight: 600;
-  color: #9702b0;
+  color: #DE5B9E;
   margin-right: 6px;
 }
 
+/* Original price (when discounted) */
 .best-seller-original-price {
   font-size: 13px;
   color: #888;
   text-decoration: line-through;
 }
 
-.best-seller-variant-select {
+/* Size selector dropdown */
+.size-selector select {
   width: 100%;
   padding: 6px;
   font-size: 13px;
@@ -111,9 +125,10 @@
   border-radius: 4px;
 }
 
+/* Add to cart button */
 .best-seller-add-to-cart {
   width: 100%;
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -124,16 +139,19 @@
   transition: background 0.2s ease;
 }
 
+/* Add to cart button hover state */
 .best-seller-add-to-cart:hover {
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
 }
 
+/* Loading state */
 .loading {
   text-align: center;
   padding: 2rem;
   font-size: 1.2rem;
 }
 
+/* Error state */
 .error {
   text-align: center;
   padding: 2rem;
@@ -141,26 +159,14 @@
   font-size: 1.2rem;
 }
 
-.cart-message {
-  text-align: center;
-  padding: 1rem;
-  margin: 1rem auto;
-  max-width: 600px;
-  border-radius: 4px;
+/* View all button container */
+.view-all-btn-div {
+  margin: 20px 0;
 }
 
-.cart-message.success {
-  background-color: #dff0d8;
-  color: #3c763d;
-}
-
-.cart-message.error {
-  background-color: #f2dede;
-  color: #a94442;
-}
-
+/* View all button */
 .view-all-btn {
-  background: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: whitesmoke;
   border: none;
   font-weight: 600;
@@ -171,14 +177,8 @@
   transition: background 0.3s;
 }
 
+/* View all button hover state */
 .view-all-btn:hover {
   background: #800000;
   color: white;
-}
-
-.best-seller-image {
-  width: 100%;
-  height: auto;
-  max-height: 300px; /* Adjust as needed */
-  object-fit: cover;
 }

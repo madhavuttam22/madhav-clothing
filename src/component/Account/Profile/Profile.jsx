@@ -8,30 +8,44 @@ import ConfirmationModal from "../../ConfirmationModal/ConfirmationModal";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { updateProfile, updateEmail } from "firebase/auth";
-
 import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
 
+/**
+ * Profile Component - Displays and manages user profile information.
+ * Handles viewing/editing profile details, avatar uploads, and logout functionality.
+ * @returns {JSX.Element} The profile page with user information and editing capabilities.
+ */
 const Profile = () => {
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  // State management
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // Controls logout confirmation modal
   const [user, setUser] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
     avatar: "",
-    initials: "",
+    initials: "", // Fallback for when avatar isn't available
   });
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState(null);
+  const [editMode, setEditMode] = useState(false); // Toggles between view/edit modes
+  const [loading, setLoading] = useState(true); // Loading state for data fetching
+  const [notification, setNotification] = useState(null); // Notification system
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); // Reference for file input element
 
+  /**
+   * Displays a temporary notification to the user
+   * @param {string} message - Notification content
+   * @param {string} type - Notification type ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
 
+  /**
+   * Generates a random color for the initials avatar background
+   * @returns {string} Hex color code
+   */
   const getRandomColor = () => {
     const colors = [
       "#FF6B6B",
@@ -46,12 +60,14 @@ const Profile = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  // Fetch user data on component mount
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
           const idToken = await firebaseUser.getIdToken();
 
+          // Fetch profile data from backend
           const res = await fetch(
             "https://web-production-2449.up.railway.app/api/profile/me/",
             {
@@ -63,6 +79,7 @@ const Profile = () => {
 
           const data = await res.json();
 
+          // Set user state with combined data from Firebase and backend
           setUser({
             name: data.name || firebaseUser.displayName || "",
             email: data.email || firebaseUser.email || "",
@@ -79,16 +96,19 @@ const Profile = () => {
           console.error("Error fetching profile from backend:", error);
         }
       } else {
-        navigate("/login/");
+        navigate("/login/"); // Redirect if not authenticated
       }
 
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Cleanup auth listener
   }, [navigate]);
 
-  // Get CSRF token from cookies
+  /**
+   * Extracts CSRF token from cookies for Django backend requests
+   * @returns {string|null} CSRF token if found
+   */
   const getCSRFToken = () => {
     const cookies = document.cookie.split(";");
     for (let cookie of cookies) {
@@ -98,15 +118,25 @@ const Profile = () => {
     return null;
   };
 
+  /**
+   * Handles form input changes
+   * @param {React.ChangeEvent} e - Change event from input element
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Initiates logout flow by showing confirmation modal
+   */
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
   };
 
+  /**
+   * Executes logout after confirmation
+   */
   const handleConfirmLogout = async () => {
     setShowLogoutModal(false);
     try {
@@ -114,13 +144,17 @@ const Profile = () => {
       showNotification("Successfully logged out", "success");
       setTimeout(() => {
         navigate("/");
-        window.location.reload();
+        window.location.reload(); // Ensure clean state after logout
       }, 1500);
     } catch (error) {
       showNotification("Logout failed", "error");
     }
   };
 
+  /**
+   * Handles avatar image upload
+   * @param {React.ChangeEvent} e - File input change event
+   */
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -129,21 +163,27 @@ const Profile = () => {
         setUser((prev) => ({
           ...prev,
           avatar: reader.result,
-          initials: "",
+          initials: "", // Clear initials when avatar is set
         }));
       };
       reader.readAsDataURL(file);
     }
   };
 
+  /**
+   * Handles profile form submission
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Basic validation
       if (!user.name.trim()) throw new Error("Full name is required");
       if (!user.email.trim()) throw new Error("Email is required");
 
+      // Prepare form data for backend
       const formData = new FormData();
       const nameParts = user.name.trim().split(/\s+/);
       formData.append("first_name", nameParts[0] || "");
@@ -152,6 +192,7 @@ const Profile = () => {
       if (user.phone) formData.append("phone", user.phone.trim());
       if (user.address) formData.append("address", user.address.trim());
 
+      // Handle avatar upload if present
       if (fileInputRef.current?.files[0]) {
         const file = fileInputRef.current.files[0];
         if (!file.type.startsWith("image/"))
@@ -163,13 +204,7 @@ const Profile = () => {
 
       const idToken = await auth.currentUser.getIdToken();
 
-      console.log("📤 Sending formData to backend...");
-      for (let pair of formData.entries()) {
-        console.log(`🧾 ${pair[0]}: ${pair[1]}`);
-      }
-
-      console.log("🔐 Firebase ID Token:", idToken);
-
+      // Send update to backend
       const response = await fetch(
         "https://web-production-2449.up.railway.app/api/profile/update/",
         {
@@ -181,18 +216,7 @@ const Profile = () => {
         }
       );
 
-      console.log("📥 Raw response:", response);
-
-      let data;
-      try {
-        data = await response.json();
-        console.log("✅ Parsed response JSON:", data);
-      } catch (jsonError) {
-        console.error("❌ Failed to parse JSON response:", jsonError);
-        const text = await response.text();
-        console.error("🔍 Raw response text instead:", text);
-        throw new Error("Server did not return JSON. Check backend.");
-      }
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
@@ -200,18 +224,20 @@ const Profile = () => {
         );
       }
 
-      // Firebase updates
+      // Update Firebase profile if needed
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, {
           displayName: user.name,
           photoURL: user.avatar || null,
         });
 
+        // Update email if changed
         if (auth.currentUser.email !== user.email) {
           await updateEmail(auth.currentUser, user.email);
         }
       }
 
+      // Update local state with new data
       setUser((prev) => ({
         ...prev,
         name: data.name || prev.name,
@@ -233,9 +259,10 @@ const Profile = () => {
       showNotification("Profile updated successfully!");
       setEditMode(false);
     } catch (error) {
-      console.error("🔥 Profile update error:", error.message);
+      console.error("Profile update error:", error.message);
       showNotification(error.message || "An error occurred", "error");
 
+      // Handle auth/CSRF issues
       if (error.message.includes("403") || error.message.includes("CSRF")) {
         navigate("/login/");
       }
@@ -244,10 +271,14 @@ const Profile = () => {
     }
   };
 
+  /**
+   * Closes the logout confirmation modal
+   */
   const handleCloseModal = () => {
     setShowLogoutModal(false);
   };
 
+  // Loading state UI
   if (loading) {
     return (
       <div className="loading-screen">
@@ -261,6 +292,7 @@ const Profile = () => {
     <>
       <Header />
       <div className="profile-container">
+        {/* Profile Header Section */}
         <div className="profile-header">
           <h1>My Profile</h1>
           {!editMode && (
@@ -275,7 +307,9 @@ const Profile = () => {
           )}
         </div>
 
+        {/* Main Profile Content */}
         <div className="profile-content">
+          {/* Sidebar with Avatar and Navigation */}
           <div className="profile-sidebar">
             <div className="avatar-container">
               {user.avatar ? (
@@ -292,10 +326,9 @@ const Profile = () => {
                   {user.initials}
                 </div>
               )}
-
-              
             </div>
 
+            {/* Navigation Menu */}
             <nav className="profile-menu">
               <Link to={'/myorders/'} className="menu-item">
                 My Orders
@@ -303,8 +336,10 @@ const Profile = () => {
             </nav>
           </div>
 
+          {/* Profile Details Section */}
           <div className="profile-details">
             {editMode ? (
+              // Edit Mode Form
               <form onSubmit={handleSubmit} className="profile-form">
                 <div className="form-group">
                   <label>Full Name</label>
@@ -348,6 +383,7 @@ const Profile = () => {
                   />
                 </div>
 
+                {/* Form Action Buttons */}
                 <div className="form-actions">
                   <button
                     type="button"
@@ -367,6 +403,7 @@ const Profile = () => {
                 </div>
               </form>
             ) : (
+              // View Mode Display
               <div className="profile-info">
                 <div className="info-item">
                   <span className="info-label">Name:</span>
@@ -395,6 +432,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Notification System */}
         {notification && (
           <Notification
             message={notification.message}
@@ -405,6 +443,7 @@ const Profile = () => {
       </div>
       <Footer />
 
+      {/* Logout Confirmation Modal */}
       <ConfirmationModal
         isOpen={showLogoutModal}
         onClose={handleCloseModal}

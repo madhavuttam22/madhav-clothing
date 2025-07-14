@@ -1,72 +1,35 @@
-// components/ProductFilters/ProductFilters.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./ProductFilters.module.css";
 
+/**
+ * ProductFilters Component - Provides filtering options for product listings
+ * 
+ * @param {Object} props - Component props
+ * @param {string} props.categoryId - The ID of the current product category
+ * @returns {JSX.Element} - Rendered filter component with price, color, size and availability options
+ */
 const ProductFilters = ({ categoryId }) => {
+  // State management for all filter options
   const [filters, setFilters] = useState({
-    priceRange: [0, 10000],
-    selectedPrice: [0, 10000],
-    colors: [],
-    selectedColors: [],
-    sizes: [],
-    selectedSizes: [],
-    availability: "all",
+    priceRange: [0, 10000], // Absolute min/max price range
+    selectedPrice: [0, 10000], // Currently selected price range
+    colors: [], // All available colors
+    selectedColors: [], // Currently selected colors
+    sizes: [], // All available sizes
+    selectedSizes: [], // Currently selected sizes
+    availability: "all", // Stock availability filter
   });
 
-  const [loading, setLoading] = useState(true);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true); // Loading state for filter data
+  const location = useLocation(); // Current route location
+  const navigate = useNavigate(); // Navigation function
 
-  //   useEffect(() => {
-  //     const fetchFilterOptions = async () => {
-  //       try {
-  //         const url = categoryId
-  //           ? `https://web-production-2449.up.railway.app/api/categories/${categoryId}/filter-options/`
-  //           : 'https://web-production-2449.up.railway.app/api/products/filter-options/';
-
-  //         const response = await axios.get(url);
-  //         const data = response.data;
-
-  //         setFilters(prev => ({
-  //           ...prev,
-  //           priceRange: [data.price_range.min, data.price_range.max],
-  //           selectedPrice: [data.price_range.min, data.price_range.max],
-  //           colors: data.colors,
-  //           sizes: data.sizes
-  //         }));
-  //       } catch (error) {
-  //         console.error('Error fetching filter options:', error);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
-
-  //     fetchFilterOptions();
-
-  //     // Parse existing filters from URL
-  //     const searchParams = new URLSearchParams(location.search);
-  //     const minPrice = searchParams.get('min_price');
-  //     const maxPrice = searchParams.get('max_price');
-  //     const colors = searchParams.getAll('colors[]');
-  //     const sizes = searchParams.getAll('sizes[]');
-  //     const availability = searchParams.get('availability');
-
-  //     if (minPrice || maxPrice || colors.length || sizes.length || availability) {
-  //       setFilters(prev => ({
-  //         ...prev,
-  //         selectedPrice: [
-  //           minPrice ? parseInt(minPrice) : prev.priceRange[0],
-  //           maxPrice ? parseInt(maxPrice) : prev.priceRange[1]
-  //         ],
-  //         selectedColors: colors.map(id => parseInt(id)),
-  //         selectedSizes: sizes.map(id => parseInt(id)),
-  //         availability: availability || 'all'
-  //       }));
-  //     }
-  //   }, [categoryId, location.search]);
-
+  /**
+   * Handles price range selection changes
+   * @param {Array} value - New price range [min, max]
+   */
   const handlePriceChange = (value) => {
     setFilters((prev) => ({
       ...prev,
@@ -74,32 +37,47 @@ const ProductFilters = ({ categoryId }) => {
     }));
   };
 
+  /**
+   * Toggles color selection in filters
+   * @param {string} colorId - ID of the color to toggle
+   */
   const handleColorToggle = (colorId) => {
     setFilters((prev) => {
       const newColors = prev.selectedColors.includes(colorId)
-        ? prev.selectedColors.filter((id) => id !== colorId)
-        : [...prev.selectedColors, colorId];
+        ? prev.selectedColors.filter((id) => id !== colorId) // Remove if already selected
+        : [...prev.selectedColors, colorId]; // Add if not selected
       return { ...prev, selectedColors: newColors };
     });
   };
 
+  /**
+   * Toggles size selection in filters
+   * @param {string} sizeId - ID of the size to toggle
+   */
   const handleSizeToggle = (sizeId) => {
     setFilters((prev) => {
       const newSizes = prev.selectedSizes.includes(sizeId)
-        ? prev.selectedSizes.filter((id) => id !== sizeId)
-        : [...prev.selectedSizes, sizeId];
+        ? prev.selectedSizes.filter((id) => id !== sizeId) // Remove if already selected
+        : [...prev.selectedSizes, sizeId]; // Add if not selected
       return { ...prev, selectedSizes: newSizes };
     });
   };
 
+  /**
+   * Changes product availability filter
+   * @param {string} value - New availability value ('all' or 'in_stock')
+   */
   const handleAvailabilityChange = (value) => {
     setFilters((prev) => ({ ...prev, availability: value }));
   };
 
+  /**
+   * Applies all selected filters by updating URL query parameters
+   */
   const applyFilters = () => {
     const searchParams = new URLSearchParams();
 
-    // Price filter
+    // Add price filter if different from default range
     if (
       filters.selectedPrice[0] !== filters.priceRange[0] ||
       filters.selectedPrice[1] !== filters.priceRange[1]
@@ -108,24 +86,28 @@ const ProductFilters = ({ categoryId }) => {
       searchParams.set("max_price", filters.selectedPrice[1]);
     }
 
-    // Color filter
+    // Add each selected color
     filters.selectedColors.forEach((id) => {
       searchParams.append("colors[]", id);
     });
 
-    // Size filter
+    // Add each selected size
     filters.selectedSizes.forEach((id) => {
       searchParams.append("sizes[]", id);
     });
 
-    // Availability filter
+    // Add availability filter if not 'all'
     if (filters.availability !== "all") {
       searchParams.set("availability", filters.availability);
     }
 
+    // Navigate to current path with new query params
     navigate(`${location.pathname}?${searchParams.toString()}`);
   };
 
+  /**
+   * Resets all filters to their default values
+   */
   const resetFilters = () => {
     setFilters((prev) => ({
       ...prev,
@@ -134,13 +116,15 @@ const ProductFilters = ({ categoryId }) => {
       selectedSizes: [],
       availability: "all",
     }));
-    navigate(location.pathname);
+    navigate(location.pathname); // Navigate without any query params
   };
 
+  // Show loading state while filters are being fetched
   if (loading) return <div className={styles.loading}>Loading filters...</div>;
 
   return (
     <div className={styles.filtersContainer}>
+      {/* Filters Header Section */}
       <div className={styles.filterSection}>
         <h3 className={styles.filterTitle}>Filters</h3>
         <button onClick={resetFilters} className={styles.resetButton}>
@@ -148,7 +132,7 @@ const ProductFilters = ({ categoryId }) => {
         </button>
       </div>
 
-      {/* Price Range Filter */}
+      {/* Price Range Filter Section */}
       <div className={styles.filterSection}>
         <h4 className={styles.filterSubtitle}>Price Range</h4>
         <div className={styles.priceRangeValues}>
@@ -197,7 +181,7 @@ const ProductFilters = ({ categoryId }) => {
         </div>
       </div>
 
-      {/* Color Filter */}
+      {/* Color Filter Section */}
       <div className={styles.filterSection}>
         <h4 className={styles.filterSubtitle}>Colors</h4>
         <div className={styles.colorOptions}>
@@ -219,7 +203,7 @@ const ProductFilters = ({ categoryId }) => {
         </div>
       </div>
 
-      {/* Size Filter */}
+      {/* Size Filter Section */}
       <div className={styles.filterSection}>
         <h4 className={styles.filterSubtitle}>Sizes</h4>
         <div className={styles.sizeOptions}>
@@ -237,7 +221,7 @@ const ProductFilters = ({ categoryId }) => {
         </div>
       </div>
 
-      {/* Availability Filter */}
+      {/* Availability Filter Section */}
       <div className={styles.filterSection}>
         <h4 className={styles.filterSubtitle}>Availability</h4>
         <div className={styles.availabilityOptions}>
@@ -264,6 +248,7 @@ const ProductFilters = ({ categoryId }) => {
         </div>
       </div>
 
+      {/* Apply Filters Button */}
       <button onClick={applyFilters} className={styles.applyButton}>
         Apply Filters
       </button>

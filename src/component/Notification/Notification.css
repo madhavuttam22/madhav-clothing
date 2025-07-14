@@ -1,3 +1,9 @@
+/* 
+Notification Component Styles
+Styles for the notification system with different types and animations
+*/
+
+/* Base notification styling */
 .notification {
   position: fixed;
   bottom: 25px;
@@ -8,45 +14,50 @@
   border-radius: 8px;
   color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 1000; /* Ensure it appears above other elements */
   max-width: 350px;
-  animation: slideIn 0.3s ease-out;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideIn 0.3s ease-out; /* Entry animation */
+  backdrop-filter: blur(5px); /* Frosted glass effect */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
 }
 
+/* Notification type variants with semi-transparent backgrounds */
 .notification-success {
-  background: rgba(46, 125, 50, 0.9);
+  background: rgba(46, 125, 50, 0.9); /* Green with 90% opacity */
 }
 
 .notification-error {
-  background: rgba(211, 47, 47, 0.9);
+  background: rgba(211, 47, 47, 0.9); /* Red with 90% opacity */
 }
 
 .notification-warning {
-  background: rgba(237, 108, 2, 0.9);
+  background: rgba(237, 108, 2, 0.9); /* Orange with 90% opacity */
 }
 
 .notification-info {
-  background: rgba(2, 136, 209, 0.9);
+  background: rgba(2, 136, 209, 0.9); /* Blue with 90% opacity */
 }
 
+/* Notification icon styling */
 .notification-icon {
   font-size: 20px;
   margin-right: 15px;
   font-weight: bold;
 }
 
+/* Content area that grows to fill available space */
 .notification-content {
   flex: 1;
 }
 
+/* Message text styling */
 .notification-message {
   margin: 0;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.4; /* Improved readability */
 }
 
+/* Close button styling */
 .notification-close {
   background: none;
   border: none;
@@ -56,13 +67,14 @@
   cursor: pointer;
   opacity: 0.7;
   padding: 0 0 2px 5px;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s; /* Smooth hover effect */
 }
 
 .notification-close:hover {
-  opacity: 1;
+  opacity: 1; /* Full opacity on hover */
 }
 
+/* Slide-in animation for notification entry */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -74,15 +86,16 @@
   }
 }
 
-/* For smaller screens */
+/* Responsive adjustments for smaller screens */
 @media (max-width: 576px) {
   .notification {
-    max-width: calc(100% - 40px);
+    max-width: calc(100% - 40px); /* Full width minus padding */
     right: 20px;
     bottom: 20px;
   }
 }
 
+/* Legacy styles (duplicate in original, kept for compatibility) */
 .notification {
   position: fixed;
   bottom: 20px;
@@ -98,32 +111,37 @@
   max-width: 350px;
 }
 
+/* Legacy type variants (solid colors) */
 .notification-success {
-  background-color: #4CAF50;
+  background: #4CAF50;
 }
 
 .notification-error {
-  background-color: #F44336;
+  background: #F44336;
 }
 
 .notification-warning {
-  background-color: #FF9800;
+  background: #FF9800;
 }
 
+/* Legacy icon styling */
 .notification-icon {
   font-size: 20px;
   margin-right: 15px;
 }
 
+/* Legacy content area */
 .notification-content {
   flex: 1;
 }
 
+/* Legacy message styling */
 .notification-message {
   margin: 0;
   font-size: 14px;
 }
 
+/* Legacy close button */
 .notification-close {
   background: none;
   border: none;
@@ -134,6 +152,7 @@
   padding: 0 5px;
 }
 
+/* Duplicate animation (kept for compatibility) */
 @keyframes slideIn {
   from {
     transform: translateX(100%);

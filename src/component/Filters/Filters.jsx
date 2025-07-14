@@ -1,28 +1,52 @@
+// src/components/Filters/Filters.jsx
 import React, { useState, useEffect } from "react";
 import "./Filters.css";
 
+/**
+ * Filters Component
+ * 
+ * A collapsible filter panel for product listings with:
+ * - Sort by options (price, newest)
+ * - Size filtering
+ * - Color filtering
+ * - Reset functionality
+ * 
+ * Props:
+ * @param {Array} products - Array of product objects to filter
+ * @param {Function} onApply - Callback when filters are changed
+ */
 const Filters = ({ products = [], onApply }) => {
+  // State for filter selections
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
 
+  /**
+   * Extract unique sizes from products array
+   * Uses Map to ensure uniqueness by size.id
+   */
   const uniqueSizes = Array.from(
     new Map(
       products
-        .flatMap((p) => (p.sizes?.map((s) => s.size) || []))
-        .map((size) => [size?.id, size])
-    ).values()
+        .flatMap((p) => (p.sizes?.map((s) => s.size) || [])) // Flatten all sizes
+        .map((size) => [size?.id, size]) // Create [id, size] pairs
+    ).values() // Convert back to array
   );
 
+  /**
+   * Extract unique colors from products array
+   * Uses Map to ensure uniqueness by color.id
+   */
   const uniqueColors = Array.from(
     new Map(
       products
-        .flatMap((p) => (p.colors?.map((c) => c.color) || []))
-        .map((color) => [color?.id, color])
-    ).values()
+        .flatMap((p) => (p.colors?.map((c) => c.color) || [])) // Flatten all colors
+        .map((color) => [color?.id, color]) // Create [id, color] pairs
+    ).values() // Convert back to array
   );
 
+  // Effect to trigger onApply callback when filters change
   useEffect(() => {
     if (typeof onApply === "function") {
       onApply({
@@ -31,12 +55,14 @@ const Filters = ({ products = [], onApply }) => {
         sort: sortOrder,
       });
     }
-  }, [selectedSize, selectedColor, sortOrder]);
+  }, [selectedSize, selectedColor, sortOrder, onApply]);
 
   return (
     <div className={`filters-container ${isExpanded ? "expanded" : ""}`}>
+      {/* Collapsible header section */}
       <div className="filters-header" onClick={() => setIsExpanded(!isExpanded)}>
         <h3>Filters & Sort</h3>
+        {/* Animated toggle icon */}
         <svg
           className={`toggle-icon ${isExpanded ? "expanded" : ""}`}
           width="20"
@@ -52,7 +78,9 @@ const Filters = ({ products = [], onApply }) => {
         </svg>
       </div>
 
+      {/* Filter content (collapsible) */}
       <div className="filters-content">
+        {/* Sort by section */}
         <div className="filter-group">
           <div className="filter-label">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -77,6 +105,7 @@ const Filters = ({ products = [], onApply }) => {
           </div>
         </div>
 
+        {/* Size filter section */}
         <div className="filter-group">
           <div className="filter-label">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -104,6 +133,7 @@ const Filters = ({ products = [], onApply }) => {
           </div>
         </div>
 
+        {/* Color filter section */}
         <div className="filter-group">
           <div className="filter-label">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -134,6 +164,7 @@ const Filters = ({ products = [], onApply }) => {
           </div>
         </div>
 
+        {/* Reset filters button */}
         <div className="filter-actions">
           <button 
             className="reset-btn"

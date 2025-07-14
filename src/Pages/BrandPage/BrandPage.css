@@ -1,23 +1,34 @@
-/* BrandPage.css */
+/* 
+  BrandPage.css - Styles for the Brand Story page
+
+  Features:
+  - Gradient hero section with wave SVG divider
+  - Responsive grid layout for feature cards
+  - Animated hover effects throughout
+  - Value cards with large number indicators
+  - Mobile-first responsive design
+*/
+
+/* Base styles for brand page */
 .brand-page {
   font-family: 'Poppins', sans-serif;
   color: #333;
   overflow-x: hidden;
 }
 
-/* Hero Section */
+/* Hero Section Styles */
 .hero-section {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  background: linear-gradient(135deg, #6e8efb, #a777e3); /* Gradient background */
   color: white;
-  padding: 8rem 2rem 12rem;
+  padding: 8rem 2rem 12rem; /* Large padding to accommodate wave */
   text-align: center;
-  position: relative;
+  position: relative; /* For absolute positioning of wave */
 }
 
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
-  animation: fadeInUp 1s ease;
+  animation: fadeInUp 1s ease; /* Entrance animation */
 }
 
 .hero-title {
@@ -32,6 +43,7 @@
   margin-bottom: 2rem;
 }
 
+/* Wave SVG styling at bottom of hero */
 .hero-wave {
   position: absolute;
   bottom: 0;
@@ -44,18 +56,18 @@
 .hero-wave svg {
   position: relative;
   display: block;
-  width: calc(100% + 1.3px);
+  width: calc(100% + 1.3px); /* Prevents gap on right side */
   height: 150px;
-  color: #f9f9f9;
+  color: #f9f9f9; /* Color matches next section */
 }
 
-/* Features Section */
+/* Features Section Styles */
 .features-section {
   padding: 5rem 2rem;
   max-width: 1200px;
-  margin: -6rem auto 0;
+  margin: -6rem auto 0; /* Negative margin to overlap wave */
   position: relative;
-  z-index: 1;
+  z-index: 1; /* Ensure content appears above wave */
 }
 
 .section-header {
@@ -74,12 +86,14 @@
   font-size: 1.2rem;
 }
 
+/* Features Grid Layout */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
   gap: 2rem;
 }
 
+/* Feature Card Styles */
 .feature-card {
   background: white;
   border-radius: 12px;
@@ -91,6 +105,7 @@
   z-index: 1;
 }
 
+/* Gradient overlay on hover */
 .feature-card::before {
   content: '';
   position: absolute;
@@ -113,6 +128,7 @@
   opacity: 1;
 }
 
+/* Feature Icon Styling */
 .feature-icon {
   width: 80px;
   height: 80px;
@@ -143,7 +159,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* Color Swatches */
+/* Color Swatches Styles */
 .color-swatches {
   display: flex;
   justify-content: center;
@@ -162,7 +178,7 @@
   transform: scale(1.2) translateY(-5px);
 }
 
-/* Packaging Examples */
+/* Packaging Examples Styles */
 .packaging-examples {
   display: flex;
   flex-wrap: wrap;
@@ -186,7 +202,7 @@
   transform: translateY(-3px);
 }
 
-/* Stats */
+/* Stats Display Styles */
 .stats {
   display: flex;
   justify-content: center;
@@ -211,7 +227,7 @@
   margin-top: 0.5rem;
 }
 
-/* Values Section */
+/* Values Section Styles */
 .values-section {
   background: #f9f9f9;
   padding: 6rem 2rem;
@@ -243,6 +259,7 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Large number background for value cards */
 .value-number {
   font-size: 3rem;
   font-weight: 700;
@@ -266,7 +283,7 @@
   z-index: 1;
 }
 
-/* Animations */
+/* Animation Keyframes */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -278,7 +295,7 @@
   }
 }
 
-/* Responsive */
+/* Responsive Breakpoints */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;

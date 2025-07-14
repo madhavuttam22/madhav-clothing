@@ -1,9 +1,20 @@
-/* Hero.css */
+/**
+ * Hero Component Styles
+ * 
+ * Contains styles for:
+ * - Main carousel container and slides
+ * - Navigation dots styling
+ * - Hero bottom section with customer counter
+ * - Image hover effects
+ */
+
+/* Main carousel container */
 #zu-carousel-section {
-  background-color: #000;
+  background: #000;
   overflow: hidden;
 }
 
+/* Carousel image styling */
 .carousel-cell img {
   width: 100%;
   display: block;
@@ -11,10 +22,12 @@
   transition: transform 0.3s ease-in-out;
 }
 
+/* Image hover effect */
 .carousel-cell:hover img {
   transform: scale(1.02);
 }
 
+/* Dots navigation styling */
 .slick-dots li button:before {
   color: white !important;
 }
@@ -23,23 +36,26 @@
   opacity: 1;
   color: #f8f9fa !important;
 }
-.hero-bottom{
-    background: #9702b0;
-    padding: 50px;
-    color: white;
-    text-align: center;
-    padding-left: 24px;
-    padding-right: 24px;
-}
-.hero-bottom h3{
-    font-family: "Poppins", sans-serif !important;
-    font-weight: 600;
-    font-style: normal;
-}
-.hero-bottom h2{
-    font-family: "Poppins", sans-serif !important;
-    font-weight: 700;
-    font-style: normal;
+
+/* Hero bottom section - customer counter */
+.hero-bottom {
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+  padding: 50px;
+  color: white;
+  text-align: center;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
+/* Typography for hero bottom section */
+.hero-bottom h3 {
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 600;
+  font-style: normal;
+}
 
+.hero-bottom h2 {
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 700;
+  font-style: normal;
+}

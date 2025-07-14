@@ -1,22 +1,31 @@
+/* 
+Footer Component Styles
+Responsive footer styling with gradient background and clean typography
+*/
+
+/* Main footer container with gradient background */
 .Footer {
-  background-color: #9702b0;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   padding: 50px 0 20px;
   color: whitesmoke;
   font-size: 14px;
 }
 
+/* Centered container with max-width for content */
 .Container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 15px;
 }
 
+/* Inner content wrapper with flex layout */
 .Footer__Inner {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 30px;
 }
 
+/* Individual footer blocks (columns) */
 .Footer__Block {
   flex: 1;
   min-width: 200px;
@@ -24,6 +33,7 @@
   padding: 0 15px;
 }
 
+/* Footer section titles */
 .Footer__Title {
   font-size: 16px;
   font-weight: 700;
@@ -33,7 +43,7 @@
   color: whitesmoke;
 }
 
-/* Social Icons */
+/* Social media icons container */
 .Footer__Social {
   display: flex;
   list-style: none;
@@ -41,15 +51,18 @@
   margin: 0;
 }
 
+/* Social media icon items */
 .HorizontalList__Item {
   margin-right: 15px;
 }
 
+/* Clickable icon wrapper */
 .Icon-Wrapper--clickable {
   display: inline-block;
   vertical-align: middle;
 }
 
+/* Base icon styling */
 .Icon {
   width: 16px;
   height: 16px;
@@ -57,41 +70,47 @@
   transition: fill 0.2s ease-in-out;
 }
 
+/* Icon hover effect */
 .Link--primary:hover .Icon {
   fill: #dcd2d2;
 }
 
-/* Links */
+/* Links list container */
 .Linklist {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* Individual link items */
 .Linklist__Item {
   margin-bottom: 12px;
 }
 
+/* Base link styling */
 .Link {
   color: whitesmoke !important;
   text-decoration: none;
   transition: color 0.2s ease-in-out;
 }
 
+/* Link hover effect */
 .Link--primary:hover {
   color: #666;
 }
 
-/* Newsletter Form */
+/* Newsletter content text */
 .Footer__Content {
   margin-bottom: 15px;
 }
 
+/* Form container */
 .Form {
   display: flex;
   flex-wrap: wrap;
 }
 
+/* Input field styling */
 .Form__Input {
   width: 100%;
   padding: 10px 15px;
@@ -101,13 +120,16 @@
   border-radius: 0;
   font-size: 12px;
 }
-.Form__Input::placeholder{
+
+/* Input placeholder styling */
+.Form__Input::placeholder {
     color: whitesmoke;
 }
 
+/* Submit button styling */
 .Form__Submit {
   padding: 10px 20px;
-  background-color: white;
+  background: white;
   color: #333;
   border-radius: 5px;
   border: none;
@@ -115,37 +137,46 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  transition: background-color 0.2s ease-in-out;
+  transition: background 0.2s ease-in-out;
 }
 
+/* Submit button hover effect */
 .Form__Submit:hover {
-  background-color: #333;
+  background: #333;
   color: whitesmoke;
 }
 
-/* Footer Bottom */
+/* Footer bottom section */
 .Footer__Aside {
   width: 100%;
   text-align: left;
   padding-top: 20px;
 }
 
+/* Copyright text */
 .Footer__Copyright {
   margin-bottom: 15px;
 }
 
+/* Store name link */
 .Footer__StoreName {
   color: #999;
   text-decoration: none;
 }
 
-/* Responsive adjustments */
+/* 
+Responsive Breakpoints
+Adjusts layout for different screen sizes
+*/
+
+/* Tablet view - 2 columns */
 @media (max-width: 768px) {
   .Footer__Block {
     flex: 0 0 50%;
   }
 }
 
+/* Mobile view - single column */
 @media (max-width: 480px) {
   .Footer__Block {
     flex: 0 0 100%;

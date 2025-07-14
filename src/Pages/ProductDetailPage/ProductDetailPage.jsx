@@ -6,27 +6,63 @@ import "./ProductDetail.css";
 import Notification from "../../component/Notification/Notification";
 import { auth } from "../../firebase";
 
+/**
+ * ProductDetailPage Component
+ * 
+ * Displays detailed information about a single product including:
+ * - Product images gallery with thumbnail navigation
+ * - Color and size selection options
+ * - Price information
+ * - Add to cart and buy now functionality
+ * - Product description with toggle
+ * - Social sharing options
+ * - Size chart modal
+ */
 const ProductDetailPage = () => {
+  // Get product ID from URL parameters
   const { id } = useParams();
+  
+  // Navigation and location hooks
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // State for product selection options
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  
+  // State for UI toggles
   const [showDescription, setShowDescription] = useState(false);
+  
+  // State for product data and loading status
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // State for product images
   const [currentImages, setCurrentImages] = useState([]);
   const [mainImage, setMainImage] = useState("");
+  
+  // State for notifications
   const [notification, setNotification] = useState(null);
+  
+  // State for cart operations
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
+  /**
+   * Displays a notification message
+   * @param {string} message - The message to display
+   * @param {string} type - The type of notification ('success' or 'error')
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
 
+  /**
+   * Shares product on WhatsApp
+   * Opens WhatsApp with pre-filled message containing product name and URL
+   */
   const shareOnWhatsApp = () => {
     const productUrl = window.location.href;
     const message = `Check out this product: ${product.name} - ${productUrl}`;
@@ -34,6 +70,10 @@ const ProductDetailPage = () => {
     window.open(whatsappUrl, "_blank");
   };
 
+  /**
+   * Shares product on Facebook
+   * Opens Facebook share dialog with product URL
+   */
   const shareOnFacebook = () => {
     const productUrl = window.location.href;
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
@@ -42,6 +82,10 @@ const ProductDetailPage = () => {
     window.open(facebookUrl, "_blank", "width=600,height=400");
   };
 
+  /**
+   * Copies product URL to clipboard
+   * Shows notification on success/error
+   */
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(window.location.href)
@@ -53,6 +97,10 @@ const ProductDetailPage = () => {
       });
   };
 
+  /**
+   * Adds selected product to cart
+   * Validates size selection and user authentication before making API call
+   */
   const addToCart = async () => {
     if (!selectedSize) {
       showNotification("Please select a size before adding to cart", "error");
@@ -62,6 +110,8 @@ const ProductDetailPage = () => {
     try {
       setIsAddingToCart(true);
       const token = await auth.currentUser?.getIdToken();
+      
+      // Redirect to login if user not authenticated
       if (!token) {
         showNotification("You need to be logged in to add to cart", "error");
         navigate("/login", { state: { from: location.pathname } });
@@ -71,6 +121,7 @@ const ProductDetailPage = () => {
       const sizeId = selectedSize.id;
       const colorId = selectedColor?.id || null;
 
+      // API call to add product to cart
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${product.id}/`,
         {
@@ -98,6 +149,7 @@ const ProductDetailPage = () => {
           `${product.name} (Size: ${selectedSize.name}) added to cart!`
       );
 
+      // Update cart count in header if function exists
       if (window.updateCartCount) {
         window.updateCartCount();
       }
@@ -108,6 +160,7 @@ const ProductDetailPage = () => {
         sizeId: selectedSize.id,
       });
 
+      // Handle different error cases
       const errorMessage = error.message.includes("Network Error")
         ? "Network error - please check your connection"
         : error.message || "Failed to update your cart. Please try again.";
@@ -118,6 +171,10 @@ const ProductDetailPage = () => {
     }
   };
 
+  /**
+   * Handles direct purchase (Buy Now)
+   * Navigates to checkout page with product details
+   */
   const handleBuyNow = async () => {
     if (!selectedSize) {
       showNotification("Please select a size", "error");
@@ -126,8 +183,9 @@ const ProductDetailPage = () => {
 
     try {
       setIsAddingToCart(true);
-
       const user = auth.currentUser;
+      
+      // Redirect to login if user not authenticated
       if (!user) {
         showNotification("Please login to continue", "error");
         navigate("/login", { state: { from: location.pathname } });
@@ -159,6 +217,7 @@ const ProductDetailPage = () => {
     }
   };
 
+  // Fetch product data on component mount
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -171,12 +230,14 @@ const ProductDetailPage = () => {
         const data = await response.json();
         setProduct(data);
 
+        // Set default color if available
         if (data.colors?.length > 0) {
           const firstColor = data.colors[0];
           setSelectedColor(firstColor.color);
           updateColorImages(firstColor);
         }
 
+        // Set default size (first available or first in list)
         if (data.sizes?.length > 0) {
           const firstAvailableSize =
             data.sizes.find((size) => size.stock > 0)?.size ||
@@ -193,6 +254,10 @@ const ProductDetailPage = () => {
     fetchProduct();
   }, [id]);
 
+  /**
+   * Updates the images displayed based on selected color
+   * @param {object} colorData - The color data object containing images
+   */
   const updateColorImages = (colorData) => {
     if (colorData?.images?.length > 0) {
       setCurrentImages(colorData.images);
@@ -204,9 +269,16 @@ const ProductDetailPage = () => {
     }
   };
 
+  /**
+   * Handles color selection change
+   * Updates images and resets size selection if needed
+   * @param {object} colorData - The selected color data
+   */
   const handleColorChange = (colorData) => {
     setSelectedColor(colorData.color);
     updateColorImages(colorData);
+    
+    // Reset size selection to first available size for new color
     const availableSizes = product.sizes.filter((size) => size.stock > 0);
     const sizeToSelect =
       availableSizes.find((size) => size.size.id === selectedSize?.id)?.size ||
@@ -214,10 +286,18 @@ const ProductDetailPage = () => {
     setSelectedSize(sizeToSelect);
   };
 
+  /**
+   * Changes the main displayed image
+   * @param {object} img - The image object to display
+   */
   const handleImageClick = (img) => {
     setMainImage(img.image_url);
   };
 
+  /**
+   * Adjusts product quantity
+   * @param {number} amount - The amount to adjust (+1 or -1)
+   */
   const handleQuantityChange = (amount) => {
     const newQuantity = quantity + amount;
     if (newQuantity > 0) {
@@ -225,14 +305,19 @@ const ProductDetailPage = () => {
     }
   };
 
+  /**
+   * Toggles product description visibility
+   */
   const toggleDescription = () => {
     setShowDescription(!showDescription);
   };
 
+  // Display loading/error states if needed
   if (loading) return <div className="loading">Loading...</div>;
   if (error) return <div className="error">Error: {error}</div>;
   if (!product) return <div className="not-found">Product not found</div>;
 
+  // Extract price information
   const currentPrice = product.currentprice;
   const originalPrice = product.orignalprice;
 
@@ -241,10 +326,11 @@ const ProductDetailPage = () => {
       <Header />
       <div className="product-detail-page">
         <div className="product-wrapper">
-          {/* Product Gallery */}
+          {/* Product Gallery Section */}
           <div className="product-gallery">
             {currentImages.length > 0 ? (
               <>
+                {/* Thumbnail Navigation */}
                 <div className="gallery-thumbnails">
                   {currentImages.map((img, index) => (
                     <div
@@ -261,6 +347,8 @@ const ProductDetailPage = () => {
                     </div>
                   ))}
                 </div>
+                
+                {/* Main Product Image */}
                 <div className="main-image">
                   {mainImage ? (
                     <img src={mainImage} alt={product.name} />
@@ -278,11 +366,11 @@ const ProductDetailPage = () => {
             )}
           </div>
 
-          {/* Product Info */}
+          {/* Product Information Section */}
           <div className="product-info">
             <h1 className="product-title">{product.name}</h1>
 
-            {/* Price Section */}
+            {/* Price Display */}
             <div className="price-section">
               <span className="current-price">₹ {currentPrice}</span>
               {originalPrice && originalPrice !== currentPrice && (
@@ -410,7 +498,7 @@ const ProductDetailPage = () => {
               </button>
             </div>
 
-            {/* sharing buttons */}
+            {/* Social Sharing Options */}
             <div className="sharing-section">
               <h4 className="sharing-title">Share this product:</h4>
               <div className="sharing-buttons">
@@ -458,7 +546,7 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Description Section */}
+            {/* Product Description with Toggle */}
             <div className="product-description-toggle">
               <button
                 className={`description-toggle-button ${
@@ -481,7 +569,7 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      {/* Size Chart Modal */}
+      {/* Size Chart Modal (hidden by default) */}
       <div className="size-chart-modal" id="size-chart">
         <div className="modal-content">
           <h3>Size Guide</h3>
@@ -552,6 +640,7 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
+      {/* Notification Component */}
       {notification && (
         <Notification
           message={notification.message}

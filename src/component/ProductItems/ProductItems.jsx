@@ -6,23 +6,41 @@ import Notification from "../Notification/Notification";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
+/**
+ * ProductItems Component - Displays a grid of top products with add-to-cart functionality
+ * 
+ * @returns {JSX.Element} - Rendered product grid component
+ */
 const ProductItems = () => {
+  // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
-  const [topProducts, setTopProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [addingToCartId, setAddingToCartId] = useState(null);
-  const [notification, setNotification] = useState(null);
-  const [selectedSizes, setSelectedSizes] = useState({});
-  const [selectedColors, setSelectedColors] = useState({});
-  const from = location.state?.from || "/";
 
+  // State management
+  const [topProducts, setTopProducts] = useState([]); // Stores top products data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [addingToCartId, setAddingToCartId] = useState(null); // Tracks which product is being added to cart
+  const [notification, setNotification] = useState(null); // Notification state
+  const [selectedSizes, setSelectedSizes] = useState({}); // Stores selected sizes for each product
+  const [selectedColors, setSelectedColors] = useState({}); // Stores selected colors for each product
+  const from = location.state?.from || "/"; // Redirect path after auth
+
+  /**
+   * Shows a notification message
+   * @param {string} message - Notification content
+   * @param {string} type - Notification type ('success', 'error', etc.)
+   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
   };
 
+  /**
+   * Handles size selection change for a product
+   * @param {string} productId - ID of the product
+   * @param {string} sizeId - ID of the selected size
+   */
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
@@ -30,20 +48,28 @@ const ProductItems = () => {
     }));
   };
 
+  /**
+   * Adds a product to the cart
+   * @param {string} productId - ID of the product to add
+   */
   const addToCart = async (productId) => {
     const sizeId = selectedSizes[productId];
     const colorId = selectedColors[productId];
 
+    // Validate size selection
     if (!sizeId) {
       showNotification("Please select a size before adding to cart", "error");
       return;
     }
 
     try {
-      setAddingToCartId(productId);
+      setAddingToCartId(productId); // Set loading state for this product
+      
+      // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return; // User not logged in, redirected
 
+      // API call to add to cart
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -66,18 +92,20 @@ const ProductItems = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
+      // Show success and update UI
       showNotification(data.message || "Item added to cart successfully!");
       if (typeof window.updateCartCount === "function") {
-        window.updateCartCount();
+        window.updateCartCount(); // Update cart count if function exists
       }
     } catch (err) {
       console.error("Add to cart error:", err);
       showNotification("Something went wrong. Please try again.", "error");
     } finally {
-      setAddingToCartId(null);
+      setAddingToCartId(null); // Reset loading state
     }
   };
 
+  // Fetch top products on component mount
   useEffect(() => {
     const fetchTopProducts = async () => {
       try {
@@ -85,11 +113,14 @@ const ProductItems = () => {
           "https://web-production-2449.up.railway.app/api/products/?is_top=true"
         );
 
+        // Process product data with defaults
         const productsWithDetails = res.data.map((product) => {
+          // Find first available size or fallback to first size
           const firstAvailableSize =
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
 
+          // Set default image with fallbacks
           let imageUrl = "/placeholder-product.jpg";
           if (product.colors?.length > 0) {
             const firstColor = product.colors[0];
@@ -113,6 +144,7 @@ const ProductItems = () => {
 
         setTopProducts(productsWithDetails);
 
+        // Initialize default selections
         const initialSizes = {};
         const initialColors = {};
         productsWithDetails.forEach((product) => {
@@ -136,6 +168,7 @@ const ProductItems = () => {
     fetchTopProducts();
   }, []);
 
+  // Loading and error states
   if (loading) return <div className="loading">Loading top products...</div>;
   if (error) return <div className="error">{error}</div>;
 
@@ -143,6 +176,7 @@ const ProductItems = () => {
     <>
       <h1 className="top-products-title">Top Products</h1>
 
+      {/* Notification component */}
       {notification && (
         <Notification
           message={notification.message}
@@ -151,9 +185,11 @@ const ProductItems = () => {
         />
       )}
 
+      {/* Products grid */}
       <div className="top-products-grid">
         {topProducts.map((item) => (
           <div className="top-product-card" key={item.id}>
+            {/* Product image with link */}
             <Link to={`/product/${item.id}/`}>
               <div className="top-product-image-container">
                 <img
@@ -170,6 +206,8 @@ const ProductItems = () => {
                 )}
               </div>
             </Link>
+
+            {/* Product info section */}
             <div className="top-product-info">
               <h3 className="top-product-title text-center">
                 <Link
@@ -179,6 +217,8 @@ const ProductItems = () => {
                   {item.name}
                 </Link>
               </h3>
+
+              {/* Price display */}
               <div className="top-product-price-wrapper d-flex justify-content-center">
                 <span className="top-product-current-price">
                   ₹{item.currentprice}
@@ -190,6 +230,7 @@ const ProductItems = () => {
                 )}
               </div>
 
+              {/* Size selector */}
               {item.sizes?.length > 0 && (
                 <div className="size-selector">
                   <select
@@ -210,6 +251,7 @@ const ProductItems = () => {
                 </div>
               )}
 
+              {/* Add to cart button */}
               <button
                 className="top-product-add-to-cart"
                 onClick={() => addToCart(item.id)}
