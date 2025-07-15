@@ -268,18 +268,18 @@
 }
 
 .add-to-cart:hover {
-  background: #7d0299; /* Darker on hover */
+  background: linear-gradient(90deg, #de5b9e,#005ea6); /* Darker on hover */
 }
 
 .buy-now {
   /* Secondary action button */
-  background: #6f0dab;
+  background: linear-gradient(90deg, #de5b9e,#005ea6);
   color: #DE5B9E;
   border: 2px solid #DE5B9E; /* Changed from gradient to solid color */
 }
 
 .buy-now:hover {
-  background: #f9f0fc;
+  background: linear-gradient(90deg, #005ea6, #de5b9e);
   color: #DE5B9E; /* Ensure color stays consistent on hover */
 }
 
