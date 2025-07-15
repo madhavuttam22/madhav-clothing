@@ -445,7 +445,7 @@ const SearchResults = () => {
                     </div>
                     <div className="best-seller-grid">
                       {filteredProducts.map((item) => (
-                        <div className="best-seller-cards" key={item.id}>
+                        <div className="best-seller-card" key={item.id}>
                           <Link to={`/product/${item.id}/`}>
                             <div className="best-seller-image-container">
                               <img

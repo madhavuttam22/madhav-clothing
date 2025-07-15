@@ -284,7 +284,7 @@ const BestSellerPage = () => {
             <div className="best-seller-grid">
               {filteredProducts.map((item, index) => (
                 <div
-                  className="best-seller-cards"
+                  className="best-seller-card"
                   key={item.id}
                   ref={
                     index === filteredProducts.length - 1
