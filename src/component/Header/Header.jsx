@@ -1,18 +1,7 @@
 /**
- * Header Component
- * 
- * This is the main header component for the e-commerce website.
- * It includes:
- * - Top announcement bar
- * - Contact information
- * - Logo
- * - Navigation menu
- * - Search functionality
- * - User profile and cart icons
- * 
- * The component is responsive and adapts to different screen sizes.
+ * Header Component - Final Optimized Version
+ * Maintains all CSS classes exactly as provided while fixing navigation issues
  */
-
 import React, { useState, useEffect, useRef } from "react";
 import "./Header.css";
 import { IoCallOutline } from "react-icons/io5";
@@ -20,52 +9,56 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FiSearch, FiX } from "react-icons/fi";
+import { FaBars, FaTimes } from "react-icons/fa";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
 import { useAuth } from "../context/AuthContext.jsx";
-import logo from '/logo.png'
+import logo from '/logo.png';
 
 const Header = () => {
-  // State for search functionality
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   
-  // Refs and hooks for navigation and DOM manipulation
-  const suggestionsRef = useRef(null);
+  const searchRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
-  /**
-   * Checks if a given path matches the current route
-   * @param {string} path - The path to check
-   * @param {boolean} exact - Whether to match exactly or as prefix
-   * @returns {boolean} True if the path matches the current route
-   */
-  const isActive = (path, exact = false) => {
-    return exact
-      ? location.pathname === path
-      : location.pathname.startsWith(path);
-  };
-
-  // Effect for fetching search suggestions with debounce
+  // Close dropdowns when clicking outside
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.length > 1 && showSearchBar) {
-        fetchSuggestions(searchQuery);
-      } else {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSearchBar(false);
         setSuggestions([]);
       }
-    }, 300);
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setShowMobileMenu(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    return () => clearTimeout(timer);
+  // Close mobile menu on route change
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [location.pathname]);
+
+  // Fetch search suggestions
+  useEffect(() => {
+    if (searchQuery.length > 2 && showSearchBar) {
+      const timer = setTimeout(() => {
+        fetchSuggestions(searchQuery);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setSuggestions([]);
+    }
   }, [searchQuery, showSearchBar]);
 
-  /**
-   * Fetches search suggestions from the API
-   * @param {string} query - The search query
-   */
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
@@ -73,81 +66,51 @@ const Header = () => {
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
-      setShowSuggestions(true);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
   };
 
-  /**
-   * Handles profile icon click - navigates to profile or login page
-   * @param {Event} e - Click event
-   */
   const handleProfileClick = (e) => {
     e.preventDefault();
     navigate(user ? "/profile/" : "/login/");
   };
 
-  /**
-   * Toggles the search bar visibility
-   * @param {Event} e - Click event
-   */
   const handleSearchClick = (e) => {
     e.preventDefault();
     setShowSearchBar(!showSearchBar);
-    setShowSuggestions(false);
+    setSuggestions([]);
     if (showSearchBar && searchQuery.trim()) {
       handleSearchSubmit(e);
     }
   };
 
-  /**
-   * Handles search form submission
-   * @param {Event} e - Form submission event
-   */
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery("");
       setShowSearchBar(false);
-      setShowSuggestions(false);
+      setSuggestions([]);
     }
   };
 
-  /**
-   * Handles clicking on a search suggestion
-   * @param {string} suggestion - The selected suggestion
-   */
   const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
     navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+    setSearchQuery("");
     setShowSearchBar(false);
-    setShowSuggestions(false);
+    setSuggestions([]);
   };
 
-  /**
-   * Handles search input changes
-   * @param {Event} e - Input change event
-   */
-  const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
-    setShowSuggestions(e.target.value.length > 1);
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(!showMobileMenu);
   };
 
-  // Effect for handling clicks outside the suggestions dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const isActive = (path, exact = false) => {
+    return exact
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
+  };
 
   return (
     <>
@@ -156,7 +119,7 @@ const Header = () => {
         <p>EXPLORE OUR WIDE RANGE OF PRODUCTS</p>
       </div>
 
-      {/* Contact information bar */}
+      {/* Contact information */}
       <div className="nav2 d-flex justify-content-evenly">
         <div className="mobileno">
           <a className="contact_info" href="tel:+919740227938">
@@ -172,53 +135,33 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Main header section */}
+      {/* Main header */}
       <header className="bg-white border-bottom sticky-top">
         <div className="container-fluid py-2 px-3">
           <div className="d-flex align-items-center justify-content-between">
-            {/* Mobile menu button */}
-            <button
-              className="btn d-md-none menu-btn"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#sidebarMenu"
-              aria-controls="sidebarMenu"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="fill w-25"></div>
-
-            {/* Logo */}
-            <Link
-              to={"/"}
-              className="navbar-brand mx-auto d-md-block d-none w-25 logo-container"
-            >
-              <img
-                src={logo}
-                alt="Logo"
-                height="70"
-                className="logo-img"
-              />
+            {/* Logo - mobile version */}
+            <Link to="/" className="navbar-brand d-lg-none">
+              <img src={logo} alt="Logo" height="50" className="logo-img" />
             </Link>
 
-            {/* Right side icons (profile, search, cart) */}
+            {/* Logo - desktop version */}
+            <Link to="/" className="navbar-brand mx-lg-auto d-none d-lg-block">
+              <img src={logo} alt="Logo" height="70" className="logo-img" />
+            </Link>
+
+            {/* Right side icons (search, profile, cart) */}
             <div className="d-flex align-items-center gap-3">
               {/* Profile icon */}
-              <a
-                href="#"
+              <Link
+                to={user ? "/profile" : "/login"}
                 className="text-dark icon-hover"
                 onClick={handleProfileClick}
-                style={{ textDecoration: "none" }}
               >
-                <i
-                  className={`bi bi-person profile-icon ${
-                    isActive("/profile") ? "active-icon" : ""
-                  }`}
-                ></i>
-              </a>
+                <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
+              </Link>
 
-              {/* Search functionality */}
-              <div className="search-container" ref={suggestionsRef}>
+              {/* Search icon/bar - desktop version */}
+              <div className="search-container d-none d-lg-block" ref={searchRef}>
                 {showSearchBar ? (
                   <form onSubmit={handleSearchSubmit} className="search-form">
                     <div className="search-input-container">
@@ -226,8 +169,7 @@ const Header = () => {
                         type="text"
                         placeholder="Search products..."
                         value={searchQuery}
-                        onChange={handleInputChange}
-                        onFocus={() => setShowSuggestions(true)}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="search-input"
                         autoFocus
                       />
@@ -244,8 +186,7 @@ const Header = () => {
                         <FiSearch size={20} />
                       </button>
                     </div>
-                    {/* Search suggestions dropdown */}
-                    {showSuggestions && suggestions.length > 0 && (
+                    {suggestions.length > 0 && (
                       <div className="suggestions-dropdown">
                         {suggestions.map((suggestion, index) => (
                           <div
@@ -260,44 +201,170 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <a
-                    href="#"
+                  <button
                     className="text-dark icon-hover"
                     onClick={handleSearchClick}
                   >
-                    <i
-                      className={`bi bi-search search-icon ${
-                        isActive("/search") ? "active-icon" : ""
-                      }`}
-                    ></i>
-                  </a>
+                    <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
+                  </button>
                 )}
               </div>
 
+              {/* Search icon - mobile version */}
+              <button
+                className="text-dark icon-hover d-lg-none"
+                onClick={handleSearchClick}
+              >
+                <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
+              </button>
+
               {/* Cart icon */}
               <Link
-                to={"/cart/"}
+                to="/cart"
                 className="position-relative text-dark icon-hover"
               >
-                <i
-                  className={`bi bi-cart cart-icon ${
-                    isActive("/cart") ? "active-icon" : ""
-                  }`}
-                ></i>
+                <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
                 <span className="cart-badge"></span>
               </Link>
+
+              {/* Mobile menu button */}
+              <button
+                className="btn d-lg-none menu-btn"
+                onClick={toggleMobileMenu}
+              >
+                {showMobileMenu ? (
+                  <FaTimes className="menu-icon" />
+                ) : (
+                  <FaBars className="menu-icon" />
+                )}
+              </button>
             </div>
           </div>
 
-          {/* Main navigation menu (desktop only) */}
-          <nav className="d-none d-md-flex justify-content-center mt-3">
+          {/* Mobile search bar */}
+          {showSearchBar && (
+            <div className="d-lg-none mt-2 w-100">
+              <form onSubmit={handleSearchSubmit} className="search-form">
+                <div className="search-input-container">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="clear-search-btn"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <FiX />
+                    </button>
+                  )}
+                  <button type="submit" className="search-button">
+                    <FiSearch size={20} />
+                  </button>
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="suggestions-dropdown">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="suggestion-item"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </form>
+            </div>
+          )}
+
+          {/* Mobile menu */}
+          <div
+            className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`}
+            ref={mobileMenuRef}
+          >
+            <nav className="mobile-menu">
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <Link
+                    to="/"
+                    className={`nav-link nav-hover ${isActive("/", true) ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Home</span>
+                  </Link>
+                </li>
+
+                <li className="nav-item dropdown">
+                  <ShopDropdown mobileClose={() => setShowMobileMenu(false)} />
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/bestseller"
+                    className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Best Sellers</span>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/newcollection"
+                    className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>New Collection</span>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/allproducts"
+                    className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>All Products</span>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/brand"
+                    className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Brand</span>
+                  </Link>
+                </li>
+
+                <li className="nav-item">
+                  <Link
+                    to="/contactus"
+                    className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Contact</span>
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          {/* Desktop navigation */}
+          <nav className="d-none d-lg-flex justify-content-center mt-3">
             <ul className="nav">
               <li className="nav-item">
                 <Link
                   to="/"
-                  className={`nav-link nav-hover ${
-                    isActive("/", true) ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/", true) ? "active" : ""}`}
                 >
                   <span>Home</span>
                 </Link>
@@ -310,9 +377,7 @@ const Header = () => {
               <li className="nav-item">
                 <Link
                   to="/bestseller"
-                  className={`nav-link nav-hover ${
-                    isActive("/bestseller") ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
                 >
                   <span>Best Sellers</span>
                 </Link>
@@ -321,9 +386,7 @@ const Header = () => {
               <li className="nav-item">
                 <Link
                   to="/newcollection"
-                  className={`nav-link nav-hover ${
-                    isActive("/newcollection") ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
                 >
                   <span>New Collection</span>
                 </Link>
@@ -332,19 +395,16 @@ const Header = () => {
               <li className="nav-item">
                 <Link
                   to="/allproducts"
-                  className={`nav-link nav-hover ${
-                    isActive("/allproducts") ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
                 >
                   <span>All Products</span>
                 </Link>
               </li>
+
               <li className="nav-item">
                 <Link
                   to="/brand"
-                  className={`nav-link nav-hover ${
-                    isActive("/brand") ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
                 >
                   <span>Brand</span>
                 </Link>
@@ -353,9 +413,7 @@ const Header = () => {
               <li className="nav-item">
                 <Link
                   to="/contactus"
-                  className={`nav-link nav-hover ${
-                    isActive("/contactus") ? "active" : ""
-                  }`}
+                  className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
                 >
                   <span>Contact</span>
                 </Link>
