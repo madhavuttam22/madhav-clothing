@@ -290,7 +290,6 @@ const Profile = () => {
 
   return (
     <>
-      <Header />
       <div className="profile-container">
         {/* Profile Header Section */}
         <div className="profile-header">
@@ -330,7 +329,7 @@ const Profile = () => {
 
             {/* Navigation Menu */}
             <nav className="profile-menu">
-              <Link to={'/myorders/'} className="menu-item">
+              <Link to={"/myorders/"} className="menu-item">
                 My Orders
               </Link>
             </nav>
@@ -441,7 +440,6 @@ const Profile = () => {
           />
         )}
       </div>
-      <Footer />
 
       {/* Logout Confirmation Modal */}
       <ConfirmationModal

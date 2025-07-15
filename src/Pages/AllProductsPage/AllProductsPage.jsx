@@ -12,7 +12,7 @@ import "./AllProductsPage.css";
 
 /**
  * AllProductsPage Component
- * 
+ *
  * Displays a paginated grid of all available products with filtering capabilities.
  * Features include:
  * - Infinite scrolling with Intersection Observer
@@ -262,7 +262,6 @@ const AllProductsPage = () => {
 
   return (
     <>
-      <Header />
       <div className="all-products-page-container">
         <h1 className="all-products-title">All Products</h1>
 
@@ -319,7 +318,7 @@ const AllProductsPage = () => {
                       )}
                     </div>
                   </Link>
-                  
+
                   {/* Product info section */}
                   <div className="product-info w-100 text-center">
                     <h3 className="product-title">
@@ -330,7 +329,7 @@ const AllProductsPage = () => {
                         {item.name}
                       </Link>
                     </h3>
-                    
+
                     {/* Price display */}
                     <div className="product-price-wrapper">
                       <span className="product-current-price">
@@ -385,7 +384,6 @@ const AllProductsPage = () => {
         </div>
       </div>
 
-      <Footer />
       <BackToTop />
     </>
   );

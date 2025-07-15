@@ -18,11 +18,11 @@ import { getAuth } from "firebase/auth";
 const Cart = () => {
   // State management
   const [cartData, setCartData] = useState({
-    items: [],          // Array of cart items
-    total: 0,           // Total cart value
-    item_count: 0,      // Total number of items
-    isLoading: true,    // Loading state
-    error: null         // Error state
+    items: [], // Array of cart items
+    total: 0, // Total cart value
+    item_count: 0, // Total number of items
+    isLoading: true, // Loading state
+    error: null, // Error state
   });
   const [notification, setNotification] = useState(null); // Notification system
   const [isProcessing, setIsProcessing] = useState(false); // Processing state for cart actions
@@ -347,7 +347,6 @@ const Cart = () => {
           </div>
         )}
       </div>
-      <Footer />
 
       {/* Notification component */}
       {notification && (

@@ -18,7 +18,7 @@ const SearchResults = () => {
   // Hooks for routing and state management
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // State for products and UI
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -30,7 +30,7 @@ const SearchResults = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
-  
+
   // Ref for handling clicks outside suggestions dropdown
   const suggestionsRef = useRef(null);
 
@@ -128,7 +128,7 @@ const SearchResults = () => {
     } catch (err) {
       console.error("Search error:", err);
       setError("Failed to load search results. Please try again.");
-      
+
       // Fallback to basic search if enhanced search fails
       try {
         const basicResponse = await axios.get(
@@ -362,7 +362,6 @@ const SearchResults = () => {
   // Main component render
   return (
     <>
-      <Header />
       <div className="search-results-page">
         <div className="search-header-container">
           <div className="container">
@@ -545,7 +544,7 @@ const SearchResults = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
       <BackToTop />
     </>
   );

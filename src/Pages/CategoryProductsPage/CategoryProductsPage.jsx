@@ -12,14 +12,14 @@ import "./CategoryProductsPage.css";
 
 /**
  * CategoryProductsPage Component
- * 
+ *
  * Displays products belonging to a specific category with filtering and pagination capabilities.
  * Handles product display, size selection, adding to cart, and responsive layout.
  */
 const CategoryProductsPage = () => {
   // Get category ID from URL parameters
   const { category_id } = useParams();
-  
+
   // State management for products, loading, errors, etc.
   const [products, setProducts] = useState([]); // All products in the category
   const [filteredProducts, setFilteredProducts] = useState([]); // Products after filters applied
@@ -31,11 +31,11 @@ const CategoryProductsPage = () => {
   const [selectedSizes, setSelectedSizes] = useState({}); // Track selected sizes for each product
   const [page, setPage] = useState(1); // Current page for infinite scroll
   const [hasMore, setHasMore] = useState(true); // Flag for more products available
-  
+
   // React Router hooks
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Intersection Observer ref for infinite scroll
   const observer = useRef();
 
@@ -191,7 +191,7 @@ const CategoryProductsPage = () => {
 
       // Set loading state for this product
       setAddingToCartId(productId);
-      
+
       // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
@@ -285,7 +285,6 @@ const CategoryProductsPage = () => {
 
   return (
     <>
-      <Header />
       <div className="category-page-container">
         <h1 className="category-title">{category?.category || "Category"}</h1>
 
@@ -341,7 +340,7 @@ const CategoryProductsPage = () => {
                       )}
                     </div>
                   </Link>
-                  
+
                   {/* Product information */}
                   <div className="category-info">
                     <h3 className="category-product-title">
@@ -352,7 +351,7 @@ const CategoryProductsPage = () => {
                         {product.name}
                       </Link>
                     </h3>
-                    
+
                     {/* Price display */}
                     <div className="category-price-wrapper d-flex justify-content-center">
                       <span className="category-current-price">
@@ -408,7 +407,7 @@ const CategoryProductsPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
       <BackToTop />
     </>
   );

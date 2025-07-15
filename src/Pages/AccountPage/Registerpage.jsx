@@ -1,6 +1,4 @@
 import React from 'react'
-import Header from '../../component/Header/Header'
-import Footer from '../../component/Footer/Footer'
 import Register from '../../component/Account/Register/Register'
 
 /**
@@ -18,14 +16,10 @@ import Register from '../../component/Account/Register/Register'
 const Registerpage = () => {
   return (
     <>
-      {/* Application header with navigation */}
-      <Header/>
       
       {/* Registration form component */}
       <Register/>
       
-      {/* Global footer with links and information */}
-      <Footer/>
     </>
   )
 }

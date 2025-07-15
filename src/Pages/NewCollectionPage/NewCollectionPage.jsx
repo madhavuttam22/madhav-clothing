@@ -170,7 +170,7 @@ const NewCollectionPage = () => {
 
     try {
       setAddingToCartId(productId); // Set loading state for this product
-      
+
       // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
@@ -206,7 +206,7 @@ const NewCollectionPage = () => {
       showNotification(
         data.message || `${product.name} added to cart successfully!`
       );
-      
+
       // Update cart count in header if function exists
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
@@ -264,7 +264,6 @@ const NewCollectionPage = () => {
 
   return (
     <>
-      <Header />
       <div className="new-collection-page-container">
         <h1 className="new-collection">New Collection</h1>
 
@@ -310,7 +309,7 @@ const NewCollectionPage = () => {
                       <span className="new-collection-badge">New Arrival</span>
                     </div>
                   </Link>
-                  
+
                   {/* Product info section */}
                   <div className="new-collection-info">
                     <h3 className="new-collection-title">
@@ -321,7 +320,7 @@ const NewCollectionPage = () => {
                         {item.name}
                       </Link>
                     </h3>
-                    
+
                     {/* Price display */}
                     <div className="new-collection-price-wrapper d-flex justify-content-center">
                       <span className="new-collection-current-price">
@@ -376,7 +375,6 @@ const NewCollectionPage = () => {
         </div>
       </div>
 
-      <Footer />
       <BackToTop />
     </>
   );

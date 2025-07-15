@@ -12,7 +12,7 @@ import "./BestSellerPage.css";
 
 /**
  * BestSellerPage Component - Displays a grid of best-selling products with filtering options
- * 
+ *
  * Features:
  * - Displays products marked as best sellers from the API
  * - Allows filtering by size, color, and price sorting
@@ -24,7 +24,7 @@ const BestSellerPage = () => {
   // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // State management for products and UI
   const [bestSellers, setBestSellers] = useState([]); // All best seller products
   const [filteredProducts, setFilteredProducts] = useState([]); // Products after filters applied
@@ -35,7 +35,7 @@ const BestSellerPage = () => {
   const [selectedSizes, setSelectedSizes] = useState({}); // Tracks selected sizes for each product
   const [page, setPage] = useState(1); // Current page for infinite scroll
   const [hasMore, setHasMore] = useState(true); // Flag for more products available
-  
+
   // Ref for intersection observer (infinite scroll)
   const observer = useRef();
 
@@ -260,7 +260,6 @@ const BestSellerPage = () => {
 
   return (
     <>
-      <Header />
       <div className="bestseller-page-container">
         <h1 className="bestseller">Best Seller</h1>
 
@@ -306,7 +305,7 @@ const BestSellerPage = () => {
                       <span className="best-seller-badge">Best Seller</span>
                     </div>
                   </Link>
-                  
+
                   {/* Product info section */}
                   <div className="best-seller-info">
                     <h3 className="best-seller-title">
@@ -317,7 +316,7 @@ const BestSellerPage = () => {
                         {item.name}
                       </Link>
                     </h3>
-                    
+
                     {/* Price display */}
                     <div className="best-seller-price-wrapper d-flex justify-content-center">
                       <span className="best-seller-current-price">
@@ -372,7 +371,6 @@ const BestSellerPage = () => {
         </div>
       </div>
 
-      <Footer />
       <BackToTop />
     </>
   );

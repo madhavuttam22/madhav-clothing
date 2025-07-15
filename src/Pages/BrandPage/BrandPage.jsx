@@ -1,7 +1,5 @@
 import React from 'react';
 import './BrandPage.css';
-import Header from '../../component/Header/Header';
-import Footer from '../../component/Footer/Footer';
 
 /**
  * BrandPage Component - Displays the brand story, features, and values
@@ -16,8 +14,6 @@ import Footer from '../../component/Footer/Footer';
 const BrandPage = () => {
   return (
     <>
-      {/* Site Header */}
-      <Header/>
       
       {/* Main Brand Page Content */}
       <div className="brand-page">
@@ -148,8 +144,6 @@ const BrandPage = () => {
         </section>
       </div>
       
-      {/* Site Footer */}
-      <Footer/>
     </>
   );
 };

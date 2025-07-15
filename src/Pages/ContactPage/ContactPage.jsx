@@ -54,7 +54,7 @@ const ContactPage = () => {
       });
       return false;
     }
-    
+
     // Validate email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setSubmitStatus({ success: false, message: "Invalid email format." });
@@ -81,7 +81,7 @@ const ContactPage = () => {
         formData,
         { withCredentials: true }
       );
-      
+
       // Show success modal and reset form on successful submission
       setShowConfirmation(true);
       setFormData({
@@ -182,8 +182,7 @@ const ContactPage = () => {
   return (
     <>
       {/* Header Component */}
-      <Header />
-      
+
       {/* Main Contact Page Content */}
       <div className="contact-page">
         {/* Hero Section with wave effect */}
@@ -411,9 +410,8 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Footer Component */}
-      <Footer />
 
       {/* Confirmation Modal - Shows on successful form submission */}
       <ConfirmationModal

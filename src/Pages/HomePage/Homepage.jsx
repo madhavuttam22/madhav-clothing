@@ -17,13 +17,12 @@
 import React from 'react'
 
 // Import all section components
-import Header from '../../component/Header/Header'
 import Hero from '../../component/Hero/Hero'
 import ProductItem from '../../component/ProductItems/ProductItems'
 import CommunitySection from '../../component/ComunityHeroSection/CommunitySection'
 import GallerySlider from '../../component/GallerySlider/GallerySlider'
 import BestSeller from '../../component/BestSeller/BestSeller'
-import Footer from '../../component/Footer/Footer'
+
 import BackToTop from '../../component/BackToTop/BackToTop'
 
 const Homepage = () => {
@@ -42,8 +41,6 @@ const Homepage = () => {
      * 8. BackToTop - Floating button to scroll to top
      */
     <>
-        {/* Main site header with navigation */}
-        <Header/>
         
         {/* Hero banner section - typically contains a large image and call-to-action */}
         <Hero/>
@@ -60,8 +57,7 @@ const Homepage = () => {
         {/* Best selling products showcase */}
         <BestSeller/>
         
-        {/* Main site footer with links and information */}
-        <Footer/>
+        
         
         {/* Floating back-to-top button that appears when scrolling down */}
         <BackToTop/>

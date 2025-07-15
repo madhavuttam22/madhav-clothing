@@ -110,7 +110,6 @@ const MyOrders = () => {
 
   return (
     <>
-      <Header />
       <div className="orders-container">
         <div className="orders-header">
           <h1>My Orders</h1>
@@ -177,10 +176,14 @@ const MyOrders = () => {
                         <h4 className="item-name">{item.product_name}</h4>
                         <div className="item-variants">
                           {item.size_name && (
-                            <span className="variant">Size: {item.size_name}</span>
+                            <span className="variant">
+                              Size: {item.size_name}
+                            </span>
                           )}
                           {item.color_name && (
-                            <span className="variant">Color: {item.color_name}</span>
+                            <span className="variant">
+                              Color: {item.color_name}
+                            </span>
                           )}
                           <span className="variant">Qty: {item.quantity}</span>
                         </div>
@@ -209,12 +212,18 @@ const MyOrders = () => {
                             <h4 className="item-name">{item.product_name}</h4>
                             <div className="item-variants">
                               {item.size_name && (
-                                <span className="variant">Size: {item.size_name}</span>
+                                <span className="variant">
+                                  Size: {item.size_name}
+                                </span>
                               )}
                               {item.color_name && (
-                                <span className="variant">Color: {item.color_name}</span>
+                                <span className="variant">
+                                  Color: {item.color_name}
+                                </span>
                               )}
-                              <span className="variant">Qty: {item.quantity}</span>
+                              <span className="variant">
+                                Qty: {item.quantity}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -254,7 +263,6 @@ const MyOrders = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };

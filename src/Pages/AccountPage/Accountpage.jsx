@@ -1,6 +1,4 @@
 import React from 'react'
-import Header from '../../component/Header/Header'
-import Footer from '../../component/Footer/Footer'
 import Login from '../../component/Account/Login/Login'
 
 /**
@@ -18,14 +16,11 @@ import Login from '../../component/Account/Login/Login'
 const Accountpage = () => {
   return (
     <>
-      {/* Render the global header component */}
-      <Header/>
+     
       
       {/* Main content: Login form component */}
       <Login/>
       
-      {/* Render the global footer component */}
-      <Footer/>
     </>
   )
 }

@@ -8,7 +8,7 @@ import { auth } from "../../firebase";
 
 /**
  * ProductDetailPage Component
- * 
+ *
  * Displays detailed information about a single product including:
  * - Product images gallery with thumbnail navigation
  * - Color and size selection options
@@ -21,31 +21,31 @@ import { auth } from "../../firebase";
 const ProductDetailPage = () => {
   // Get product ID from URL parameters
   const { id } = useParams();
-  
+
   // Navigation and location hooks
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // State for product selection options
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  
+
   // State for UI toggles
   const [showDescription, setShowDescription] = useState(false);
-  
+
   // State for product data and loading status
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // State for product images
   const [currentImages, setCurrentImages] = useState([]);
   const [mainImage, setMainImage] = useState("");
-  
+
   // State for notifications
   const [notification, setNotification] = useState(null);
-  
+
   // State for cart operations
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
@@ -110,7 +110,7 @@ const ProductDetailPage = () => {
     try {
       setIsAddingToCart(true);
       const token = await auth.currentUser?.getIdToken();
-      
+
       // Redirect to login if user not authenticated
       if (!token) {
         showNotification("You need to be logged in to add to cart", "error");
@@ -184,7 +184,7 @@ const ProductDetailPage = () => {
     try {
       setIsAddingToCart(true);
       const user = auth.currentUser;
-      
+
       // Redirect to login if user not authenticated
       if (!user) {
         showNotification("Please login to continue", "error");
@@ -277,7 +277,7 @@ const ProductDetailPage = () => {
   const handleColorChange = (colorData) => {
     setSelectedColor(colorData.color);
     updateColorImages(colorData);
-    
+
     // Reset size selection to first available size for new color
     const availableSizes = product.sizes.filter((size) => size.stock > 0);
     const sizeToSelect =
@@ -323,7 +323,6 @@ const ProductDetailPage = () => {
 
   return (
     <>
-      <Header />
       <div className="product-detail-page">
         <div className="product-wrapper">
           {/* Product Gallery Section */}
@@ -347,7 +346,7 @@ const ProductDetailPage = () => {
                     </div>
                   ))}
                 </div>
-                
+
                 {/* Main Product Image */}
                 <div className="main-image">
                   {mainImage ? (
@@ -648,7 +647,6 @@ const ProductDetailPage = () => {
           onClose={() => setNotification(null)}
         />
       )}
-      <Footer />
     </>
   );
 };
