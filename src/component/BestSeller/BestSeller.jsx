@@ -196,7 +196,7 @@ const BestSeller = () => {
       <div className="best-seller-container">
         <div className="best-seller-cards">
           {bestSellers.slice(0, 8).map((item) => (
-            <div className="best-seller-card" style={{width:'250px'}} key={item.id}>
+            <div className="best-seller-card" key={item.id}>
               {/* Product image with link to product page */}
               <Link to={`/product/${item.id}/`}>
                 <div className="best-seller-image-container">
