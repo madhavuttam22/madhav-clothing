@@ -24,17 +24,28 @@ const SearchResults = () => {
   const suggestionsRef = useRef(null);
 
   // Get ?q= from URL
-  const query = new URLSearchParams(location.search).get("q");
+  // const query = new URLSearchParams(location.search).get("q");
 
   // Main effect to fetch data whenever query changes
+  // useEffect(() => {
+  //   if (query) {
+  //     setSearchQuery(query);
+  //     fetchSearchResults(query);
+  //   } else {
+  //     navigate("/");
+  //   }
+  // }, [query]);
+
   useEffect(() => {
-    if (query) {
-      setSearchQuery(query);
-      fetchSearchResults(query);
-    } else {
-      navigate("/");
-    }
-  }, [query]);
+  const qParam = new URLSearchParams(location.search).get("q");
+  if (qParam) {
+    setSearchQuery(qParam);
+    fetchSearchResults(qParam);
+  } else {
+    navigate("/");
+  }
+}, [location.search]);  // 👈 track location.search, not 'query'
+
 
   const fetchSearchResults = async (searchTerm) => {
     try {
