@@ -10,106 +10,76 @@ import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 import BackToTop from "../../component/BackToTop/BackToTop";
 import "./AllProductsPage.css";
 
-/**
- * AllProductsPage Component
- *
- * Displays a paginated grid of all available products with filtering capabilities.
- * Features include:
- * - Infinite scrolling with Intersection Observer
- * - Product filtering by size, color, and price sorting
- * - Add to cart functionality with size selection
- * - Responsive grid layout
- * - Product badges for best sellers and top products
- * - Error handling and loading states
- */
 const AllProductsPage = () => {
-  // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
-
-  // State management for products and UI
-  const [allProducts, setAllProducts] = useState([]); // All products from API
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered product list
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [addingToCartId, setAddingToCartId] = useState(null); // Tracks which product is being added to cart
-  const [notification, setNotification] = useState(null); // Notification system
-  const [selectedSizes, setSelectedSizes] = useState({}); // Tracks selected sizes for each product
-  const [page, setPage] = useState(1); // Pagination control
-  const [hasMore, setHasMore] = useState(true); // Infinite scroll flag
-
-  // Infinite scroll observer ref
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [addingToCartId, setAddingToCartId] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
 
-  /**
-   * Displays a temporary notification to the user
-   * @param {string} message - Notification message
-   * @param {string} type - Notification type ('success' or 'error')
-   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // Fetch all products on component mount
- useEffect(() => {
-  const fetchAllProducts = async () => {
-    try {
-      setLoading(true); // 👈 Add this line to show loader on navigation
-      const res = await axios.get(
-        "https://web-production-2449.up.railway.app/api/products/"
-      );
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const res = await axios.get(
+          "https://web-production-2449.up.railway.app/api/products/"
+        );
 
-      const productsWithData = res.data.map((product) => {
-        let imageUrl = "/placeholder-product.jpg";
-        if (product.colors?.length > 0) {
-          const firstColor = product.colors[0];
-          const defaultImage = firstColor.images.find(
-            (img) => img.is_default
-          );
-          imageUrl =
-            defaultImage?.image_url ||
-            firstColor.images?.[0]?.image_url ||
-            imageUrl;
-        }
+        const productsWithData = res.data.map((product) => {
+          let imageUrl = "/placeholder-product.jpg";
+          if (product.colors?.length > 0) {
+            const firstColor = product.colors[0];
+            const defaultImage = firstColor.images.find(
+              (img) => img.is_default
+            );
+            imageUrl =
+              defaultImage?.image_url ||
+              firstColor.images?.[0]?.image_url ||
+              imageUrl;
+          }
 
-        const firstAvailableSize =
-          product.sizes?.find((size) => size.stock > 0)?.size ||
-          product.sizes?.[0]?.size;
+          const firstAvailableSize =
+            product.sizes?.find((size) => size.stock > 0)?.size ||
+            product.sizes?.[0]?.size;
 
-        return {
-          ...product,
-          image: imageUrl,
-          defaultSize: firstAvailableSize,
-        };
-      });
+          return {
+            ...product,
+            image: imageUrl,
+            defaultSize: firstAvailableSize,
+          };
+        });
 
-      setAllProducts(productsWithData);
-      setFilteredProducts(productsWithData);
+        setAllProducts(productsWithData);
+        setFilteredProducts(productsWithData);
 
-      const initialSizes = {};
-      productsWithData.forEach((product) => {
-        if (product.defaultSize) {
-          initialSizes[product.id] = product.defaultSize.id;
-        }
-      });
-      setSelectedSizes(initialSizes);
-    } catch (err) {
-      console.error("Failed to load products", err);
-      setError("Failed to load products. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        const initialSizes = {};
+        productsWithData.forEach((product) => {
+          if (product.defaultSize) {
+            initialSizes[product.id] = product.defaultSize.id;
+          }
+        });
+        setSelectedSizes(initialSizes);
+      } catch (err) {
+        console.error("Failed to load products", err);
+        setError("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllProducts();
+  }, []);
 
-  fetchAllProducts();
-}, [location.pathname]); // 👈 Trigger on route change too
-
-
-  /**
-   * Infinite scroll implementation using Intersection Observer
-   * Observes the last product element and triggers pagination when visible
-   */
   const lastProductRef = useCallback(
     (node) => {
       if (loading) return;
@@ -124,11 +94,6 @@ const AllProductsPage = () => {
     [loading, hasMore]
   );
 
-  /**
-   * Handles size selection change for a product
-   * @param {number} productId - ID of the product
-   * @param {number} sizeId - ID of the selected size
-   */
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
@@ -136,10 +101,6 @@ const AllProductsPage = () => {
     }));
   };
 
-  /**
-   * Adds a product to the cart with selected size
-   * @param {number} productId - ID of the product to add
-   */
   const addToCart = async (productId) => {
     const selectedSizeId = parseInt(selectedSizes[productId]);
     if (!selectedSizeId) {
@@ -147,7 +108,6 @@ const AllProductsPage = () => {
       return;
     }
 
-    // Find the product and selected size
     const product = allProducts.find((p) => p.id === productId);
     if (!product) {
       showNotification("Product not found", "error");
@@ -158,7 +118,6 @@ const AllProductsPage = () => {
       (size) => size.size.id === selectedSizeId
     );
 
-    // Check stock availability
     if (!selectedSize || selectedSize.stock <= 0) {
       showNotification("Selected size is out of stock", "error");
       return;
@@ -166,15 +125,12 @@ const AllProductsPage = () => {
 
     try {
       setAddingToCartId(productId);
-      // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return;
 
-      // Get default color (first available)
       const colorId =
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
-      // API call to add to cart
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -197,7 +153,6 @@ const AllProductsPage = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
-      // Show success notification and update cart count
       showNotification(
         data.message || `${product.name} added to cart successfully!`
       );
@@ -215,52 +170,40 @@ const AllProductsPage = () => {
     }
   };
 
-  /**
-   * Applies filters to the product list
-   * @param {Object} filters - Filter criteria
-   * @param {number} filters.size - Size ID to filter by
-   * @param {number} filters.color - Color ID to filter by
-   * @param {string} filters.sort - Sorting method ('price_low' or 'price_high')
-   */
   const applyFilters = ({ size, color, sort }) => {
     let filtered = [...allProducts];
 
-    // Apply size filter if specified
     if (size) {
       filtered = filtered.filter((product) =>
         product.sizes?.some((s) => s.size.id === parseInt(size))
       );
     }
 
-    // Apply color filter if specified
     if (color) {
       filtered = filtered.filter((product) =>
         product.colors?.some((c) => c.color.id === parseInt(color))
       );
     }
 
-    // Apply sorting if specified
     if (sort === "price_low") {
       filtered.sort((a, b) => a.currentprice - b.currentprice);
     } else if (sort === "price_high") {
       filtered.sort((a, b) => b.currentprice - a.currentprice);
     }
 
-    // Update filtered products and reset pagination
     setFilteredProducts(filtered);
     setPage(1);
   };
 
-  // Loading and error states
   if (loading) return <div className="loading">Loading products...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <>
+      <Header />
       <div className="all-products-page-container">
         <h1 className="all-products-title">All Products</h1>
 
-        {/* Notification system */}
         {notification && (
           <Notification
             message={notification.message}
@@ -270,26 +213,22 @@ const AllProductsPage = () => {
         )}
 
         <div className="all-products-content">
-          {/* Filters sidebar */}
           <div className="filters-sidebar">
             <Filters products={allProducts} onApply={applyFilters} />
           </div>
 
-          {/* Products grid */}
           <div className="products-grid-container">
             <div className="products-grid">
               {filteredProducts.map((item, index) => (
                 <div
                   className="product-card"
                   key={item.id}
-                  // Attach intersection observer to last product
                   ref={
                     index === filteredProducts.length - 1
                       ? lastProductRef
                       : null
                   }
                 >
-                  {/* Product image with link to detail page */}
                   <Link to={`/product/${item.id}/`}>
                     <div className="product-image-container">
                       <img
@@ -300,7 +239,6 @@ const AllProductsPage = () => {
                           e.target.src = "/placeholder-product.jpg";
                         }}
                       />
-                      {/* Product badges */}
                       {item.is_best_seller && (
                         <span className="product-badge best-seller">
                           Best Seller
@@ -313,8 +251,6 @@ const AllProductsPage = () => {
                       )}
                     </div>
                   </Link>
-
-                  {/* Product info section */}
                   <div className="product-info w-100 text-center">
                     <h3 className="product-title">
                       <Link
@@ -324,8 +260,6 @@ const AllProductsPage = () => {
                         {item.name}
                       </Link>
                     </h3>
-
-                    {/* Price display */}
                     <div className="product-price-wrapper">
                       <span className="product-current-price">
                         ₹{item.currentprice}
@@ -338,7 +272,6 @@ const AllProductsPage = () => {
                         )}
                     </div>
 
-                    {/* Size selector */}
                     {item.sizes?.length > 0 && (
                       <div className="size-selector">
                         <select
@@ -361,7 +294,6 @@ const AllProductsPage = () => {
                       </div>
                     )}
 
-                    {/* Add to cart button */}
                     <button
                       className="add-to-cart-btn"
                       onClick={() => addToCart(item.id)}
@@ -379,6 +311,7 @@ const AllProductsPage = () => {
         </div>
       </div>
 
+      <Footer />
       <BackToTop />
     </>
   );
