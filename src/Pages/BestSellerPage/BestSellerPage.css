@@ -1,6 +1,13 @@
 /* 
   BestSellerPage.css - Styles for the Best Seller page component
-  Updated with consistent CSS Grid layout
+
+  Features:
+  - Responsive grid layout for products
+  - Card styling with hover effects
+  - Badge styling for best seller items
+  - Price display styling with original price strikethrough
+  - Size selector and add to cart button styling
+  - Media queries for responsive design
 */
 
 /* Main container for the best seller page */
@@ -11,7 +18,7 @@
 }
 
 /* Page title styling */
-.bestseller-title {
+.bestseller {
   text-align: center;
   margin: 20px 0 30px;
   font-size: 2.2rem;
@@ -38,28 +45,25 @@
   flex: 1;
 }
 
-/* Updated Grid layout for best seller products - now using CSS Grid */
+/* Grid layout for best seller products */
 .best-seller-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
   padding-bottom: 40px;
 }
 
 /* Individual product card styling */
-.best-seller-card {
+.best-seller-cards {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Card hover effects */
-.best-seller-card:hover {
+.best-seller-cards:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -84,7 +88,7 @@
 }
 
 /* Image zoom effect on hover */
-.best-seller-card:hover .best-seller-image {
+.best-seller-cards:hover .best-seller-image {
   transform: scale(1.05);
 }
 
@@ -99,28 +103,18 @@
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: bold;
-  z-index: 1;
 }
 
 /* Product info section styling */
 .best-seller-info {
   padding: 15px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
 }
 
 /* Product title styling */
 .best-seller-title {
   margin: 0 0 8px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 1.3;
-  min-height: 2.6em;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
 }
 
 /* Product title link styling */
@@ -137,9 +131,6 @@
 /* Price wrapper styling */
 .best-seller-price-wrapper {
   margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Current price styling */
@@ -168,8 +159,6 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
-  background-color: #fff;
-  cursor: pointer;
 }
 
 /* Add to cart button styling */
@@ -182,44 +171,18 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
-  margin-top: auto;
+  transition: background 0.3s ease;
 }
 
 /* Add to cart button hover effect */
 .best-seller-add-to-cart:hover {
   background: #7a0191;
-  transform: translateY(-2px);
 }
 
 /* Disabled add to cart button styling */
 .best-seller-add-to-cart:disabled {
   background: #ccc;
   cursor: not-allowed;
-  transform: none;
-}
-
-/* Loading skeleton for cards */
-.best-seller-card.loading {
-  position: relative;
-  overflow: hidden;
-  background: #f5f5f5;
-}
-
-.best-seller-card.loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
 }
 
 /* Responsive styles for tablet devices */
@@ -236,67 +199,19 @@
   }
   
   .best-seller-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  
-  .bestseller-title {
-    font-size: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
 
 /* Responsive styles for mobile devices */
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .best-seller-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
   }
   
-  .bestseller-title {
+  .bestseller {
     font-size: 1.8rem;
     margin: 15px 0;
   }
-  
-  .best-seller-info {
-    padding: 12px;
-  }
-  
-  .best-seller-title {
-    font-size: 0.9rem;
-  }
-  
-  .best-seller-current-price {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .best-seller-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-  }
-  
-  .best-seller-info {
-    padding: 10px;
-  }
-  
-  .best-seller-title {
-    font-size: 0.85rem;
-  }
-  
-  .best-seller-current-price {
-    font-size: 0.95rem;
-  }
-}
-
-/* Empty state styling */
-.best-seller-empty {
-  text-align: center;
-  padding: 50px 20px;
-  grid-column: 1 / -1;
-}
-
-.best-seller-empty h3 {
-  color: #666;
-  font-size: 1.2rem;
-  margin-bottom: 15px;
 }
