@@ -140,11 +140,7 @@ const Login = () => {
               />
             </div>
 
-            <div className="form-options" style={{textAlign:'right'}}>
-              <Link to="/forgot-password/" className="forgot-password">
-                Forgot password?
-              </Link>
-            </div>
+            
 
             {/* Submit Button */}
             <button type="submit" className="login-button" disabled={loading}>
