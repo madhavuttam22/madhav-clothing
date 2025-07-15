@@ -14,7 +14,7 @@ import axios from "axios";
  * - Highlights currently active category based on route
  * - Responsive dropdown menu for shop navigation
  */
-const ShopDropdown = () => {
+const ShopDropdown = ({ handleReloadNavigate, mobileClose }) => {
   // State for storing fetched categories
   const [categories, setCategories] = useState([]);
   // Loading state to handle API fetch status
@@ -83,15 +83,17 @@ const ShopDropdown = () => {
           // Map through categories and create menu items
           categories.map((category) => (
             <li key={category.id}>
-              <Link
-                className={`dropdown-item ${
-                  isActive(`/category/${category.id}`) ? "active-category" : ""
-                }`}
-                to={`/category/${category.id}/products/`}
-                aria-current={isActive(`/category/${category.id}`) ? "page" : undefined}
-              >
+               <a
+    className={`dropdown-item ${isActive(`/category/${category.id}`) ? "active-category" : ""}`}
+    href={`/category/${category.id}/products/`}
+    onClick={(e) => {
+      if (mobileClose) mobileClose(); // optional: close mobile menu
+      handleReloadNavigate(e, `/category/${category.id}/products/`);
+    }}
+    aria-current={isActive(`/category/${category.id}`) ? "page" : undefined}
+  >
                 {category.category}
-              </Link>
+              </a>
             </li>
           ))
         )}

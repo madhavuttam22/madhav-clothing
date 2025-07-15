@@ -266,7 +266,8 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="nav-item dropdown">
-                  <ShopDropdown mobileClose={() => setShowMobileMenu(false)} />
+                  <ShopDropdown handleReloadNavigate={handleReloadNavigate} mobileClose={() => setShowMobileMenu(false)} />
+
                 </li>
                 {[
                   ["/bestseller", "Best Sellers"],
@@ -302,7 +303,7 @@ const Header = () => {
                 </a>
               </li>
               <li className="nav-item dropdown">
-                <ShopDropdown />
+                <ShopDropdown handleReloadNavigate={handleReloadNavigate} />
               </li>
               {[
                 ["/bestseller", "Best Sellers"],
