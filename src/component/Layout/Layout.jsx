@@ -1,22 +1,23 @@
 import React, { useEffect } from "react";
-import { useLocation, Outlet } from "react-router-dom";
 import Header from "../Header/Header";
-import Footer from "../Footer/Footer"; // (Assuming you have a footer component)
+import Footer from "../Footer/Footer";
+import { Outlet, useLocation } from "react-router-dom";
 
 const Layout = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Force scroll to top and refresh logic
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
   return (
     <>
       <Header />
-      <main>
-        <Outlet /> {/* ← This renders the current route's content */}
-      </main>
-      <Footer /> {/* Optional if you want footer on all pages */}
+      <div key={location.pathname}> {/* This line forces remount */}
+        <Outlet />
+      </div>
+      <Footer />
     </>
   );
 };
