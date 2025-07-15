@@ -9,6 +9,8 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
 
 const SearchResults = () => {
+  const [searchKey, setSearchKey] = useState(0);
+
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -44,7 +46,7 @@ const SearchResults = () => {
   } else {
     navigate("/");
   }
-}, [location.search]);  // 👈 track location.search, not 'query'
+}, [location.search, searchKey]); // <-- add searchKey
 
 
   const fetchSearchResults = async (searchTerm) => {
@@ -169,12 +171,14 @@ const SearchResults = () => {
   };
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setShowSuggestions(false);
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  e.preventDefault();
+  if (searchQuery.trim()) {
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    setSearchKey((prev) => prev + 1); // ⬅ force re-trigger
+  }
+};
+
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
