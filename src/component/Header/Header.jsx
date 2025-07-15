@@ -329,8 +329,10 @@ const Header = () => {
                     to="/newcollection"
                     className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
-                  >
+                  ><a href="">
+
                     <span>New Collection</span>
+                  </a>
                   </Link>
                 </li>
 
