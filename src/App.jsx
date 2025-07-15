@@ -70,25 +70,24 @@
 // export default App;
 // App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Homepage from './pages/Homepage';
-import AllProductsPage from './pages/AllProducts/AllProductsPage';
-import BestSellerPage from './pages/BestSeller';
+import AllProductsPage from './pages/AllProductsPage/AllProductsPage';
+// import BestSellerPage from './pages/BestSeller';
 import BrandPage from './pages/Brand';
 import ContactPage from './pages/Contact';
-import ProductDetail from './pages/ProductDetail';
+// import ProductDetail from './pages/ProductDetail';
 import Layout from './component/Layout/Layout';
-
+import HomePage from './Pages/HomePage'
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Homepage />} />
+          <Route index element={<HomePage />} />
           <Route path="allproducts" element={<AllProductsPage />} />
-          <Route path="bestseller" element={<BestSellerPage />} />
+          {/* <Route path="bestseller" element={<BestSellerPage />} /> */}
           <Route path="brand" element={<BrandPage />} />
           <Route path="contactus" element={<ContactPage />} />
-          <Route path="product/:id" element={<ProductDetail />} />
+          {/* <Route path="product/:id" element={<ProductDetail />} /> */}
         </Route>
       </Routes>
     </BrowserRouter>
