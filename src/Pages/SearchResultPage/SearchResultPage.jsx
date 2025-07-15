@@ -216,183 +216,183 @@ const SearchResults = () => {
     );
 
   return (
-    <>
-      <div className="search-results-page">
-        <div className="search-header-container">
-          <div className="container">
-            <div className="search-header">
-              <h1>
-                {products.length > 0 ? `Results for "${query}"` : "Search"}
-              </h1>
-              <form
-                onSubmit={handleSearchSubmit}
-                className="search-form"
-                ref={suggestionsRef}
-              >
-                <div className="search-input-container">
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={handleInputChange}
-                    onFocus={() => setShowSuggestions(true)}
-                    className="search-input"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      className="clear-search-btn"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setSuggestions([]);
-                      }}
-                    >
-                      <FiX />
-                    </button>
-                  )}
-                  <button type="submit" className="search-button">
-                    <FiSearch size={20} />
+  <>
+    <div className="search-results-page">
+      <div className="search-header-container">
+        <div className="container">
+          <div className="search-header">
+            <h1>
+              {products.length > 0 ? `Results for "${searchQuery}"` : "Search"}
+            </h1>
+            <form
+              onSubmit={handleSearchSubmit}
+              className="search-form"
+              ref={suggestionsRef}
+            >
+              <div className="search-input-container">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                  onFocus={() => setShowSuggestions(true)}
+                  className="search-input"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="clear-search-btn"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSuggestions([]);
+                    }}
+                  >
+                    <FiX />
                   </button>
-                </div>
-                {showSuggestions && suggestions.length > 0 && (
-                  <div className="suggestions-dropdown">
-                    {suggestions.map((s, i) => (
-                      <div
-                        key={i}
-                        className="suggestion-item"
-                        onClick={() => handleSuggestionClick(s)}
-                      >
-                        {s}
-                      </div>
-                    ))}
-                  </div>
                 )}
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <div className="search-results-content">
-          <div className="container">
-            {notification && (
-              <Notification
-                message={notification.message}
-                type={notification.type}
-                onClose={() => setNotification(null)}
-              />
-            )}
-
-            <div className="search-results-layout">
-              <div className="filters-sidebar">
-                <Filters products={products} onApply={applyFilters} />
+                <button type="submit" className="search-button">
+                  <FiSearch size={20} />
+                </button>
               </div>
-
-              <div className="products-grid-container">
-                {filteredProducts.length > 0 ? (
-                  <>
-                    <div className="results-count">
-                      Found {filteredProducts.length} item(s)
-                    </div>
-                    <div className="best-seller-grid">
-                      {filteredProducts.map((item) => (
-                        <div className="best-seller-card" key={item.id}>
-                          <Link to={`/product/${item.id}/`}>
-                            <div className="best-seller-image-container">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="best-seller-image"
-                                onError={(e) => {
-                                  e.target.src = "/placeholder-product.jpg";
-                                }}
-                              />
-                            </div>
-                          </Link>
-                          <div className="best-seller-info">
-                            <h3 className="best-seller-title">
-                              <Link
-                                to={`/product/${item.id}/`}
-                                className="best-seller-title-link"
-                              >
-                                {item.name}
-                              </Link>
-                            </h3>
-                            <div className="best-seller-price-wrapper d-flex justify-content-center">
-                              <span className="best-seller-current-price">
-                                ₹{item.currentprice}
-                              </span>
-                              {item.orignalprice &&
-                                item.orignalprice > item.currentprice && (
-                                  <span className="best-seller-original-price">
-                                    ₹{item.orignalprice}
-                                  </span>
-                                )}
-                            </div>
-                            {item.sizes?.length > 0 && (
-                              <div className="size-selector">
-                                <select
-                                  value={selectedSizes[item.id] || ""}
-                                  onChange={(e) =>
-                                    handleSizeChange(item.id, e.target.value)
-                                  }
-                                  className="size-dropdown"
-                                >
-                                  {item.sizes.map(({ size, stock }) => (
-                                    <option
-                                      key={size.id}
-                                      value={size.id}
-                                      disabled={stock <= 0}
-                                    >
-                                      {size.name}{" "}
-                                      {stock <= 0 ? "(Out of Stock)" : ""}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                            <button
-                              className="best-seller-add-to-cart"
-                              onClick={() => addToCart(item.id)}
-                              disabled={
-                                addingToCartId === item.id ||
-                                !selectedSizes[item.id]
-                              }
-                            >
-                              {addingToCartId === item.id
-                                ? "Adding..."
-                                : "Add to Cart"}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <div className="no-results">
-                    <img
-                      src="/no-results.svg"
-                      alt="No results"
-                      className="no-results-img"
-                    />
-                    <h3>No products found</h3>
-                    <p>We couldn't find anything for "{query}"</p>
-                    <button
-                      onClick={() => navigate("/")}
-                      className="continue-shopping-btn"
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {suggestions.map((s, i) => (
+                    <div
+                      key={i}
+                      className="suggestion-item"
+                      onClick={() => handleSuggestionClick(s)}
                     >
-                      Continue Shopping
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+                      {s}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </form>
           </div>
         </div>
       </div>
 
-      <BackToTop />
-    </>
-  );
-};
+      <div className="search-results-content">
+        <div className="container">
+          {notification && (
+            <Notification
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification(null)}
+            />
+          )}
+
+          <div className="search-results-layout">
+            <div className="filters-sidebar">
+              <Filters products={products} onApply={applyFilters} />
+            </div>
+
+            <div className="products-grid-container">
+              {filteredProducts.length > 0 ? (
+                <>
+                  <div className="results-count">
+                    Found {filteredProducts.length} item(s)
+                  </div>
+                  <div className="best-seller-grid">
+                    {filteredProducts.map((item) => (
+                      <div className="best-seller-card" key={item.id}>
+                        <Link to={`/product/${item.id}/`}>
+                          <div className="best-seller-image-container">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="best-seller-image"
+                              onError={(e) => {
+                                e.target.src = "/placeholder-product.jpg";
+                              }}
+                            />
+                          </div>
+                        </Link>
+                        <div className="best-seller-info">
+                          <h3 className="best-seller-title">
+                            <Link
+                              to={`/product/${item.id}/`}
+                              className="best-seller-title-link"
+                            >
+                              {item.name}
+                            </Link>
+                          </h3>
+                          <div className="best-seller-price-wrapper d-flex justify-content-center">
+                            <span className="best-seller-current-price">
+                              ₹{item.currentprice}
+                            </span>
+                            {item.orignalprice &&
+                              item.orignalprice > item.currentprice && (
+                                <span className="best-seller-original-price">
+                                  ₹{item.orignalprice}
+                                </span>
+                              )}
+                          </div>
+                          {item.sizes?.length > 0 && (
+                            <div className="size-selector">
+                              <select
+                                value={selectedSizes[item.id] || ""}
+                                onChange={(e) =>
+                                  handleSizeChange(item.id, e.target.value)
+                                }
+                                className="size-dropdown"
+                              >
+                                {item.sizes.map(({ size, stock }) => (
+                                  <option
+                                    key={size.id}
+                                    value={size.id}
+                                    disabled={stock <= 0}
+                                  >
+                                    {size.name}{" "}
+                                    {stock <= 0 ? "(Out of Stock)" : ""}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          <button
+                            className="best-seller-add-to-cart"
+                            onClick={() => addToCart(item.id)}
+                            disabled={
+                              addingToCartId === item.id ||
+                              !selectedSizes[item.id]
+                            }
+                          >
+                            {addingToCartId === item.id
+                              ? "Adding..."
+                              : "Add to Cart"}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="no-results">
+                  <img
+                    src="/no-results.svg"
+                    alt="No results"
+                    className="no-results-img"
+                  />
+                  <h3>No products found</h3>
+                  <p>We couldn't find anything for "{searchQuery}"</p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="continue-shopping-btn"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <BackToTop />
+  </>
+);
+}
 
 export default SearchResults;
