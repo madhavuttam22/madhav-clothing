@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Notification from "../../Notification/Notification";
 import "./Forget.css";
 import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
+import { auth } from "../../../firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +26,10 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      // Send password reset email via Firebase
+      await sendPasswordResetEmail(auth, email);
+      
+      // Also notify Django backend
       const response = await fetch(
         "https://web-production-2449.up.railway.app/api/password-reset/",
         {
@@ -35,17 +41,18 @@ const ForgotPassword = () => {
         }
       );
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send reset email");
+        throw new Error("Failed to notify backend");
       }
 
       showNotification("Password reset email sent. Check your inbox!");
-      setStep(1.5); // Show success message but stay on same form
+      setStep(1.5);
     } catch (error) {
       console.error("Reset request error:", error);
-      showNotification(error.message || "Failed to send reset email", "error");
+      showNotification(
+        error.message || "Failed to send reset email", 
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -96,7 +103,6 @@ const ForgotPassword = () => {
     }
   };
 
-  // Check if this is a password reset confirmation link
   React.useEffect(() => {
     if (uidb64 && token) {
       setStep(2);
@@ -117,7 +123,7 @@ const ForgotPassword = () => {
               ? "Enter your new password below"
               : step === 1.5
               ? "Check your email for the reset link"
-              : "Enter your email and we'll send you a link to reset your password"}
+              : "Enter your email to receive a reset link"}
           </p>
         </div>
 
