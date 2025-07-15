@@ -40,11 +40,12 @@ const Header = () => {
 
   // Reset mobile menu on navigation
   useEffect(() => {
-    const unlisten = () => {
+    const unlisten = navigate.listen(() => {
       setShowMobileMenu(false);
-    };
-    return unlisten;
-  }, [location]);
+      window.scrollTo(0, 0);
+    });
+    return () => unlisten();
+  }, [navigate]);
 
   // Fetch search suggestions
   useEffect(() => {
@@ -70,15 +71,9 @@ const Header = () => {
     }
   };
 
-  // Navigation handlers
   const handleProfileClick = (e) => {
     e.preventDefault();
     navigate(user ? "/profile" : "/login");
-  };
-
-  const handleNavigation = (path) => {
-    navigate(path);
-    window.scrollTo(0, 0); // Reset scroll position
   };
 
   const handleSearchClick = (e) => {
@@ -111,33 +106,27 @@ const Header = () => {
     setShowMobileMenu(!showMobileMenu);
   };
 
-  // Simplified and reliable isActive function
   const isActive = (path) => {
     const currentPath = location.pathname;
     
-    // Exact match for home page
     if (path === "/") {
       return currentPath === "/";
     }
     
-    // Special handling for shop routes
     if (path === "/shop") {
       return currentPath.startsWith("/category/") || 
              currentPath.startsWith("/product/");
     }
     
-    // For all other routes, check exact match or startsWith
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };
 
   return (
     <>
-      {/* Top announcement bar */}
       <div className="topnav1">
         <p>EXPLORE OUR WIDE RANGE OF PRODUCTS</p>
       </div>
 
-      {/* Contact information */}
       <div className="nav2 d-flex justify-content-evenly">
         <div className="mobileno">
           <a className="contact_info" href="tel:+919740227938">
@@ -153,21 +142,17 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Main header */}
       <header className="bg-white border-bottom sticky-top">
         <div className="container-fluid py-2 px-3">
           <div className="d-flex align-items-center justify-content-between">
-            {/* Logo - mobile version */}
             <Link to="/" className="navbar-brand d-lg-none">
               <img src={logo} alt="Logo" height="50" className="logo-img" />
             </Link>
 
-            {/* Logo - desktop version */}
             <Link to="/" className="navbar-brand mx-lg-auto d-none d-lg-block">
               <img src={logo} alt="Logo" height="70" className="logo-img" />
             </Link>
 
-            {/* Right side icons */}
             <div className="d-flex align-items-center gap-3">
               <Link
                 to={user ? "/profile" : "/login"}
@@ -177,7 +162,6 @@ const Header = () => {
                 <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
               </Link>
 
-              {/* Desktop search */}
               <div className="search-container d-none d-lg-block" ref={searchRef}>
                 {showSearchBar ? (
                   <form onSubmit={handleSearchSubmit} className="search-form">
@@ -227,7 +211,6 @@ const Header = () => {
                 )}
               </div>
 
-              {/* Mobile search */}
               <button
                 className="text-dark icon-hover d-lg-none"
                 onClick={handleSearchClick}
@@ -235,7 +218,6 @@ const Header = () => {
                 <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
               </button>
 
-              {/* Cart */}
               <Link
                 to="/cart"
                 className="position-relative text-dark icon-hover"
@@ -244,7 +226,6 @@ const Header = () => {
                 <span className="cart-badge"></span>
               </Link>
 
-              {/* Mobile menu toggle */}
               <button
                 className="btn d-lg-none menu-btn"
                 onClick={toggleMobileMenu}
@@ -258,7 +239,6 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile search bar */}
           {showSearchBar && (
             <div className="d-lg-none mt-2 w-100">
               <form onSubmit={handleSearchSubmit} className="search-form">
@@ -301,7 +281,6 @@ const Header = () => {
             </div>
           )}
 
-          {/* Mobile menu */}
           <div
             className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`}
             ref={mobileMenuRef}
@@ -312,7 +291,6 @@ const Header = () => {
                   <Link
                     to="/"
                     className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/")}
                   >
                     <span>Home</span>
                   </Link>
@@ -326,7 +304,6 @@ const Header = () => {
                   <Link
                     to="/bestseller"
                     className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/bestseller")}
                   >
                     <span>Best Sellers</span>
                   </Link>
@@ -336,7 +313,6 @@ const Header = () => {
                   <Link
                     to="/newcollection"
                     className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/newcollection")}
                   >
                     <span>New Collection</span>
                   </Link>
@@ -346,7 +322,6 @@ const Header = () => {
                   <Link
                     to="/allproducts"
                     className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/allproducts")}
                   >
                     <span>All Products</span>
                   </Link>
@@ -356,7 +331,6 @@ const Header = () => {
                   <Link
                     to="/brand"
                     className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/brand")}
                   >
                     <span>Brand</span>
                   </Link>
@@ -366,7 +340,6 @@ const Header = () => {
                   <Link
                     to="/contactus"
                     className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
-                    onClick={() => handleNavigation("/contactus")}
                   >
                     <span>Contact</span>
                   </Link>
@@ -375,14 +348,12 @@ const Header = () => {
             </nav>
           </div>
 
-          {/* Desktop navigation */}
           <nav className="d-none d-lg-flex justify-content-center mt-3">
             <ul className="nav">
               <li className="nav-item">
                 <Link
                   to="/"
                   className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/")}
                 >
                   <span>Home</span>
                 </Link>
@@ -396,7 +367,6 @@ const Header = () => {
                 <Link
                   to="/bestseller"
                   className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/bestseller")}
                 >
                   <span>Best Sellers</span>
                 </Link>
@@ -406,7 +376,6 @@ const Header = () => {
                 <Link
                   to="/newcollection"
                   className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/newcollection")}
                 >
                   <span>New Collection</span>
                 </Link>
@@ -416,7 +385,6 @@ const Header = () => {
                 <Link
                   to="/allproducts"
                   className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/allproducts")}
                 >
                   <span>All Products</span>
                 </Link>
@@ -426,7 +394,6 @@ const Header = () => {
                 <Link
                   to="/brand"
                   className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/brand")}
                 >
                   <span>Brand</span>
                 </Link>
@@ -436,7 +403,6 @@ const Header = () => {
                 <Link
                   to="/contactus"
                   className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
-                  onClick={() => handleNavigation("/contactus")}
                 >
                   <span>Contact</span>
                 </Link>
