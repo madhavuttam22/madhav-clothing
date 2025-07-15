@@ -138,8 +138,8 @@
   font-size: 14px;
 }
 
-/* Product grid layout */
-.best-seller-grid {
+/* Updated Product grid layout using CSS Grid */
+.search-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 25px;
@@ -147,27 +147,28 @@
 }
 
 /* Individual product card styling */
-.best-seller-card {
+.search-result-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
+  height: 100%; /* Ensure cards take full height of grid cell */
 }
 
-.best-seller-card:hover {
+.search-result-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.best-seller-image-container {
+.search-result-image-container {
   position: relative;
   width: 100%;
   padding-top: 100%;
   overflow: hidden;
 }
 
-.best-seller-image {
+.search-result-image {
   position: absolute;
   top: 0;
   left: 0;
@@ -177,42 +178,54 @@
   transition: transform 0.5s ease;
 }
 
-.best-seller-card:hover .best-seller-image {
+.search-result-card:hover .search-result-image {
   transform: scale(1.05);
 }
 
 /* Product info section */
-.best-seller-info {
+.search-result-info {
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 30px); /* Account for padding */
 }
 
-.best-seller-title {
+.search-result-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
+  line-height: 1.3;
+  min-height: 2.6em; /* Approximate two lines of text */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.best-seller-title-link {
+.search-result-title-link {
   color: #333;
   text-decoration: none;
 }
 
-.best-seller-title-link:hover {
+.search-result-title-link:hover {
   color: #DE5B9E;
 }
 
 /* Price display */
-.best-seller-price-wrapper {
+.search-result-price-wrapper {
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.best-seller-current-price {
+.search-result-current-price {
   font-weight: bold;
   font-size: 1.1rem;
   color: #DE5B9E;
 }
 
-.best-seller-original-price {
+.search-result-original-price {
   text-decoration: line-through;
   color: #999;
   font-size: 0.9rem;
@@ -230,10 +243,12 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
+  background-color: #fff;
+  cursor: pointer;
 }
 
 /* Add to cart button */
-.best-seller-add-to-cart {
+.search-result-add-to-cart {
   width: 100%;
   padding: 10px;
   background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
@@ -242,22 +257,26 @@
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  margin-top: auto; /* Pushes button to bottom of card */
 }
 
-.best-seller-add-to-cart:hover {
+.search-result-add-to-cart:hover {
   background: #7a0191;
+  transform: translateY(-2px);
 }
 
-.best-seller-add-to-cart:disabled {
+.search-result-add-to-cart:disabled {
   background: #ccc;
   cursor: not-allowed;
+  transform: none;
 }
 
 /* No results state */
 .no-results {
   text-align: center;
   padding: 50px 0;
+  grid-column: 1 / -1; /* Span full width of grid */
 }
 
 .no-results-img {
@@ -296,6 +315,7 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
+  grid-column: 1 / -1; /* Span full width of grid */
 }
 
 .loading-spinner {
@@ -312,6 +332,7 @@
 .error-container {
   text-align: center;
   padding: 50px;
+  grid-column: 1 / -1; /* Span full width of grid */
 }
 
 .error-container p {
@@ -347,13 +368,13 @@
     width: 100%;
   }
   
-  .best-seller-grid {
+  .search-results-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
 
 @media (max-width: 576px) {
-  .best-seller-grid {
+  .search-results-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
   }
@@ -361,5 +382,17 @@
   .search-header h1 {
     font-size: 1.8rem;
     margin: 15px 0;
+  }
+  
+  .search-result-info {
+    padding: 12px;
+  }
+  
+  .search-result-title {
+    font-size: 0.9rem;
+  }
+  
+  .search-result-current-price {
+    font-size: 1rem;
   }
 }
