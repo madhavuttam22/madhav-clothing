@@ -38,14 +38,11 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Reset mobile menu on navigation
+  // Close mobile menu when location changes
   useEffect(() => {
-    const unlisten = navigate.listen(() => {
-      setShowMobileMenu(false);
-      window.scrollTo(0, 0);
-    });
-    return () => unlisten();
-  }, [navigate]);
+    setShowMobileMenu(false);
+    window.scrollTo(0, 0);
+  }, [location]);
 
   // Fetch search suggestions
   useEffect(() => {
@@ -120,6 +117,7 @@ const Header = () => {
     
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };
+
 
   return (
     <>
