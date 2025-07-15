@@ -21,6 +21,7 @@ const Header = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   
   const suggestionsRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -28,7 +29,7 @@ const Header = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  // Close mobile menu when clicking outside
+  // Close mobile menu and suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
@@ -41,6 +42,11 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   const isActive = (path, exact = false) => {
     return exact
@@ -73,9 +79,11 @@ const Header = () => {
     }
   };
 
-  const handleProfileClick = (e) => {
+  const handleProfileClick = async (e) => {
     e.preventDefault();
-    navigate(user ? "/profile/" : "/login/");
+    setIsNavigating(true);
+    await navigate(user ? "/profile/" : "/login/");
+    setIsNavigating(false);
   };
 
   const handleSearchClick = (e) => {
@@ -87,21 +95,25 @@ const Header = () => {
     }
   };
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setIsNavigating(true);
+      await navigate(`/search?q=${encodeURIComponent(searchQuery)}`, { replace: true });
       setSearchQuery("");
       setShowSearchBar(false);
       setShowSuggestions(false);
+      setIsNavigating(false);
     }
   };
 
-  const handleSuggestionClick = (suggestion) => {
+  const handleSuggestionClick = async (suggestion) => {
     setSearchQuery(suggestion);
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+    setIsNavigating(true);
+    await navigate(`/search?q=${encodeURIComponent(suggestion)}`, { replace: true });
     setShowSearchBar(false);
     setShowSuggestions(false);
+    setIsNavigating(false);
   };
 
   const handleInputChange = (e) => {
@@ -111,6 +123,14 @@ const Header = () => {
 
   const toggleMobileMenu = () => {
     setShowMobileMenu(!showMobileMenu);
+  };
+
+  const handleNavigation = async (e, path) => {
+    e.preventDefault();
+    setIsNavigating(true);
+    await navigate(path);
+    setShowMobileMenu(false);
+    setIsNavigating(false);
   };
 
   return (
@@ -239,6 +259,7 @@ const Header = () => {
               <Link
                 to={"/cart/"}
                 className="position-relative text-dark icon-hover"
+                onClick={(e) => handleNavigation(e, "/cart/")}
               >
                 <i
                   className={`bi bi-cart cart-icon ${
@@ -321,7 +342,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/", true) ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/")}
                   >
                     <span>Home</span>
                   </Link>
@@ -337,7 +358,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/bestseller") ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/bestseller")}
                   >
                     <span>Best Sellers</span>
                   </Link>
@@ -349,7 +370,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/newcollection") ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/newcollection")}
                   >
                     <span>New Collection</span>
                   </Link>
@@ -361,7 +382,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/allproducts") ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/allproducts")}
                   >
                     <span>All Products</span>
                   </Link>
@@ -373,7 +394,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/brand") ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/brand")}
                   >
                     <span>Brand</span>
                   </Link>
@@ -385,7 +406,7 @@ const Header = () => {
                     className={`nav-link nav-hover ${
                       isActive("/contactus") ? "active" : ""
                     }`}
-                    onClick={() => setShowMobileMenu(false)}
+                    onClick={(e) => handleNavigation(e, "/contactus")}
                   >
                     <span>Contact</span>
                   </Link>
@@ -403,6 +424,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/", true) ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/")}
                 >
                   <span>Home</span>
                 </Link>
@@ -418,6 +440,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/bestseller") ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/bestseller")}
                 >
                   <span>Best Sellers</span>
                 </Link>
@@ -429,6 +452,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/newcollection") ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/newcollection")}
                 >
                   <span>New Collection</span>
                 </Link>
@@ -440,6 +464,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/allproducts") ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/allproducts")}
                 >
                   <span>All Products</span>
                 </Link>
@@ -451,6 +476,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/brand") ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/brand")}
                 >
                   <span>Brand</span>
                 </Link>
@@ -462,6 +488,7 @@ const Header = () => {
                   className={`nav-link nav-hover ${
                     isActive("/contactus") ? "active" : ""
                   }`}
+                  onClick={(e) => handleNavigation(e, "/contactus")}
                 >
                   <span>Contact</span>
                 </Link>
