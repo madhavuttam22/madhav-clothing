@@ -354,7 +354,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/bestseller"
+                    to="/bestseller/"
                     className={`nav-link nav-hover ${
                       isActive("/bestseller") ? "active" : ""
                     }`}
@@ -366,7 +366,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/newcollection"
+                    to="/newcollection/"
                     className={`nav-link nav-hover ${
                       isActive("/newcollection") ? "active" : ""
                     }`}
@@ -378,7 +378,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/allproducts"
+                    to="/allproducts/"
                     className={`nav-link nav-hover ${
                       isActive("/allproducts") ? "active" : ""
                     }`}
@@ -390,7 +390,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/brand"
+                    to="/brand/"
                     className={`nav-link nav-hover ${
                       isActive("/brand") ? "active" : ""
                     }`}
@@ -402,7 +402,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/contactus"
+                    to="/contactus/"
                     className={`nav-link nav-hover ${
                       isActive("/contactus") ? "active" : ""
                     }`}
@@ -436,7 +436,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/bestseller"
+                  to="/bestseller/"
                   className={`nav-link nav-hover ${
                     isActive("/bestseller") ? "active" : ""
                   }`}
@@ -448,7 +448,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/newcollection"
+                  to="/newcollection/"
                   className={`nav-link nav-hover ${
                     isActive("/newcollection") ? "active" : ""
                   }`}
@@ -460,7 +460,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/allproducts"
+                  to="/allproducts/"
                   className={`nav-link nav-hover ${
                     isActive("/allproducts") ? "active" : ""
                   }`}
@@ -472,7 +472,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/brand"
+                  to="/brand/"
                   className={`nav-link nav-hover ${
                     isActive("/brand") ? "active" : ""
                   }`}
@@ -484,7 +484,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/contactus"
+                  to="/contactus/"
                   className={`nav-link nav-hover ${
                     isActive("/contactus") ? "active" : ""
                   }`}
