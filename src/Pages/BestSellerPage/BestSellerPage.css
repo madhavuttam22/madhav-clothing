@@ -1,14 +1,6 @@
 /* 
   BestSellerPage.css - Styles for the Best Seller page component
   Updated with consistent CSS Grid layout
-
-  Features:
-  - Responsive CSS Grid layout for products
-  - Card styling with hover effects
-  - Badge styling for best seller items
-  - Price display styling with original price strikethrough
-  - Size selector and add to cart button styling
-  - Media queries for responsive design
 */
 
 /* Main container for the best seller page */
@@ -49,8 +41,8 @@
 /* Updated Grid layout for best seller products - now using CSS Grid */
 .best-seller-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   padding-bottom: 40px;
 }
 
@@ -61,7 +53,9 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
-  height: 100%; /* Ensure cards take full height of grid cell */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Card hover effects */
@@ -74,7 +68,7 @@
 .best-seller-image-container {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* 1:1 aspect ratio */
+  padding-top: 100%;
   overflow: hidden;
 }
 
@@ -113,16 +107,16 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 15px); /* Account for padding */
+  flex-grow: 1;
 }
 
 /* Product title styling */
 .best-seller-title {
   margin: 0 0 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.3;
-  min-height: 2.6em; /* Approximate two lines of text */
+  min-height: 2.6em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -189,7 +183,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  margin-top: auto; /* Pushes button to bottom of card */
+  margin-top: auto;
 }
 
 /* Add to cart button hover effect */
@@ -242,7 +236,7 @@
   }
   
   .best-seller-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
   
   .bestseller-title {
@@ -251,7 +245,7 @@
 }
 
 /* Responsive styles for mobile devices */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .best-seller-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
@@ -272,6 +266,25 @@
   
   .best-seller-current-price {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .best-seller-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  
+  .best-seller-info {
+    padding: 10px;
+  }
+  
+  .best-seller-title {
+    font-size: 0.85rem;
+  }
+  
+  .best-seller-current-price {
+    font-size: 0.95rem;
   }
 }
 

@@ -141,8 +141,8 @@
 /* Updated Product grid layout using CSS Grid */
 .search-results-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   padding-bottom: 40px;
 }
 
@@ -153,7 +153,9 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
-  height: 100%; /* Ensure cards take full height of grid cell */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-result-card:hover {
@@ -187,15 +189,15 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 30px); /* Account for padding */
+  flex-grow: 1;
 }
 
 .search-result-title {
   margin: 0 0 8px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   line-height: 1.3;
-  min-height: 2.6em; /* Approximate two lines of text */
+  min-height: 2.6em;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -258,7 +260,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  margin-top: auto; /* Pushes button to bottom of card */
+  margin-top: auto;
 }
 
 .search-result-add-to-cart:hover {
@@ -276,7 +278,7 @@
 .no-results {
   text-align: center;
   padding: 50px 0;
-  grid-column: 1 / -1; /* Span full width of grid */
+  grid-column: 1 / -1;
 }
 
 .no-results-img {
@@ -315,7 +317,7 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
-  grid-column: 1 / -1; /* Span full width of grid */
+  grid-column: 1 / -1;
 }
 
 .loading-spinner {
@@ -332,7 +334,7 @@
 .error-container {
   text-align: center;
   padding: 50px;
-  grid-column: 1 / -1; /* Span full width of grid */
+  grid-column: 1 / -1;
 }
 
 .error-container p {
@@ -369,11 +371,11 @@
   }
   
   .search-results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .search-results-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
@@ -394,5 +396,24 @@
   
   .search-result-current-price {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  
+  .search-result-info {
+    padding: 10px;
+  }
+  
+  .search-result-title {
+    font-size: 0.85rem;
+  }
+  
+  .search-result-current-price {
+    font-size: 0.95rem;
   }
 }
