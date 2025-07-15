@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import Header from "../Header/Header";
-import Footer from "../Footer/Footer";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from 'react-router-dom';
+import Header from '../Header/Header';
+import Footer from '../Footer/Footer';
+import { useEffect } from 'react';
 
 const Layout = () => {
   const location = useLocation();
@@ -13,10 +13,10 @@ const Layout = () => {
   return (
     <>
       <Header />
-<main key={location.pathname}>
-  <Outlet />
-</main>
-<Footer />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
     </>
   );
 };
