@@ -52,64 +52,59 @@ const AllProductsPage = () => {
   };
 
   // Fetch all products on component mount
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        // API call to get all products
-        const res = await axios.get(
-          "https://web-production-2449.up.railway.app/api/products/"
-        );
+ useEffect(() => {
+  const fetchAllProducts = async () => {
+    try {
+      setLoading(true); // 👈 Add this line to show loader on navigation
+      const res = await axios.get(
+        "https://web-production-2449.up.railway.app/api/products/"
+      );
 
-        // Process product data:
-        // 1. Add default images
-        // 2. Set default sizes
-        const productsWithData = res.data.map((product) => {
-          // Set default image (fallback to placeholder)
-          let imageUrl = "/placeholder-product.jpg";
-          if (product.colors?.length > 0) {
-            const firstColor = product.colors[0];
-            const defaultImage = firstColor.images.find(
-              (img) => img.is_default
-            );
-            imageUrl =
-              defaultImage?.image_url ||
-              firstColor.images?.[0]?.image_url ||
-              imageUrl;
-          }
+      const productsWithData = res.data.map((product) => {
+        let imageUrl = "/placeholder-product.jpg";
+        if (product.colors?.length > 0) {
+          const firstColor = product.colors[0];
+          const defaultImage = firstColor.images.find(
+            (img) => img.is_default
+          );
+          imageUrl =
+            defaultImage?.image_url ||
+            firstColor.images?.[0]?.image_url ||
+            imageUrl;
+        }
 
-          // Set default size (first available or first size)
-          const firstAvailableSize =
-            product.sizes?.find((size) => size.stock > 0)?.size ||
-            product.sizes?.[0]?.size;
+        const firstAvailableSize =
+          product.sizes?.find((size) => size.stock > 0)?.size ||
+          product.sizes?.[0]?.size;
 
-          return {
-            ...product,
-            image: imageUrl,
-            defaultSize: firstAvailableSize,
-          };
-        });
+        return {
+          ...product,
+          image: imageUrl,
+          defaultSize: firstAvailableSize,
+        };
+      });
 
-        // Update state with processed products
-        setAllProducts(productsWithData);
-        setFilteredProducts(productsWithData);
+      setAllProducts(productsWithData);
+      setFilteredProducts(productsWithData);
 
-        // Initialize selected sizes with defaults
-        const initialSizes = {};
-        productsWithData.forEach((product) => {
-          if (product.defaultSize) {
-            initialSizes[product.id] = product.defaultSize.id;
-          }
-        });
-        setSelectedSizes(initialSizes);
-      } catch (err) {
-        console.error("Failed to load products", err);
-        setError("Failed to load products. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllProducts();
-  }, []);
+      const initialSizes = {};
+      productsWithData.forEach((product) => {
+        if (product.defaultSize) {
+          initialSizes[product.id] = product.defaultSize.id;
+        }
+      });
+      setSelectedSizes(initialSizes);
+    } catch (err) {
+      console.error("Failed to load products", err);
+      setError("Failed to load products. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAllProducts();
+}, [location.pathname]); // 👈 Trigger on route change too
+
 
   /**
    * Infinite scroll implementation using Intersection Observer
