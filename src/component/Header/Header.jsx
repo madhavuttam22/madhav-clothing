@@ -196,7 +196,7 @@ const Header = () => {
               </div>
 
               {/* Mobile Search */}
-              <button className="text-dark icon-hover d-lg-none" onClick={handleSearchClick}>
+              <button className="text-dark icon-hover d-lg-none" style={{border:'none',background:'none'}} onClick={handleSearchClick}>
                 <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
               </button>
 
