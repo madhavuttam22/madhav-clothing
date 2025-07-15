@@ -54,7 +54,7 @@
 }
 
 /* Individual product card styling */
-.best-seller-cards {
+.best-seller-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
@@ -63,7 +63,7 @@
 }
 
 /* Card hover effects */
-.best-seller-cards:hover {
+.best-seller-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -88,7 +88,7 @@
 }
 
 /* Image zoom effect on hover */
-.best-seller-cards:hover .best-seller-image {
+.best-seller-card:hover .best-seller-image {
   transform: scale(1.05);
 }
 
