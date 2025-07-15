@@ -139,6 +139,12 @@
   color: #3a56c7;
 }
 
+.check-spam {
+  font-size: 12px;
+  color: #718096;
+  margin-top: 8px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .forgot-password-card {

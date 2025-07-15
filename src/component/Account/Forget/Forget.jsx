@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Notification from "../..//Notification/Notification";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Notification from "../../Notification/Notification";
 import "./Forget.css";
 import { FiMail, FiLock, FiArrowLeft } from "react-icons/fi";
 
@@ -12,6 +12,7 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
+  const { uidb64, token } = useParams();
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
@@ -58,18 +59,14 @@ const ForgotPassword = () => {
       return;
     }
 
+    if (newPassword.length < 8) {
+      showNotification("Password must be at least 8 characters", "error");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Get the current path and clean it up
-      const path = window.location.pathname;
-      const cleanPath = path.replace(/\/+/g, "/"); // Remove duplicate slashes
-
-      // Extract the last two segments (uidb64 and token)
-      const segments = cleanPath.split("/").filter(Boolean);
-      const uidb64 = segments[segments.length - 2];
-      const token = segments[segments.length - 1];
-
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/password-reset-confirm/${uidb64}/${token}/`,
         {
@@ -86,13 +83,12 @@ const ForgotPassword = () => {
         throw new Error(errorData.error || "Failed to reset password");
       }
 
-      const data = await response.json();
       showNotification("Password reset successfully! Redirecting to login...");
       setTimeout(() => navigate("/login/"), 2000);
     } catch (error) {
       console.error("Reset error:", error);
       showNotification(
-        error.message || "Failed to reset password. Please try again.",
+        error.message || "Failed to reset password. The link may have expired.",
         "error"
       );
     } finally {
@@ -102,11 +98,10 @@ const ForgotPassword = () => {
 
   // Check if this is a password reset confirmation link
   React.useEffect(() => {
-    const path = window.location.pathname;
-    if (path.includes("/reset-password/")) {
+    if (uidb64 && token) {
       setStep(2);
     }
-  }, []);
+  }, [uidb64, token]);
 
   return (
     <div className="forgot-password-container">
@@ -166,6 +161,9 @@ const ForgotPassword = () => {
                 >
                   Resend
                 </button>
+                <p className="check-spam">
+                  (Check your spam folder if you don't see it)
+                </p>
               </div>
             )}
           </form>
@@ -180,7 +178,7 @@ const ForgotPassword = () => {
                   id="newPassword"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  placeholder="Enter new password (min 8 characters)"
                   required
                   minLength="8"
                 />
