@@ -91,21 +91,35 @@ const Header = () => {
   };
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      setShowSearchBar(false);
-      setSuggestions([]);
+  e.preventDefault();
+  if (searchQuery.trim()) {
+    const url = `/search?q=${encodeURIComponent(searchQuery)}`;
+    if (location.pathname + location.search === url) {
+      window.location.reload(); // Force reload if already on same URL
+    } else {
+      navigate(url);
+      setTimeout(() => window.location.reload(), 10); // Optional delay for reload after navigate
     }
-  };
-
-  const handleSuggestionClick = (suggestion) => {
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
     setSearchQuery("");
     setShowSearchBar(false);
     setSuggestions([]);
-  };
+  }
+};
+
+
+  const handleSuggestionClick = (suggestion) => {
+  const url = `/search?q=${encodeURIComponent(suggestion)}`;
+  if (location.pathname + location.search === url) {
+    window.location.reload();
+  } else {
+    navigate(url);
+    setTimeout(() => window.location.reload(), 10);
+  }
+  setSearchQuery("");
+  setShowSearchBar(false);
+  setSuggestions([]);
+};
+
 
   const toggleMobileMenu = () => {
     setShowMobileMenu(!showMobileMenu);
