@@ -76,12 +76,14 @@ import BrandPage from './Pages/BrandPage/BrandPage';
 // import ContactPage from './pages/Contact';
 // import ProductDetail from './pages/ProductDetail';
 import Layout from './component/Layout/Layout';
+
 import HomePage from './Pages/HomePage/Homepage'
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
+        
           <Route index element={<HomePage />} />
           <Route path="allproducts" element={<AllProductsPage />} />
           {/* <Route path="bestseller" element={<BestSellerPage />} /> */}
