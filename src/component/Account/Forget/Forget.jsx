@@ -29,7 +29,7 @@ const ForgotPassword = () => {
       // Send password reset email via Firebase
       await sendPasswordResetEmail(auth, email);
       
-      // Also notify Django backend
+      // Notify Django backend
       const response = await fetch(
         "https://web-production-2449.up.railway.app/api/password-reset/",
         {
@@ -42,7 +42,8 @@ const ForgotPassword = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to notify backend");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to process request");
       }
 
       showNotification("Password reset email sent. Check your inbox!");
@@ -50,7 +51,9 @@ const ForgotPassword = () => {
     } catch (error) {
       console.error("Reset request error:", error);
       showNotification(
-        error.message || "Failed to send reset email", 
+        error.message.includes('Firebase') 
+          ? "Password reset email sent (check your inbox)"
+          : error.message || "Failed to send reset email",
         "error"
       );
     } finally {
@@ -60,7 +63,7 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-
+    
     if (newPassword !== confirmPassword) {
       showNotification("Passwords do not match", "error");
       return;
@@ -85,9 +88,10 @@ const ForgotPassword = () => {
         }
       );
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to reset password");
+        throw new Error(data.error || "Failed to reset password");
       }
 
       showNotification("Password reset successfully! Redirecting to login...");
