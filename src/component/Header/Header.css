@@ -1,4 +1,16 @@
-/* Top announcement bar with gradient background and hover animation */
+/**
+ * CSS Styles for the Header Component
+ * 
+ * These styles include:
+ * - Top announcement bar styling
+ * - Contact information styling
+ * - Logo and navigation styling
+ * - Search bar and suggestions styling
+ * - Responsive design for mobile devices
+ * - Hover and active state animations
+ */
+
+/* Top Navigation Bar */
 .topnav1 {
     background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%) !important;
     text-align: center;
@@ -13,7 +25,6 @@
     box-shadow: 0 2px 10px rgba(151, 2, 176, 0.3);
 }
 
-/* Animation effect for top bar */
 .topnav1::before {
     content: '';
     position: absolute;
@@ -29,7 +40,7 @@
     left: 100%;
 }
 
-/* Contact information bar styling */
+/* Contact Info Bar */
 .nav2 {
     background: #f5f5f5;
     padding: 10px;
@@ -38,7 +49,6 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Contact links styling with hover effects */
 .nav2 a {
     font-size: 14px;
     font-family: 'Poppins', sans-serif;
@@ -56,7 +66,6 @@
     transform: translateY(-2px);
 }
 
-/* Underline animation for contact links */
 .nav2 a::after {
     content: '';
     position: absolute;
@@ -65,6 +74,7 @@
     bottom: 0;
     left: 0;
     background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+;
     transition: width 0.3s ease;
 }
 
@@ -72,7 +82,6 @@
     width: 100%;
 }
 
-/* Vertical separator between contact items */
 .nav2 .line {
     width: 1px;
     background: linear-gradient(to bottom, transparent, #000, transparent);
@@ -80,61 +89,52 @@
     margin: 0 15px;
 }
 
-/* Main header styling with shadow and transition */
+/* Main Header */
 header {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     transition: all 0.3s ease;
+    /* background: white; */
 }
 
 header:hover {
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-/* Logo styling */
+/* Logo */
+.logo-container {
+    transition: transform 0.3s ease;
+    padding-left: 2.7%;
+    display: flex;
+    justify-content: center;
+}
+
 .logo-img {
     transition: all 0.3s ease;
     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
 }
 
-.logo-img:hover {
+.logo-container:hover .logo-img {
     transform: scale(1.05);
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
 }
 
-/* Mobile menu button styling */
+/* Menu Button */
 .menu-btn {
     transition: all 0.3s ease;
-    border: none;
-    background: transparent;
-    padding: 8px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    z-index: 1001;
 }
 
 .menu-btn:hover {
     background: #f0f0f0;
-    border-radius: 50%;
+    transform: rotate(90deg);
 }
 
-.menu-icon {
-    font-size: 1.5rem;
-    color: #333;
-    transition: all 0.3s ease;
-}
-
-.menu-btn:hover .menu-icon {
-    color: #DE5B9E;
-}
-
-/* Right side icons container */
-.d-flex.align-items-center.gap-3 {
-    gap: 1rem !important;
-}
-
-/* Navigation icons styling */
+/* Icons */
 .icon-hover {
     transition: all 0.3s ease;
     position: relative;
@@ -151,10 +151,8 @@ header:hover {
     transform: translateY(-3px);
 }
 
-/* Icons with hover scale effect */
 .profile-icon, .search-icon, .cart-icon {
     transition: all 0.3s ease;
-    font-size: 1.2rem;
 }
 
 .icon-hover:hover .profile-icon,
@@ -163,12 +161,10 @@ header:hover {
     transform: scale(1.1);
 }
 
-/* Active icon state */
 .active-icon {
     color: #DE5B9E !important;
 }
 
-/* Cart badge indicator */
 .cart-badge {
     position: absolute;
     top: -5px;
@@ -187,12 +183,12 @@ header:hover {
     transform: scale(1.2);
 }
 
-/* Search container positioning */
+/* Search Bar */
 .search-container {
     position: relative;
+    margin-right: 15px;
 }
 
-/* Search form layout */
 .search-form {
     display: flex;
     align-items: center;
@@ -205,7 +201,6 @@ header:hover {
     align-items: center;
 }
 
-/* Search input styling */
 .search-input {
     padding: 10px 15px;
     padding-right: 35px;
@@ -222,12 +217,12 @@ header:hover {
 
 .search-input:focus {
     border-color: #DE5B9E;
+;
     width: 250px;
     background: white;
     box-shadow: 0 0 0 2px rgba(151, 2, 176, 0.1);
 }
 
-/* Clear search button styling */
 .clear-search-btn {
     position: absolute;
     right: 40px;
@@ -244,7 +239,6 @@ header:hover {
     transform: scale(1.1);
 }
 
-/* Search submit button styling */
 .search-button {
     position: absolute;
     right: 10px;
@@ -252,6 +246,7 @@ header:hover {
     border: none;
     cursor: pointer;
     color: #DE5B9E;
+;
     transition: all 0.3s ease;
     padding: 0 5px;
 }
@@ -261,7 +256,7 @@ header:hover {
     transform: scale(1.1);
 }
 
-/* Search suggestions dropdown styling */
+/* Suggestions Dropdown */
 .suggestions-dropdown {
     position: absolute;
     top: 100%;
@@ -276,7 +271,6 @@ header:hover {
     margin-top: 5px;
 }
 
-/* Individual suggestion item styling */
 .suggestion-item {
     padding: 10px 15px;
     cursor: pointer;
@@ -289,74 +283,11 @@ header:hover {
 .suggestion-item:hover {
     background: #f8f8f8;
     color: #DE5B9E;
+;
     padding-left: 20px;
 }
 
-/* Mobile menu styling */
-.mobile-menu-container {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 280px;
-    height: 100vh;
-    background: white;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-    z-index: 1200;
-    transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-    overflow-y: auto;
-    padding-top: 80px;
-}
-
-.mobile-menu-container.show {
-    right: 0;
-}
-
-.mobile-menu {
-    padding: 20px;
-}
-
-.mobile-menu .nav-link {
-    padding: 12px 15px !important;
-    font-size: 16px;
-    color: #333;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-    margin-bottom: 5px;
-}
-
-.mobile-menu .nav-link:hover {
-    color: #DE5B9E;
-    background: rgba(222, 91, 158, 0.1);
-    padding-left: 20px !important;
-}
-
-.mobile-menu .nav-link.active {
-    color: #DE5B9E !important;
-    font-weight: 600;
-    background: rgba(222, 91, 158, 0.1);
-}
-
-/* Overlay for mobile menu */
-.mobile-menu-container::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* background: rgba(0,0,0,0.5); */
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.mobile-menu-container.show::before {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* Main navigation links styling */
+/* Navigation Links */
 .nav {
     gap: 15px;
 }
@@ -375,7 +306,6 @@ header:hover {
     transition: all 0.3s ease;
 }
 
-/* Navigation link hover effect */
 .nav-hover {
     position: relative;
     overflow: hidden;
@@ -386,7 +316,6 @@ header:hover {
     z-index: 1;
 }
 
-/* Underline animation for nav links */
 .nav-hover::before {
     content: '';
     position: absolute;
@@ -415,7 +344,6 @@ header:hover {
     font-weight: 600;
 }
 
-/* Dropdown menu styling */
 .dropdown-menu {
     border: none;
     border-radius: 10px;
@@ -436,7 +364,6 @@ header:hover {
     padding-left: 25px !important;
 }
 
-/* Active category styling */
 .active-category {
     background: #f8f8f8 !important;
     color: #DE5B9E!important;
@@ -454,14 +381,46 @@ header:hover {
     width: 6px;
     height: 6px;
     background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+;
     border-radius: 50%;
 }
 
-/* Responsive styles */
-@media (max-width: 992px) {
-    /* Full-width search on mobile */
+.dropdown-submenu .dropdown-menu {
+    left: 100%;
+    top: 0;
+    margin-left: 5px;
+    margin-top: -10px;
+}
+
+/* Dropdown animation */
+.dropdown-menu {
+    animation: fadeIn 0.2s ease-out;
+    transform-origin: top center;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
     .search-container {
-        position: static;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        right: 0;
+        background: white;
+        padding: 10px;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
     .search-input {
@@ -472,59 +431,54 @@ header:hover {
         width: 100%;
     }
     
-    /* Adjust logo size on mobile */
-    .navbar-brand img {
-        height: 40px !important;
+    .nav {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
-    /* Make icons slightly smaller on mobile */
-    .icon-hover {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .profile-icon, .search-icon, .cart-icon {
-        font-size: 1.1rem;
-    }
-
-    /* Mobile search bar */
-    .search-form {
-        width: 100%;
-    }
-
-    .search-input-container {
-        width: 100%;
+    .nav-link {
+        padding: 12px 20px !important;
     }
 }
 
-@media (max-width: 576px) {
-    /* Adjust contact info layout */
-    .nav2 {
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-    }
+/* Active state for all nav items */
+.nav-link.active {
+  color: #DE5B9E!important;
+  font-weight: 600;
+}
 
-    .nav2 .line {
-        display: none;
-    }
+.nav-link.active::before {
+  transform: scaleX(1);
+}
 
-    /* Smaller icons on very small screens */
-    .icon-hover {
-        width: 28px;
-        height: 28px;
-    }
+/* Remove hardcoded active class from wholesale */
+.nav-link.active:not(.nav-hover) {
+  color: inherit;
+  font-weight: inherit;
+}
 
-    .profile-icon, .search-icon, .cart-icon {
-        font-size: 1rem;
-    }
+/* Dropdown active states */
+.dropdown-toggle.active {
+  color: #DE5B9E !important;
+}
 
-    .menu-icon {
-        font-size: 1.3rem;
-    }
+/* Active category items */
+.active-category {
+  background: #f8f8f8 !important;
+  color: #DE5B9E!important;
+  font-weight: 500;
+  position: relative;
+}
 
-    /* Smaller mobile menu */
-    .mobile-menu-container {
-        width: 250px;
-    }
+.active-category::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+;
+  border-radius: 50%;
 }
