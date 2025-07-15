@@ -1,7 +1,6 @@
 /**
- * Header Component - Optimized Version
- * 
- * Fixed navigation issues while maintaining mobile responsiveness
+ * Header Component - Final Optimized Version
+ * Maintains all CSS classes exactly as provided while fixing navigation issues
  */
 import React, { useState, useEffect, useRef } from "react";
 import "./Header.css";
@@ -32,6 +31,7 @@ const Header = () => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchBar(false);
+        setSuggestions([]);
       }
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
         setShowMobileMenu(false);
@@ -49,7 +49,7 @@ const Header = () => {
 
   // Fetch search suggestions
   useEffect(() => {
-    if (searchQuery.length > 2) {
+    if (searchQuery.length > 2 && showSearchBar) {
       const timer = setTimeout(() => {
         fetchSuggestions(searchQuery);
       }, 300);
@@ -57,7 +57,7 @@ const Header = () => {
     } else {
       setSuggestions([]);
     }
-  }, [searchQuery]);
+  }, [searchQuery, showSearchBar]);
 
   const fetchSuggestions = async (query) => {
     try {
@@ -71,27 +71,46 @@ const Header = () => {
     }
   };
 
-  // Simplified navigation handler
-  const handleNavClick = (path) => {
-    navigate(path);
-    window.scrollTo(0, 0);
+  const handleProfileClick = (e) => {
+    e.preventDefault();
+    navigate(user ? "/profile/" : "/login/");
   };
 
-  const handleSearch = (e) => {
+  const handleSearchClick = (e) => {
+    e.preventDefault();
+    setShowSearchBar(!showSearchBar);
+    setSuggestions([]);
+    if (showSearchBar && searchQuery.trim()) {
+      handleSearchSubmit(e);
+    }
+  };
+
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery("");
       setShowSearchBar(false);
-      window.scrollTo(0, 0);
+      setSuggestions([]);
     }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+    setSearchQuery("");
+    setShowSearchBar(false);
+    setSuggestions([]);
   };
 
   const toggleMobileMenu = () => {
     setShowMobileMenu(!showMobileMenu);
   };
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path, exact = false) => {
+    return exact
+      ? location.pathname === path
+      : location.pathname.startsWith(path);
+  };
 
   return (
     <>
@@ -120,98 +139,147 @@ const Header = () => {
       <header className="bg-white border-bottom sticky-top">
         <div className="container-fluid py-2 px-3">
           <div className="d-flex align-items-center justify-content-between">
-            {/* Logo - mobile */}
+            {/* Logo - mobile version */}
             <Link to="/" className="navbar-brand d-lg-none">
-              <img src={logo} alt="Logo" height="50" />
+              <img src={logo} alt="Logo" height="50" className="logo-img" />
             </Link>
 
-            {/* Logo - desktop */}
+            {/* Logo - desktop version */}
             <Link to="/" className="navbar-brand mx-lg-auto d-none d-lg-block">
-              <img src={logo} alt="Logo" height="70" />
+              <img src={logo} alt="Logo" height="70" className="logo-img" />
             </Link>
 
-            {/* Right side icons */}
+            {/* Right side icons (search, profile, cart) */}
             <div className="d-flex align-items-center gap-3">
-              {/* Profile */}
+              {/* Profile icon */}
               <Link
                 to={user ? "/profile" : "/login"}
                 className="text-dark icon-hover"
+                onClick={handleProfileClick}
               >
-                <i className={`bi bi-person ${isActive("/profile") ? "active-icon" : ""}`}></i>
+                <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
               </Link>
 
-              {/* Search - desktop */}
-              <div className="d-none d-lg-block" ref={searchRef}>
+              {/* Search icon/bar - desktop version */}
+              <div className="search-container d-none d-lg-block" ref={searchRef}>
                 {showSearchBar ? (
-                  <form onSubmit={handleSearch} className="search-form">
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="search-input"
-                      autoFocus
-                    />
-                    <button type="submit" className="search-button">
-                      <FiSearch />
-                    </button>
-                    <button
-                      type="button"
-                      className="close-search"
-                      onClick={() => setShowSearchBar(false)}
-                    >
-                      <FiX />
-                    </button>
+                  <form onSubmit={handleSearchSubmit} className="search-form">
+                    <div className="search-input-container">
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="search-input"
+                        autoFocus
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          className="clear-search-btn"
+                          onClick={() => setSearchQuery("")}
+                        >
+                          <FiX />
+                        </button>
+                      )}
+                      <button type="submit" className="search-button">
+                        <FiSearch size={20} />
+                      </button>
+                    </div>
+                    {suggestions.length > 0 && (
+                      <div className="suggestions-dropdown">
+                        {suggestions.map((suggestion, index) => (
+                          <div
+                            key={index}
+                            className="suggestion-item"
+                            onClick={() => handleSuggestionClick(suggestion)}
+                          >
+                            {suggestion}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </form>
                 ) : (
                   <button
-                    className="icon-hover"
-                    onClick={() => setShowSearchBar(true)}
+                    className="text-dark icon-hover"
+                    onClick={handleSearchClick}
                   >
-                    <i className="bi bi-search"></i>
+                    <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
                   </button>
                 )}
               </div>
 
-              {/* Search - mobile */}
+              {/* Search icon - mobile version */}
               <button
-                className="icon-hover d-lg-none"
-                onClick={() => setShowSearchBar(!showSearchBar)}
+                className="text-dark icon-hover d-lg-none"
+                onClick={handleSearchClick}
               >
-                <i className="bi bi-search"></i>
+                <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
               </button>
 
-              {/* Cart */}
-              <Link to="/cart" className="position-relative icon-hover">
-                <i className={`bi bi-cart ${isActive("/cart") ? "active-icon" : ""}`}></i>
+              {/* Cart icon */}
+              <Link
+                to="/cart"
+                className="position-relative text-dark icon-hover"
+              >
+                <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
                 <span className="cart-badge"></span>
               </Link>
 
-              {/* Mobile menu toggle */}
+              {/* Mobile menu button */}
               <button
                 className="btn d-lg-none menu-btn"
                 onClick={toggleMobileMenu}
               >
-                {showMobileMenu ? <FaTimes /> : <FaBars />}
+                {showMobileMenu ? (
+                  <FaTimes className="menu-icon" />
+                ) : (
+                  <FaBars className="menu-icon" />
+                )}
               </button>
             </div>
           </div>
 
           {/* Mobile search bar */}
           {showSearchBar && (
-            <div className="d-lg-none mt-2">
-              <form onSubmit={handleSearch} className="search-form">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input"
-                  autoFocus
-                />
-                <button type="submit" className="search-button">
-                  <FiSearch />
-                </button>
+            <div className="d-lg-none mt-2 w-100">
+              <form onSubmit={handleSearchSubmit} className="search-form">
+                <div className="search-input-container">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="clear-search-btn"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      <FiX />
+                    </button>
+                  )}
+                  <button type="submit" className="search-button">
+                    <FiSearch size={20} />
+                  </button>
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="suggestions-dropdown">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="suggestion-item"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </form>
             </div>
           )}
@@ -222,38 +290,68 @@ const Header = () => {
             ref={mobileMenuRef}
           >
             <nav className="mobile-menu">
-              <ul>
-                <li>
-                  <Link to="/" onClick={() => handleNavClick("/")}>
-                    Home
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <Link
+                    to="/"
+                    className={`nav-link nav-hover ${isActive("/", true) ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Home</span>
                   </Link>
                 </li>
-                <li>
+
+                <li className="nav-item dropdown">
                   <ShopDropdown mobileClose={() => setShowMobileMenu(false)} />
                 </li>
-                <li>
-                  <Link to="/bestseller" onClick={() => handleNavClick("/bestseller")}>
-                    Best Sellers
+
+                <li className="nav-item">
+                  <Link
+                    to="/bestseller"
+                    className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Best Sellers</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/newcollection" onClick={() => handleNavClick("/newcollection")}>
-                    New Collection
+
+                <li className="nav-item">
+                  <Link
+                    to="/newcollection"
+                    className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>New Collection</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/allproducts" onClick={() => handleNavClick("/allproducts")}>
-                    All Products
+
+                <li className="nav-item">
+                  <Link
+                    to="/allproducts"
+                    className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>All Products</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/brand" onClick={() => handleNavClick("/brand")}>
-                    Brand
+
+                <li className="nav-item">
+                  <Link
+                    to="/brand"
+                    className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Brand</span>
                   </Link>
                 </li>
-                <li>
-                  <Link to="/contactus" onClick={() => handleNavClick("/contactus")}>
-                    Contact
+
+                <li className="nav-item">
+                  <Link
+                    to="/contactus"
+                    className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
+                    onClick={() => setShowMobileMenu(false)}
+                  >
+                    <span>Contact</span>
                   </Link>
                 </li>
               </ul>
@@ -264,36 +362,60 @@ const Header = () => {
           <nav className="d-none d-lg-flex justify-content-center mt-3">
             <ul className="nav">
               <li className="nav-item">
-                <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`}>
-                  Home
+                <Link
+                  to="/"
+                  className={`nav-link nav-hover ${isActive("/", true) ? "active" : ""}`}
+                >
+                  <span>Home</span>
                 </Link>
               </li>
-              <li className="nav-item">
+
+              <li className="nav-item dropdown">
                 <ShopDropdown />
               </li>
+
               <li className="nav-item">
-                <Link to="/bestseller" className={`nav-link ${isActive("/bestseller") ? "active" : ""}`}>
-                  Best Sellers
+                <Link
+                  to="/bestseller"
+                  className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
+                >
+                  <span>Best Sellers</span>
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link to="/newcollection" className={`nav-link ${isActive("/newcollection") ? "active" : ""}`}>
-                  New Collection
+                <Link
+                  to="/newcollection"
+                  className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
+                >
+                  <span>New Collection</span>
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link to="/allproducts" className={`nav-link ${isActive("/allproducts") ? "active" : ""}`}>
-                  All Products
+                <Link
+                  to="/allproducts"
+                  className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
+                >
+                  <span>All Products</span>
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link to="/brand" className={`nav-link ${isActive("/brand") ? "active" : ""}`}>
-                  Brand
+                <Link
+                  to="/brand"
+                  className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
+                >
+                  <span>Brand</span>
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link to="/contactus" className={`nav-link ${isActive("/contactus") ? "active" : ""}`}>
-                  Contact
+                <Link
+                  to="/contactus"
+                  className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
+                >
+                  <span>Contact</span>
                 </Link>
               </li>
             </ul>
