@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [step, setStep] = useState(1); // 1 = request, 2 = reset
+  const [step, setStep] = useState(1); // 1 = request, 1.5 = email sent, 2 = reset
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const ForgotPassword = () => {
 
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 5000);
   };
 
   const handleRequestReset = async (e) => {
@@ -26,6 +26,11 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      // Validate email format
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error("Please enter a valid email address");
+      }
+
       // Send password reset email via Firebase
       await sendPasswordResetEmail(auth, email);
       
@@ -46,7 +51,7 @@ const ForgotPassword = () => {
         throw new Error(errorData.error || "Failed to process request");
       }
 
-      showNotification("Password reset email sent. Check your inbox!");
+      showNotification("Password reset email sent. Please check your inbox (including spam folder).");
       setStep(1.5);
     } catch (error) {
       console.error("Reset request error:", error);
@@ -64,6 +69,7 @@ const ForgotPassword = () => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     
+    // Validate passwords
     if (newPassword !== confirmPassword) {
       showNotification("Passwords do not match", "error");
       return;
@@ -71,6 +77,12 @@ const ForgotPassword = () => {
 
     if (newPassword.length < 8) {
       showNotification("Password must be at least 8 characters", "error");
+      return;
+    }
+
+    // Check for password strength (optional)
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}/.test(newPassword)) {
+      showNotification("Password should contain at least one uppercase letter, one lowercase letter, and one number", "error");
       return;
     }
 
@@ -84,7 +96,10 @@ const ForgotPassword = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ new_password: newPassword }),
+          body: JSON.stringify({ 
+            new_password: newPassword,
+            confirm_password: confirmPassword 
+          }),
         }
       );
 
@@ -166,7 +181,10 @@ const ForgotPassword = () => {
                 Didn't receive the email?{" "}
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    setStep(1);
+                    setEmail("");
+                  }}
                   className="resend-button"
                 >
                   Resend
