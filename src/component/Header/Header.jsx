@@ -1,3 +1,4 @@
+// ⛳ Your import section stays the same
 import React, { useState, useEffect, useRef } from "react";
 import "./Header.css";
 import { IoCallOutline } from "react-icons/io5";
@@ -5,23 +6,71 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FiSearch, FiX } from "react-icons/fi";
+import { FaBars, FaTimes } from "react-icons/fa";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
 import { useAuth } from "../context/AuthContext.jsx";
-import logo from '/logo.png';
+import logo from "/logo.png";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const suggestionsRef = useRef(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const searchRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
 
-  const isActive = (path, exact = false) => {
-    return exact ? location.pathname === path : location.pathname.startsWith(path);
+  const isActive = (path, exact = false) =>
+    exact ? location.pathname === path : location.pathname.startsWith(path);
+
+  // 👇 Route navigation + reload logic
+  const handleReloadNavigate = (e, path) => {
+    e.preventDefault();
+    if (location.pathname === path) {
+      window.location.reload();
+    } else {
+      navigate(path);
+      setTimeout(() => window.location.reload(), 10); // optional, helps with cache issues
+    }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setShowSearchBar(false);
+        setSuggestions([]);
+      }
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
+        setShowMobileMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (searchQuery.length > 2 && showSearchBar) {
+      const timer = setTimeout(() => {
+        fetchSuggestions(searchQuery);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setSuggestions([]);
+    }
+  }, [searchQuery, showSearchBar]);
 
   const fetchSuggestions = async (query) => {
     try {
@@ -30,22 +79,10 @@ const Header = () => {
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
-      setShowSuggestions(true);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.length > 1 && showSearchBar) {
-        fetchSuggestions(searchQuery);
-      } else {
-        setSuggestions([]);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery, showSearchBar]);
 
   const handleProfileClick = (e) => {
     e.preventDefault();
@@ -55,7 +92,7 @@ const Header = () => {
   const handleSearchClick = (e) => {
     e.preventDefault();
     setShowSearchBar(!showSearchBar);
-    setShowSuggestions(false);
+    setSuggestions([]);
     if (showSearchBar && searchQuery.trim()) {
       handleSearchSubmit(e);
     }
@@ -67,43 +104,22 @@ const Header = () => {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery("");
       setShowSearchBar(false);
-      setShowSuggestions(false);
+      setSuggestions([]);
     }
   };
 
   const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
     navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+    setSearchQuery("");
     setShowSearchBar(false);
-    setShowSuggestions(false);
+    setSuggestions([]);
   };
 
-  const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
-    setShowSuggestions(e.target.value.length > 1);
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(!showMobileMenu);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // 🔁 RELOAD NAVIGATION LOGIC
-  const handleNavClick = (e, path) => {
-    e.preventDefault();
-    if (location.pathname === path) {
-      window.location.reload();
-    } else {
-      navigate(path);
-      setTimeout(() => window.location.reload(), 10);
-    }
-  };
-
+  // ⛳ Top Section
   return (
     <>
       <div className="topnav1">
@@ -127,27 +143,25 @@ const Header = () => {
       <header className="bg-white border-bottom sticky-top">
         <div className="container-fluid py-2 px-3">
           <div className="d-flex align-items-center justify-content-between">
-            <button
-              className="btn d-md-none menu-btn"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#sidebarMenu"
-              aria-controls="sidebarMenu"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="fill w-25"></div>
-
-            <Link to="/" className="navbar-brand mx-auto d-md-block d-none w-25 logo-container">
+            {/* Logo */}
+            <Link to="/" className="navbar-brand d-lg-none">
+              <img src={logo} alt="Logo" height="50" className="logo-img" />
+            </Link>
+            <Link to="/" className="navbar-brand mx-lg-auto d-none d-lg-block">
               <img src={logo} alt="Logo" height="70" className="logo-img" />
             </Link>
 
             <div className="d-flex align-items-center gap-3">
-              <a href="#" onClick={handleProfileClick} className="text-dark icon-hover">
+              <Link
+                to={user ? "/profile" : "/login"}
+                className="text-dark icon-hover"
+                onClick={handleProfileClick}
+              >
                 <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
-              </a>
+              </Link>
 
-              <div className="search-container" ref={suggestionsRef}>
+              {/* Desktop Search */}
+              <div className="search-container d-none d-lg-block" ref={searchRef}>
                 {showSearchBar ? (
                   <form onSubmit={handleSearchSubmit} className="search-form">
                     <div className="search-input-container">
@@ -155,8 +169,7 @@ const Header = () => {
                         type="text"
                         placeholder="Search products..."
                         value={searchQuery}
-                        onChange={handleInputChange}
-                        onFocus={() => setShowSuggestions(true)}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="search-input"
                         autoFocus
                       />
@@ -169,7 +182,7 @@ const Header = () => {
                         <FiSearch size={20} />
                       </button>
                     </div>
-                    {showSuggestions && suggestions.length > 0 && (
+                    {suggestions.length > 0 && (
                       <div className="suggestions-dropdown">
                         {suggestions.map((suggestion, index) => (
                           <div
@@ -184,59 +197,121 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <a href="#" onClick={handleSearchClick} className="text-dark icon-hover">
+                  <button className="text-dark icon-hover" onClick={handleSearchClick}>
                     <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
-                  </a>
+                  </button>
                 )}
               </div>
 
-              <Link to="/cart/" className="position-relative text-dark icon-hover">
+              {/* Mobile Search */}
+              <button className="text-dark icon-hover d-lg-none" onClick={handleSearchClick}>
+                <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
+              </button>
+
+              {/* Cart */}
+              <Link to="/cart" className="position-relative text-dark icon-hover">
                 <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
                 <span className="cart-badge"></span>
               </Link>
+
+              {/* Mobile Menu Button */}
+              <button className="btn d-lg-none menu-btn" onClick={toggleMobileMenu}>
+                {showMobileMenu ? <FaTimes className="menu-icon" /> : <FaBars className="menu-icon" />}
+              </button>
             </div>
           </div>
 
-          <nav className="d-none d-md-flex justify-content-center mt-3">
-            <ul className="nav">
-              <li className="nav-item">
-                <a href="/" className={`nav-link nav-hover ${isActive("/", true) ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/")}>
-                  <span>Home</span>
-                </a>
-              </li>
+          {/* Mobile Search Input */}
+          {showSearchBar && (
+            <div className="d-lg-none mt-2 w-100">
+              <form onSubmit={handleSearchSubmit} className="search-form">
+                <div className="search-input-container">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button type="button" className="clear-search-btn" onClick={() => setSearchQuery("")}>
+                      <FiX />
+                    </button>
+                  )}
+                  <button type="submit" className="search-button">
+                    <FiSearch size={20} />
+                  </button>
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="suggestions-dropdown">
+                    {suggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="suggestion-item"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </form>
+            </div>
+          )}
 
+          {/* Mobile Nav */}
+          <div className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`} ref={mobileMenuRef}>
+            <nav className="mobile-menu">
+              <ul className="nav flex-column">
+                {[
+                  ["/", "Home"],
+                  ["/bestseller", "Best Sellers"],
+                  ["/newcollection", "New Collection"],
+                  ["/allproducts", "All Products"],
+                  ["/brand", "Brand"],
+                  ["/contactus", "Contact"]
+                ].map(([path, label]) => (
+                  <li className="nav-item" key={path}>
+                    <a
+                      href={path}
+                      className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
+                      onClick={(e) => handleReloadNavigate(e, path)}
+                    >
+                      <span>{label}</span>
+                    </a>
+                  </li>
+                ))}
+                <li className="nav-item dropdown">
+                  <ShopDropdown mobileClose={() => setShowMobileMenu(false)} />
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          {/* Desktop Nav */}
+          <nav className="d-none d-lg-flex justify-content-center mt-3">
+            <ul className="nav">
+              {[
+                ["/", "Home"],
+                ["/bestseller", "Best Sellers"],
+                ["/newcollection", "New Collection"],
+                ["/allproducts", "All Products"],
+                ["/brand", "Brand"],
+                ["/contactus", "Contact"]
+              ].map(([path, label]) => (
+                <li className="nav-item" key={path}>
+                  <a
+                    href={path}
+                    className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
+                    onClick={(e) => handleReloadNavigate(e, path)}
+                  >
+                    <span>{label}</span>
+                  </a>
+                </li>
+              ))}
               <li className="nav-item dropdown">
                 <ShopDropdown />
-              </li>
-
-              <li className="nav-item">
-                <a href="/bestseller" className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/bestseller")}>
-                  <span>Best Sellers</span>
-                </a>
-              </li>
-
-              <li className="nav-item">
-                <a href="/newcollection" className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/newcollection")}>
-                  <span>New Collection</span>
-                </a>
-              </li>
-
-              <li className="nav-item">
-                <a href="/allproducts" className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/allproducts")}>
-                  <span>All Products</span>
-                </a>
-              </li>
-
-              <li className="nav-item">
-                <a href="/brand" className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/brand")}>
-                  <span>Brand</span>
-                </a>
-              </li>
-
-              <li className="nav-item">
-                <a href="/contactus" className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`} onClick={(e) => handleNavClick(e, "/contactus")}>
-                  <span>Contact</span>
-                </a>
               </li>
             </ul>
           </nav>
