@@ -7,16 +7,15 @@ const Layout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Force scroll to top and refresh logic
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); // Scroll to top on route change
   }, [location.pathname]);
 
   return (
     <>
       <Header />
-      <div key={location.pathname}> {/* This line forces remount */}
+      <main key={location.key}> {/* This ensures page re-renders */}
         <Outlet />
-      </div>
+      </main>
       <Footer />
     </>
   );
