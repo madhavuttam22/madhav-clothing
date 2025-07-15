@@ -39,8 +39,8 @@
 
 // Layout.jsx
 import { Outlet, useLocation } from 'react-router-dom';
-import Header from './component/Header/Header';
-import Footer from './component/Footer/Footer';
+import Header from '../Header/Header';
+import Footer from '../Footer/Footer';
 
 const Layout = () => {
   const location = useLocation();
