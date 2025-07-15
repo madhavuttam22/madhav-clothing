@@ -1,12 +1,11 @@
-// src/component/Layout/Layout.jsx
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import { useLocation, Outlet } from "react-router-dom";
 import Header from "../Header/Header";
+import Footer from "../Footer/Footer"; // (Assuming you have a footer component)
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const location = useLocation();
 
-  // This ensures the page scrolls to top and triggers re-render if needed
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -14,7 +13,10 @@ const Layout = ({ children }) => {
   return (
     <>
       <Header />
-      {children}
+      <main>
+        <Outlet /> {/* ← This renders the current route's content */}
+      </main>
+      <Footer /> {/* Optional if you want footer on all pages */}
     </>
   );
 };
