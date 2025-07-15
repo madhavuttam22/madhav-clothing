@@ -2,24 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./SearchResultPage.css";
-import Header from "../../component/Header/Header";
-import Footer from "../../component/Footer/Footer";
 import Notification from "../../component/Notification/Notification";
 import { FiSearch, FiX } from "react-icons/fi";
 import { auth } from "../../firebase";
 import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
 
-/**
- * SearchResults component displays search results based on the query parameter.
- * It includes search functionality, filters, product listing, and cart integration.
- */
 const SearchResults = () => {
-  // Hooks for routing and state management
   const location = useLocation();
   const navigate = useNavigate();
-
-  // State for products and UI
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,225 +21,114 @@ const SearchResults = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
-
-  // Ref for handling clicks outside suggestions dropdown
   const suggestionsRef = useRef(null);
 
-  // Get search query from URL parameters
+  // Get ?q= from URL
   const query = new URLSearchParams(location.search).get("q");
 
-  /**
-   * Displays a notification message that automatically disappears after 3 seconds
-   * @param {string} message - The notification message to display
-   * @param {string} type - The type of notification ('success' or 'error')
-   */
-  const showNotification = (message, type = "success") => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  // Fetch search results when query changes
+  // Main effect to fetch data whenever query changes
   useEffect(() => {
     if (query) {
       setSearchQuery(query);
-      fetchEnhancedSearchResults(query);
+      fetchSearchResults(query);
     } else {
       navigate("/");
     }
-  }, [query, navigate]);
+  }, [query]);
 
-  // Fetch search suggestions when search query changes (with debounce)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.length > 1) {
-        fetchSuggestions(searchQuery);
-      } else {
-        setSuggestions([]);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  /**
-   * Fetches enhanced search results from the API with product images and sizes
-   * @param {string} searchTerm - The search term to query
-   */
-  const fetchEnhancedSearchResults = async (searchTerm) => {
+  const fetchSearchResults = async (searchTerm) => {
     try {
       setLoading(true);
-      // First try enhanced search endpoint
-      const response = await axios.get(
+      const res = await axios.get(
         `https://web-production-2449.up.railway.app/api/products/enhanced-search/`,
         { params: { q: searchTerm } }
       );
-
-      // Process products to include images and default sizes
-      const productsWithImagesAndSizes = response.data.results.map(
-        (product) => {
-          // Set default image (fallback to placeholder if none available)
-          let imageUrl = "/placeholder-product.jpg";
-
-          if (product.colors?.length > 0) {
-            const firstColor = product.colors[0];
-            if (firstColor.images?.length > 0) {
-              const defaultImage = firstColor.images.find(
-                (img) => img.is_default
-              );
-              imageUrl =
-                defaultImage?.image_url || firstColor.images[0].image_url;
-            }
-          }
-
-          // Find first available size or first size if none available
-          const firstAvailableSize =
-            product.sizes?.find((size) => size.stock > 0)?.size ||
-            product.sizes?.[0]?.size;
-
-          return {
-            ...product,
-            image: imageUrl,
-            defaultSize: firstAvailableSize,
-          };
+      const updated = res.data.results.map((product) => {
+        let image = "/placeholder-product.jpg";
+        if (product.colors?.length > 0) {
+          const defaultImage = product.colors[0].images?.find((img) => img.is_default);
+          image = defaultImage?.image_url || product.colors[0].images?.[0]?.image_url || image;
         }
-      );
-
-      // Update state with processed products
-      setProducts(productsWithImagesAndSizes);
-      setFilteredProducts(productsWithImagesAndSizes);
-      setError(null);
-
-      // Initialize selected sizes for each product
-      const initialSizes = {};
-      productsWithImagesAndSizes.forEach((product) => {
+        const defaultSize =
+          product.sizes?.find((s) => s.stock > 0)?.size || product.sizes?.[0]?.size;
+        return { ...product, image, defaultSize };
+      });
+      setProducts(updated);
+      setFilteredProducts(updated);
+      const sizeMap = {};
+      updated.forEach((product) => {
         if (product.defaultSize) {
-          initialSizes[product.id] = product.defaultSize.id;
+          sizeMap[product.id] = product.defaultSize.id;
         }
       });
-      setSelectedSizes(initialSizes);
+      setSelectedSizes(sizeMap);
+      setError(null);
     } catch (err) {
-      console.error("Search error:", err);
-      setError("Failed to load search results. Please try again.");
-
-      // Fallback to basic search if enhanced search fails
-      try {
-        const basicResponse = await axios.get(
-          `https://web-production-2449.up.railway.app/api/products/search/`,
-          { params: { q: searchTerm } }
-        );
-        setProducts(basicResponse.data.results || []);
-        setFilteredProducts(basicResponse.data.results || []);
-      } catch (basicErr) {
-        console.error("Basic search failed:", basicErr);
-      }
+      console.error("Enhanced search failed:", err);
+      setError("Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Fetches search suggestions based on the current query
-   * @param {string} query - The partial search query
-   */
-  const fetchSuggestions = async (query) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length > 1) fetchSuggestions(searchQuery);
+      else setSuggestions([]);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchSuggestions = async (q) => {
     try {
-      const response = await axios.get(
+      const res = await axios.get(
         `https://web-production-2449.up.railway.app/api/search/suggestions/`,
-        { params: { q: query } }
+        { params: { q } }
       );
-      setSuggestions(response.data.suggestions || []);
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
+      setSuggestions(res.data.suggestions || []);
+    } catch (err) {
+      console.error("Suggestion error:", err);
     }
   };
 
-  /**
-   * Applies filters to the product list based on user selection
-   * @param {Object} filters - The filter criteria (size, color, sort)
-   */
+  const showNotification = (msg, type = "success") => {
+    setNotification({ message: msg, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const applyFilters = ({ size, color, sort }) => {
     let filtered = [...products];
-
-    // Filter by size if selected
     if (size) {
-      filtered = filtered.filter((product) =>
-        product.sizes?.some((s) => s.size.id === parseInt(size))
+      filtered = filtered.filter((p) =>
+        p.sizes?.some((s) => s.size.id === parseInt(size))
       );
     }
-
-    // Filter by color if selected
     if (color) {
-      filtered = filtered.filter((product) =>
-        product.colors?.some((c) => c.color.id === parseInt(color))
+      filtered = filtered.filter((p) =>
+        p.colors?.some((c) => c.color.id === parseInt(color))
       );
     }
-
-    // Sort products if sort option selected
-    if (sort === "price_low") {
-      filtered.sort((a, b) => a.currentprice - b.currentprice);
-    } else if (sort === "price_high") {
-      filtered.sort((a, b) => b.currentprice - a.currentprice);
-    }
-
-    // Update filtered products
+    if (sort === "price_low") filtered.sort((a, b) => a.currentprice - b.currentprice);
+    else if (sort === "price_high") filtered.sort((a, b) => b.currentprice - a.currentprice);
     setFilteredProducts(filtered);
   };
 
-  /**
-   * Handles size selection change for a product
-   * @param {number} productId - The ID of the product
-   * @param {number} sizeId - The ID of the selected size
-   */
   const handleSizeChange = (productId, sizeId) => {
-    setSelectedSizes((prev) => ({
-      ...prev,
-      [productId]: parseInt(sizeId),
-    }));
+    setSelectedSizes((prev) => ({ ...prev, [productId]: parseInt(sizeId) }));
   };
 
-  /**
-   * Adds a product to the cart with the selected size
-   * @param {number} productId - The ID of the product to add
-   */
   const addToCart = async (productId) => {
     try {
       setAddingToCartId(productId);
-      const selectedSizeId = parseInt(selectedSizes[productId]);
-
-      // Validate size selection
-      if (!selectedSizeId) {
-        showNotification("Please select a size", "error");
-        return;
-      }
-
-      // Find the product
+      const selectedSizeId = selectedSizes[productId];
+      if (!selectedSizeId) return showNotification("Please select a size", "error");
       const product = products.find((p) => p.id === productId);
-      if (!product) {
-        showNotification("Product not found", "error");
-        return;
-      }
-
-      // Check stock for selected size
-      const selectedSize = product.sizes?.find(
-        (size) => size.size.id === selectedSizeId
-      );
-
-      if (!selectedSize || selectedSize.stock <= 0) {
-        showNotification("Selected size is out of stock", "error");
-        return;
-      }
-
-      // Get Firebase auth token
+      const sizeObj = product?.sizes?.find((s) => s.size.id === selectedSizeId);
+      if (!sizeObj || sizeObj.stock <= 0)
+        return showNotification("Selected size is out of stock", "error");
       const token = await auth.currentUser?.getIdToken();
-      if (!token) {
-        showNotification("You need to log in first", "error");
-        navigate("/login", { state: { from: location.pathname } });
-        return;
-      }
-
-      // Default to first color if available
+      if (!token) return navigate("/login", { state: { from: location.pathname } });
       const colorId = product.colors?.[0]?.color?.id || null;
-
-      // Add to cart API call
       const response = await fetch(
         `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -265,33 +145,18 @@ const SearchResults = () => {
           }),
         }
       );
-
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to add to cart");
-      }
-
-      // Show success notification and update cart count
-      showNotification(data.message || "Product added to cart successfully!");
-
-      if (typeof window.updateCartCount === "function") {
-        window.updateCartCount();
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      showNotification(
-        error.message || "Something went wrong. Please try again.",
-        "error"
-      );
+      if (!response.ok) throw new Error(data.message || "Failed to add to cart");
+      showNotification(data.message || "Added to cart!");
+      if (typeof window.updateCartCount === "function") window.updateCartCount();
+    } catch (err) {
+      console.error(err);
+      showNotification(err.message || "Error", "error");
     } finally {
       setAddingToCartId(null);
     }
   };
 
-  /**
-   * Handles search form submission
-   * @param {Event} e - The form submit event
-   */
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -300,46 +165,27 @@ const SearchResults = () => {
     }
   };
 
-  /**
-   * Handles clicking on a search suggestion
-   * @param {string} suggestion - The selected suggestion
-   */
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
     setShowSuggestions(false);
     navigate(`/search?q=${encodeURIComponent(suggestion)}`);
   };
 
-  /**
-   * Handles search input changes and shows suggestions
-   * @param {Event} e - The input change event
-   */
   const handleInputChange = (e) => {
     setSearchQuery(e.target.value);
-    if (e.target.value.length > 1) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
+    setShowSuggestions(e.target.value.length > 1);
   };
 
-  // Close suggestions when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target)
-      ) {
+    const handleClickOutside = (e) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {
         setShowSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Loading state UI
   if (loading)
     return (
       <div className="loading-container">
@@ -348,7 +194,6 @@ const SearchResults = () => {
       </div>
     );
 
-  // Error state UI
   if (error)
     return (
       <div className="error-container">
@@ -359,7 +204,6 @@ const SearchResults = () => {
       </div>
     );
 
-  // Main component render
   return (
     <>
       <div className="search-results-page">
@@ -401,13 +245,13 @@ const SearchResults = () => {
                 </div>
                 {showSuggestions && suggestions.length > 0 && (
                   <div className="suggestions-dropdown">
-                    {suggestions.map((suggestion, index) => (
+                    {suggestions.map((s, i) => (
                       <div
-                        key={index}
+                        key={i}
                         className="suggestion-item"
-                        onClick={() => handleSuggestionClick(suggestion)}
+                        onClick={() => handleSuggestionClick(s)}
                       >
-                        {suggestion}
+                        {s}
                       </div>
                     ))}
                   </div>
@@ -419,7 +263,6 @@ const SearchResults = () => {
 
         <div className="search-results-content">
           <div className="container">
-            {/* Notification component for displaying messages */}
             {notification && (
               <Notification
                 message={notification.message}
@@ -429,18 +272,15 @@ const SearchResults = () => {
             )}
 
             <div className="search-results-layout">
-              {/* Filters sidebar */}
               <div className="filters-sidebar">
                 <Filters products={products} onApply={applyFilters} />
               </div>
 
-              {/* Products grid */}
               <div className="products-grid-container">
                 {filteredProducts.length > 0 ? (
                   <>
                     <div className="results-count">
-                      Found {filteredProducts.length}{" "}
-                      {filteredProducts.length === 1 ? "item" : "items"}
+                      Found {filteredProducts.length} item(s)
                     </div>
                     <div className="best-seller-grid">
                       {filteredProducts.map((item) => (
@@ -477,8 +317,6 @@ const SearchResults = () => {
                                   </span>
                                 )}
                             </div>
-
-                            {/* Size selector dropdown */}
                             {item.sizes?.length > 0 && (
                               <div className="size-selector">
                                 <select
@@ -501,8 +339,6 @@ const SearchResults = () => {
                                 </select>
                               </div>
                             )}
-
-                            {/* Add to cart button */}
                             <button
                               className="best-seller-add-to-cart"
                               onClick={() => addToCart(item.id)}
@@ -521,23 +357,21 @@ const SearchResults = () => {
                     </div>
                   </>
                 ) : (
-                  !loading && (
-                    <div className="no-results">
-                      <img
-                        src="/no-results.svg"
-                        alt="No results"
-                        className="no-results-img"
-                      />
-                      <h3>No products found</h3>
-                      <p>We couldn't find any items matching "{query}"</p>
-                      <button
-                        onClick={() => navigate("/")}
-                        className="continue-shopping-btn"
-                      >
-                        Continue Shopping
-                      </button>
-                    </div>
-                  )
+                  <div className="no-results">
+                    <img
+                      src="/no-results.svg"
+                      alt="No results"
+                      className="no-results-img"
+                    />
+                    <h3>No products found</h3>
+                    <p>We couldn't find anything for "{query}"</p>
+                    <button
+                      onClick={() => navigate("/")}
+                      className="continue-shopping-btn"
+                    >
+                      Continue Shopping
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
