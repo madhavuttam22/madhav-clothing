@@ -70,7 +70,7 @@
 // export default App;
 // App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AllProductsPage from './pages/AllProductsPage/AllProductsPage';
+import AllProductsPage from './Pages/AllProductsPage/AllProductsPage';
 // import BestSellerPage from './pages/BestSeller';
 import BrandPage from './pages/Brand';
 import ContactPage from './pages/Contact';
