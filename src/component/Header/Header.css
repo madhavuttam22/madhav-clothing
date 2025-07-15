@@ -248,8 +248,8 @@ header:hover {
 .search-button {
     position: absolute;
     right: 10px;
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
     cursor: pointer;
     color: #DE5B9E;
     transition: all 0.3s ease;
