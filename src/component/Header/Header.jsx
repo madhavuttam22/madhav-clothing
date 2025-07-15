@@ -197,7 +197,7 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <button className="text-dark icon-hover" onClick={handleSearchClick}>
+                  <button className="text-dark icon-hover" style={{border:'none',background:'none'}} onClick={handleSearchClick}>
                     <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
                   </button>
                 )}
