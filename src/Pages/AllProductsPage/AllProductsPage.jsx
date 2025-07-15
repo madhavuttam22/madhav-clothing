@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Header from "../../component/Header/Header";
-import Footer from "../../component/Footer/Footer";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Notification from "../../component/Notification/Notification";
@@ -200,7 +198,6 @@ const AllProductsPage = () => {
 
   return (
     <>
-      <Header />
       <div className="all-products-page-container">
         <h1 className="all-products-title">All Products</h1>
 
@@ -310,8 +307,6 @@ const AllProductsPage = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
       <BackToTop />
     </>
   );
