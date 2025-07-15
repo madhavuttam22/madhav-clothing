@@ -69,7 +69,7 @@ const Header = () => {
 
   const handleProfileClick = (e) => {
     e.preventDefault();
-    navigate(user ? "/profile/" : "/login/");
+    navigate(user ? "/profile" : "/login");
   };
 
   const handleSearchClick = (e) => {
@@ -103,25 +103,24 @@ const Header = () => {
   };
 
   const isActive = (path) => {
-    // Remove trailing slashes for comparison
-    const currentPath = location.pathname.replace(/\/+$/, "");
-    const comparePath = path.replace(/\/+$/, "");
+    const currentPath = location.pathname;
     
-    // Special handling for home page
-    if (comparePath === "") {
-      return currentPath === "";
+    // Exact match for home page
+    if (path === "/") {
+      return currentPath === "/";
     }
     
     // Special handling for shop routes
-    if (comparePath === "/shop" || comparePath === "/category") {
+    if (path === "/shop") {
       return currentPath.startsWith("/category/") || 
              currentPath.startsWith("/product/");
     }
     
-    return currentPath.startsWith(comparePath);
+    // For all other routes, check if current path starts with the given path
+    return currentPath.startsWith(path);
   };
 
-   return (
+  return (
     <>
       {/* Top announcement bar */}
       <div className="topnav1">
@@ -329,10 +328,8 @@ const Header = () => {
                     to="/newcollection"
                     className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
-                  ><a href="">
-
+                  >
                     <span>New Collection</span>
-                  </a>
                   </Link>
                 </li>
 
