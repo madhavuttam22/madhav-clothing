@@ -1,11 +1,8 @@
-/**
- * Main Application Component - Updated and Working Version
- */
 import React from 'react';
 import './App.css';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Homepage from './Pages/HomePage/Homepage';
 import Accountpage from './Pages/AccountPage/Accountpage';
 import Registerpage from './Pages/AccountPage/Registerpage';
@@ -27,39 +24,38 @@ import MyOrders from './component/Account/MyOrders/MyOrders';
 import Notification from './component/Notification/Notification';
 import useNotification from './component/Customhook/useNotification';
 
-const App = () => {
+const AppRoutes = () => {
+  const location = useLocation();
   const { notification, hideNotification } = useNotification();
     
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Homepage />} />
-          <Route path="/order-success/" element={<OrderSuccessPage />} />
-          <Route path="/login/" element={<Accountpage />} />
-          <Route path="/register/" element={<Registerpage />} />
-          <Route path="/allproducts/" element={<AllProductsPage />} />
-          <Route path="/contactus/" element={<ContactPage />} />
-          <Route path="/brand/" element={<BrandPage />} />
-          <Route path="/newcollection/" element={<NewCollectionPage />} />
-          <Route path="/product/:id/" element={<ProductDetailPage />} />
-          <Route path="/bestseller/" element={<BestSellerPage />} />
-          <Route path="/search/" element={<SearchResults />} />
-          <Route path="/category/:category_id/products/" element={<CategoryProductsPage />} />
-          <Route path="/forgot-password/" element={<ForgotPassword />} />
-          <Route path="/reset-password/:uidb64/:token/" element={<ForgotPassword />} />
+      <Routes location={location} key={location.pathname}>
+        {/* Public Routes */}
+        <Route path="/" element={<Homepage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/login" element={<Accountpage />} />
+        <Route path="/register" element={<Registerpage />} />
+        <Route path="/allproducts" element={<AllProductsPage />} />
+        <Route path="/contactus" element={<ContactPage />} />
+        <Route path="/brand" element={<BrandPage />} />
+        <Route path="/newcollection" element={<NewCollectionPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/bestseller" element={<BestSellerPage />} />
+        <Route path="/search" element={<SearchResults />} />
+        <Route path="/category/:category_id/products" element={<CategoryProductsPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:uidb64/:token" element={<ForgotPassword />} />
 
-          {/* Protected Routes */}
-          <Route path="/cart/" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-          <Route path="/profile/" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/myorders/" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
-          <Route path="/checkout/" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+        {/* Protected Routes */}
+        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/myorders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+        <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
 
-          {/* Fallback route */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </BrowserRouter>
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
 
       {/* Global Notification Component */}
       {notification && (
@@ -70,6 +66,14 @@ const App = () => {
         />
       )}
     </>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 };
 

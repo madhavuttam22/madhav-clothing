@@ -1,7 +1,3 @@
-/**
- * Header Component - Final Optimized Version
- * Maintains all CSS classes exactly as provided with fixed navigation
- */
 import React, { useState, useEffect, useRef } from "react";
 import "./Header.css";
 import { IoCallOutline } from "react-icons/io5";
@@ -125,7 +121,7 @@ const Header = () => {
     return currentPath.startsWith(comparePath);
   };
 
-  return (
+   return (
     <>
       {/* Top announcement bar */}
       <div className="topnav1">
@@ -166,7 +162,7 @@ const Header = () => {
             <div className="d-flex align-items-center gap-3">
               {/* Profile icon */}
               <Link
-                to={user ? "/profile/" : "/login/"}
+                to={user ? "/profile" : "/login"}
                 className="text-dark icon-hover"
                 onClick={handleProfileClick}
               >
@@ -233,7 +229,7 @@ const Header = () => {
 
               {/* Cart icon */}
               <Link
-                to="/cart/"
+                to="/cart"
                 className="position-relative text-dark icon-hover"
               >
                 <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
@@ -320,7 +316,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/bestseller/"
+                    to="/bestseller"
                     className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
                   >
@@ -330,7 +326,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/newcollection/"
+                    to="/newcollection"
                     className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
                   >
@@ -340,7 +336,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/allproducts/"
+                    to="/allproducts"
                     className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
                   >
@@ -350,7 +346,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/brand/"
+                    to="/brand"
                     className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
                   >
@@ -360,7 +356,7 @@ const Header = () => {
 
                 <li className="nav-item">
                   <Link
-                    to="/contactus/"
+                    to="/contactus"
                     className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
                     onClick={() => setShowMobileMenu(false)}
                   >
@@ -389,7 +385,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/bestseller/"
+                  to="/bestseller"
                   className={`nav-link nav-hover ${isActive("/bestseller") ? "active" : ""}`}
                 >
                   <span>Best Sellers</span>
@@ -398,7 +394,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/newcollection/"
+                  to="/newcollection"
                   className={`nav-link nav-hover ${isActive("/newcollection") ? "active" : ""}`}
                 >
                   <span>New Collection</span>
@@ -407,7 +403,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/allproducts/"
+                  to="/allproducts"
                   className={`nav-link nav-hover ${isActive("/allproducts") ? "active" : ""}`}
                 >
                   <span>All Products</span>
@@ -416,7 +412,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/brand/"
+                  to="/brand"
                   className={`nav-link nav-hover ${isActive("/brand") ? "active" : ""}`}
                 >
                   <span>Brand</span>
@@ -425,7 +421,7 @@ const Header = () => {
 
               <li className="nav-item">
                 <Link
-                  to="/contactus/"
+                  to="/contactus"
                   className={`nav-link nav-hover ${isActive("/contactus") ? "active" : ""}`}
                 >
                   <span>Contact</span>
