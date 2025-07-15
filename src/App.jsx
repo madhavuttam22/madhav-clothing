@@ -30,6 +30,7 @@ import NewCollectionPage from './Pages/NewCollectionPage/NewCollectionPage';
 import CheckoutPage from './Pages/CheckoutPage/CheckoutPage';
 import OrderSuccessPage from './Pages/OrderSuccessPage/OrderSuccessPage';
 import MyOrders from './component/Account/MyOrders/MyOrders';
+import Layout from './component/Layout/Layout';
 
 const App = () => {
   // Notification hook for displaying global alerts/notifications
@@ -40,6 +41,7 @@ const App = () => {
       {/* Main application router */}
       <BrowserRouter>
         <Routes>
+          <Route element={<Layout />}>
           {/* Public Routes */}
           <Route path='/' element={<Homepage/>}/>
           <Route path='/order-success/' element={<OrderSuccessPage/>}/>
@@ -61,6 +63,7 @@ const App = () => {
           <Route path='/profile/' element={<Profile/>}/>
           <Route path='/myorders/' element={<MyOrders/>}/>
           <Route path='/checkout/' element={<CheckoutPage/>}/>
+          </Route>
         </Routes>
       </BrowserRouter>
 
