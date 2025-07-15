@@ -76,7 +76,7 @@ import BrandPage from './Pages/BrandPage/BrandPage';
 // import ContactPage from './pages/Contact';
 // import ProductDetail from './pages/ProductDetail';
 import Layout from './component/Layout/Layout';
-import HomePage from './Pages/HomePage'
+import HomePage from './Pages/HomePage/Homepage'
 function App() {
   return (
     <BrowserRouter>
