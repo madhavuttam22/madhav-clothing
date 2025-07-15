@@ -13,10 +13,10 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <main key={location.pathname}> {/* Force remount */}
-        <Outlet />
-      </main>
-      <Footer />
+<main key={location.pathname}>
+  <Outlet />
+</main>
+<Footer />
     </>
   );
 };
