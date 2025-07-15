@@ -72,8 +72,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AllProductsPage from './Pages/AllProductsPage/AllProductsPage';
 // import BestSellerPage from './pages/BestSeller';
-import BrandPage from './pages/Brand';
-import ContactPage from './pages/Contact';
+import BrandPage from './Pages/BrandPage/BrandPage';
+// import ContactPage from './pages/Contact';
 // import ProductDetail from './pages/ProductDetail';
 import Layout from './component/Layout/Layout';
 import HomePage from './Pages/HomePage'
@@ -86,7 +86,7 @@ function App() {
           <Route path="allproducts" element={<AllProductsPage />} />
           {/* <Route path="bestseller" element={<BestSellerPage />} /> */}
           <Route path="brand" element={<BrandPage />} />
-          <Route path="contactus" element={<ContactPage />} />
+          {/* <Route path="contactus" element={<ContactPage />} /> */}
           {/* <Route path="product/:id" element={<ProductDetail />} /> */}
         </Route>
       </Routes>
