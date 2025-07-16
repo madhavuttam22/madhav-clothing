@@ -644,87 +644,67 @@
 /* ================ MOBILE GALLERY REDESIGN ================ */
 @media (max-width: 768px) {
   .product-wrapper {
-    display: flex;
     flex-direction: column;
   }
 
-  /* Main product title above gallery */
+  /* Product title above gallery on mobile */
   .product-title {
-    order: -1; /* Move title to top */
+    order: -1;
     margin-bottom: 15px;
-    font-size: 22px;
     padding: 0 10px;
+    font-size: 24px;
   }
 
   /* Main image styling */
+  .product-gallery {
+    width: 100%;
+    padding: 0;
+    flex-direction: column;
+  }
+
   .main-image {
-    height: 65vh; /* Use viewport height for better sizing */
+    height: 65vh;
     max-height: 500px;
     min-height: 300px;
     border-radius: 0;
-    margin: 0 -20px; /* Full width */
+    margin: 0 -20px;
     width: calc(100% + 40px);
   }
 
-  /* Thumbnail container - now below main image */
+  /* Thumbnail container - modern horizontal scroller */
   .gallery-thumbnails {
+    width: 100%;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     padding: 15px 10px;
     overflow-x: auto;
-    scrollbar-width: none; /* Hide default scrollbar */
-    -ms-overflow-style: none; /* IE/Edge */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
-  /* Hide scrollbar for Webkit browsers */
+  /* Hide scrollbar */
   .gallery-thumbnails::-webkit-scrollbar {
     display: none;
   }
 
-  /* Custom scroll indicator */
-  .gallery-thumbnails:after {
-    content: "";
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 3px;
-    background: rgba(0,0,0,0.1);
-    border-radius: 3px;
-  }
-
-  /* Active thumbnail indicator */
-  .thumbnail.active {
-    position: relative;
-  }
-
-  .thumbnail.active:after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 3px;
-    background: #DE5B9E;
-    border-radius: 3px;
-  }
-
   /* Thumbnail styling */
   .thumbnail {
-    width: 70px;
-    height: 70px;
+    min-width: 80px;
+    height: 80px;
+    margin: 0;
+    scroll-snap-align: start;
     border-radius: 8px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
-    flex-shrink: 0;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0;
   }
 
   .thumbnail.active {
     border-color: #DE5B9E;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(222, 91, 158, 0.2);
   }
 
   .thumbnail img {
@@ -733,38 +713,58 @@
     object-fit: cover;
   }
 
+  /* Custom scroll indicator */
+  .scroll-indicator {
+    width: 100%;
+    height: 3px;
+    background: rgba(0,0,0,0.1);
+    margin-top: 5px;
+    border-radius: 3px;
+    position: relative;
+    display: none; /* Only show if needed */
+  }
+
+  .scroll-indicator::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 20%;
+    background: #DE5B9E;
+    border-radius: 3px;
+    animation: scrollProgress 5s linear infinite;
+  }
+
+  @keyframes scrollProgress {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(400%); }
+  }
+
   /* Product info adjustments */
   .product-info {
     padding: 15px;
+    margin-top: 10px;
   }
 
-  /* Price section styling */
-  .price-section {
-    margin: 15px 0;
-    font-size: 18px;
+  /* Action buttons full width */
+  .action-buttons {
+    margin: 25px 0;
   }
 
-  /* Add some space between sections */
-  .product-option {
-    margin: 20px 0;
+  .add-to-cart, .buy-now {
+    width: 100%;
   }
 }
 
-/* Custom scrollbar for browsers that support it */
-@media (max-width: 768px) and (-webkit-min-device-pixel-ratio:0) {
-  .gallery-thumbnails::-webkit-scrollbar {
+/* Show scroll indicator only when scrolling is needed */
+@media (max-width: 768px) and (hover: none) {
+  .gallery-thumbnails {
+    padding-bottom: 15px;
+  }
+  
+  .scroll-indicator {
     display: block;
-    height: 4px;
-  }
-
-  .gallery-thumbnails::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.05);
-    border-radius: 10px;
-  }
-
-  .gallery-thumbnails::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
-    border-radius: 10px;
   }
 }
 
