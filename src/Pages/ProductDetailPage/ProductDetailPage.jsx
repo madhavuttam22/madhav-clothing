@@ -330,41 +330,43 @@ useEffect(() => {
         <div className="product-wrapper">
           {/* Product Gallery Section */}
           <div className="product-gallery">
-  {currentImages.length > 0 ? (
-    <>
-      {/* Thumbnail Navigation - will reorder in mobile */}
-      <div className="gallery-thumbnails">
-        {currentImages.map((img, index) => (
-          <div
-            key={index}
-            className={`thumbnail ${mainImage === img.image_url ? "active" : ""}`}
-            onClick={() => handleImageClick(img)}
-          >
-            <img src={img.image_url} alt={`Thumbnail ${index + 1}`} />
+            {currentImages.length > 0 ? (
+              <>
+                {/* Thumbnail Navigation */}
+                <div className="gallery-thumbnails">
+                  {currentImages.map((img, index) => (
+                    <div
+                      key={index}
+                      className={`thumbnail ${
+                        mainImage === img.image_url ? "active" : ""
+                      }`}
+                      onClick={() => handleImageClick(img)}
+                    >
+                      <img
+                        src={img.image_url}
+                        alt={`${product.name} - ${index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+                    <div className="scroll-indicator"></div>
+                {/* Main Product Image */}
+                <div className="main-image">
+                  {mainImage ? (
+                    <img src={mainImage} alt={product.name} />
+                  ) : (
+                    <div className="no-image-placeholder">
+                      No image selected
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="no-images">
+                No images available for this color
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-      
-      {/* Scroll indicator - only visible on mobile */}
-      <div className="scroll-indicator"></div>
-
-      {/* Main Product Image - will reorder in mobile */}
-      <div className="main-image">
-        {mainImage ? (
-          <img src={mainImage} alt={product.name} />
-        ) : (
-          <div className="no-image-placeholder">
-            No image selected
-          </div>
-        )}
-      </div>
-    </>
-  ) : (
-    <div className="no-images">
-      No images available for this color
-    </div>
-  )}
-</div>
 
           {/* Product Information Section */}
           <div className="product-info">

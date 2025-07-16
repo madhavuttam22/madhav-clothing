@@ -641,90 +641,43 @@
   border-width: 0;
 }
 
-/* ================ MOBILE GALLERY REDESIGN ================ */
-/* Mobile layout */
+/* ================ RESPONSIVE STYLES ================ */
 @media (max-width: 768px) {
-  .product-gallery {
-    width: 100%;
+  /* Mobile and tablet styles */
+  .product-gallery, .product-info {
+    width: 100%; /* Full width on small screens */
     padding: 0;
-    flex-direction: column;
   }
-  .product-info{
-    width: 100%;
+  
+  .product-gallery {
+    flex-direction: column-reverse; /* Stack thumbnails below main image */
   }
-
-  /* Main image on top in mobile */
-  .main-image {
-    order: 1;
-    width: 100%;
-    height: auto;
-    max-height: 70vh;
-    min-height: 300px;
-    margin-bottom: 15px;
-  }
-
-  /* Thumbnails below in mobile */
+  
   .gallery-thumbnails {
-    order: 2;
     width: 100%;
+    flex-direction: row; /* Horizontal thumbnails on mobile */
+    overflow-x: auto; /* Horizontal scrolling if needed */
     margin-right: 0;
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 10px 0;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    margin-top: 10px;
   }
-
-  /* Hide scrollbar */
-  .gallery-thumbnails::-webkit-scrollbar {
-    display: none;
-  }
-
+  
   .thumbnail {
-    min-width: 80px;
-    height: 80px;
-    margin: 0;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-    border-radius: 8px;
+    min-width: 70px; /* Minimum thumbnail size */
+    margin-right: 10px;
+    margin-bottom: 0;
   }
-
-  /* Active thumbnail style */
-  .thumbnail.active {
-    border-color: #DE5B9E;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(222, 91, 158, 0.2);
+  
+  .sharing-buttons {
+    justify-content: space-between; /* Better spacing for share buttons */
   }
-
-  /* Scroll indicator */
-  .scroll-indicator {
-    width: 100%;
-    height: 3px;
-    background: rgba(0,0,0,0.1);
-    margin-top: 5px;
-    border-radius: 3px;
-    position: relative;
-    overflow: hidden;
+  
+  .share-button {
+    flex: 1;
+    justify-content: center;
   }
-
-  .scroll-indicator::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 20%;
-    background: #DE5B9E;
-    border-radius: 3px;
-    animation: scrollHint 2s infinite;
-  }
-
-  @keyframes scrollHint {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(400%); }
-    100% { transform: translateX(0); }
+  
+  .action-buttons {
+    flex-direction: column; /* Stack buttons vertically */
   }
 }
 
