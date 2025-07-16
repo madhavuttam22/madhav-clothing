@@ -217,7 +217,6 @@ const Cart = () => {
 
   return (
     <>
-      <Header cartItemCount={cartData.item_count} />
       <div className="cart-container">
         <h1 className="cart-title">Your Shopping Cart</h1>
 
