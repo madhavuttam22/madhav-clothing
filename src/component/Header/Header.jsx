@@ -25,7 +25,7 @@ const Header = () => {
   const isActive = (path) => location.pathname === path;
 
   const handleReloadNavigate = (e, path) => {
-    e.preventDefault();
+    // e.preventDefault();
     if (location.pathname === path) {
       window.location.reload();
     } else {
