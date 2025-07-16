@@ -641,63 +641,130 @@
   border-width: 0;
 }
 
-/* ================ RESPONSIVE STYLES ================ */
+/* ================ MOBILE GALLERY REDESIGN ================ */
 @media (max-width: 768px) {
-  /* Mobile and tablet styles */
-  .product-gallery, .product-info {
-    width: 100%; /* Full width on small screens */
-    padding: 0;
+  .product-wrapper {
+    display: flex;
+    flex-direction: column;
   }
-  
-  .product-gallery {
-    flex-direction: column; /* Stack thumbnails below main image */
+
+  /* Main product title above gallery */
+  .product-title {
+    order: -1; /* Move title to top */
+    margin-bottom: 15px;
+    font-size: 22px;
+    padding: 0 10px;
   }
-  
+
+  /* Main image styling */
+  .main-image {
+    height: 65vh; /* Use viewport height for better sizing */
+    max-height: 500px;
+    min-height: 300px;
+    border-radius: 0;
+    margin: 0 -20px; /* Full width */
+    width: calc(100% + 40px);
+  }
+
+  /* Thumbnail container - now below main image */
   .gallery-thumbnails {
-    width: 100%;
-    display: flex; /* Horizontal thumbnails on mobile */
-    overflow-x: auto; /* Horizontal scrolling if needed */
-    margin-right: 0;
-    margin-top: 10px;
-    padding-bottom: 10px; /* Space for scroll */
-    gap: 8px; /* Space between thumbnails */
+    display: flex;
+    gap: 8px;
+    padding: 15px 10px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide default scrollbar */
+    -ms-overflow-style: none; /* IE/Edge */
   }
-  
+
+  /* Hide scrollbar for Webkit browsers */
+  .gallery-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom scroll indicator */
+  .gallery-thumbnails:after {
+    content: "";
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+  }
+
+  /* Active thumbnail indicator */
+  .thumbnail.active {
+    position: relative;
+  }
+
+  .thumbnail.active:after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: #DE5B9E;
+    border-radius: 3px;
+  }
+
+  /* Thumbnail styling */
   .thumbnail {
-    min-width: 60px; /* Smaller thumbnails on mobile */
-    height: 60px; /* Fixed height */
-    margin-right: 0;
-    margin-bottom: 0;
-    flex-shrink: 0; /* Prevent thumbnails from shrinking */
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
-  
+
+  .thumbnail.active {
+    border-color: #DE5B9E;
+  }
+
   .thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensure images fill the thumbnail */
+    object-fit: cover;
   }
-  
-  .main-image {
-    height: 350px; /* Slightly smaller main image on mobile */
+
+  /* Product info adjustments */
+  .product-info {
+    padding: 15px;
   }
-  
-  /* Hide the thumbnails column on mobile if no images */
-  .no-images {
-    display: none;
+
+  /* Price section styling */
+  .price-section {
+    margin: 15px 0;
+    font-size: 18px;
   }
-  
-  /* Rest of your existing mobile styles... */
-  .sharing-buttons {
-    justify-content: space-between;
+
+  /* Add some space between sections */
+  .product-option {
+    margin: 20px 0;
   }
-  
-  .share-button {
-    flex: 1;
-    justify-content: center;
+}
+
+/* Custom scrollbar for browsers that support it */
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio:0) {
+  .gallery-thumbnails::-webkit-scrollbar {
+    display: block;
+    height: 4px;
   }
-  
-  .action-buttons {
-    flex-direction: column;
+
+  .gallery-thumbnails::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+  }
+
+  .gallery-thumbnails::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+    border-radius: 10px;
   }
 }
 
