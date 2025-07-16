@@ -650,25 +650,45 @@
   }
   
   .product-gallery {
-    flex-direction: column-reverse; /* Stack thumbnails below main image */
+    flex-direction: column; /* Stack thumbnails below main image */
   }
   
   .gallery-thumbnails {
     width: 100%;
-    flex-direction: row; /* Horizontal thumbnails on mobile */
+    display: flex; /* Horizontal thumbnails on mobile */
     overflow-x: auto; /* Horizontal scrolling if needed */
     margin-right: 0;
     margin-top: 10px;
+    padding-bottom: 10px; /* Space for scroll */
+    gap: 8px; /* Space between thumbnails */
   }
   
   .thumbnail {
-    min-width: 70px; /* Minimum thumbnail size */
-    margin-right: 10px;
+    min-width: 60px; /* Smaller thumbnails on mobile */
+    height: 60px; /* Fixed height */
+    margin-right: 0;
     margin-bottom: 0;
+    flex-shrink: 0; /* Prevent thumbnails from shrinking */
   }
   
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images fill the thumbnail */
+  }
+  
+  .main-image {
+    height: 350px; /* Slightly smaller main image on mobile */
+  }
+  
+  /* Hide the thumbnails column on mobile if no images */
+  .no-images {
+    display: none;
+  }
+  
+  /* Rest of your existing mobile styles... */
   .sharing-buttons {
-    justify-content: space-between; /* Better spacing for share buttons */
+    justify-content: space-between;
   }
   
   .share-button {
@@ -677,7 +697,7 @@
   }
   
   .action-buttons {
-    flex-direction: column; /* Stack buttons vertically */
+    flex-direction: column;
   }
 }
 

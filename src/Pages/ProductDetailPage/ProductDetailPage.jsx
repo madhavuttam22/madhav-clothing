@@ -21,7 +21,6 @@ import { auth } from "../../firebase";
 const ProductDetailPage = () => {
   // Get product ID from URL parameters
   const { id } = useParams();
-  console.log(id)
 
   // Navigation and location hooks
   const navigate = useNavigate();
