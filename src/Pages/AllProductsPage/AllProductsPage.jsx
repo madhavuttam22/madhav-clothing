@@ -226,7 +226,10 @@ const AllProductsPage = () => {
                       : null
                   }
                 >
-                  <Link to={`/product/${item.id}/`}>
+                  <a className="cursor" onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}>
                     <div className="product-image-container">
                       <img
                         src={item.image}
@@ -247,7 +250,7 @@ const AllProductsPage = () => {
                         </span>
                       )}
                     </div>
-                  </Link>
+                  </a>
                   <div className="product-info w-100 text-center">
                     <h3 className="product-title">
                       <Link

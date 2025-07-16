@@ -290,7 +290,7 @@ const BestSellerPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <a onClick={() => {
+                  <a className="cursor" onClick={() => {
                         navigate(`/product/${item.id}/`);
                         window.location.reload();
                       }}>

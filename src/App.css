@@ -23,3 +23,7 @@ a {
   /* Force black color for all links unless specifically overridden */
   color: black !important;
 }
+
+.cursor{
+  cursor: pointer;
+}

@@ -318,7 +318,10 @@ const CategoryProductsPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <Link to={`/product/${product.id}/`}>
+                  <a className="cursor" onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}>
                     <div className="category-image-container">
                       <img
                         src={product.image}
@@ -339,7 +342,7 @@ const CategoryProductsPage = () => {
                         </span>
                       )}
                     </div>
-                  </Link>
+                  </a>
 
                   {/* Product information */}
                   <div className="category-info">

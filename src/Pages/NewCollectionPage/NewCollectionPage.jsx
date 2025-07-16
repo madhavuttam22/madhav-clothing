@@ -296,7 +296,10 @@ const NewCollectionPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <Link to={`/product/${item.id}/`}>
+                  <a className="cursor" onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}>
                     <div className="new-collection-image-container">
                       <img
                         src={item.image}
@@ -308,7 +311,7 @@ const NewCollectionPage = () => {
                       />
                       <span className="new-collection-badge">New Arrival</span>
                     </div>
-                  </Link>
+                  </a>
 
                   {/* Product info section */}
                   <div className="new-collection-info">

@@ -300,7 +300,10 @@ const SearchResults = () => {
                   <div className="best-seller-grid">
                     {filteredProducts.map((item) => (
                       <div className="best-seller-card" key={item.id}>
-                        <Link to={`/product/${item.id}/`}>
+                        <a className="cursor" onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}>
                           <div className="best-seller-image-container">
                             <img
                               src={item.image}
@@ -311,7 +314,7 @@ const SearchResults = () => {
                               }}
                             />
                           </div>
-                        </Link>
+                        </a>
                         <div className="best-seller-info">
                           <h3 className="best-seller-title">
                             <Link
