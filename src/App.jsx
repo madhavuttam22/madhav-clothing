@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, HashRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -30,7 +30,7 @@ const App = () => {
   const { notification, hideNotification } = useNotification();
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Homepage />} />
@@ -63,7 +63,7 @@ const App = () => {
           onClose={hideNotification}
         />
       )}
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 
