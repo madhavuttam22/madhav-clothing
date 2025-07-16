@@ -218,41 +218,44 @@ const ProductDetailPage = () => {
   };
 
   // Fetch product data on component mount
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(
-          `https://web-production-2449.up.railway.app/api/products/${id}/`
-        );
-        if (!response.ok) {
-          throw new Error("Product not found");
-        }
-        const data = await response.json();
-        setProduct(data);
+  // ✅ Fixed
+useEffect(() => {
+  const fetchProduct = async () => {
+    setLoading(true); // Optional: reset loading state when switching product
+    try {
+      const response = await fetch(
+        `https://web-production-2449.up.railway.app/api/products/${id}/`
+      );
+      if (!response.ok) throw new Error("Product not found");
 
-        // Set default color if available
-        if (data.colors?.length > 0) {
-          const firstColor = data.colors[0];
-          setSelectedColor(firstColor.color);
-          updateColorImages(firstColor);
-        }
+      const data = await response.json();
+      setProduct(data);
 
-        // Set default size (first available or first in list)
-        if (data.sizes?.length > 0) {
-          const firstAvailableSize =
-            data.sizes.find((size) => size.stock > 0)?.size ||
-            data.sizes[0].size;
-          setSelectedSize(firstAvailableSize);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      // Default color and image
+      if (data.colors?.length > 0) {
+        const firstColor = data.colors[0];
+        setSelectedColor(firstColor.color);
+        updateColorImages(firstColor);
       }
-    };
 
-    fetchProduct();
-  }, [id]);
+      // Default size
+      if (data.sizes?.length > 0) {
+        const firstAvailableSize =
+          data.sizes.find((size) => size.stock > 0)?.size ||
+          data.sizes[0].size;
+        setSelectedSize(firstAvailableSize);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProduct();
+  window.scrollTo(0, 0);
+}, [id]); // ✅ Depend on `id`
+
 
   /**
    * Updates the images displayed based on selected color
