@@ -256,8 +256,6 @@ const BestSellerPage = () => {
   if (loading) return <div className="loading">Loading best sellers...</div>;
   if (error) return <div className="error">{error}</div>;
 
- 
-
   return (
     <>
       <div className="bestseller-page-container">
@@ -292,7 +290,10 @@ const BestSellerPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <Link to={`/product/${item.id}/`}>
+                  <div onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}>
                     <div className="best-seller-image-container">
                       <img
                         src={item.image}
@@ -304,19 +305,17 @@ const BestSellerPage = () => {
                       />
                       <span className="best-seller-badge">Best Seller</span>
                     </div>
-                  </Link>
+                  </div>
 
                   {/* Product info section */}
                   <div className="best-seller-info">
                     <h3 className="best-seller-title">
-                      <a onClick={() => {
-                        navigate(`/product/${item.id}/`);
-                        window.location.reload();
-                      }}
+                      <Link
+                        to={`/product/${item.id}/`} 
                         className="best-seller-title-link"
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     </h3>
 
                     {/* Price display */}
