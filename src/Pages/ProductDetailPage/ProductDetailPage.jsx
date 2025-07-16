@@ -349,7 +349,7 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-
+                    <div className="scroll-indicator"></div>
                 {/* Main Product Image */}
                 <div className="main-image">
                   {mainImage ? (
