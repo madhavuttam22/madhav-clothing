@@ -222,7 +222,7 @@ const Header = () => {
 
               {/* Mobile Menu Button */}
               <button className="btn d-lg-none menu-btn" onClick={toggleMobileMenu}>
-                {showMobileMenu ? <FaTimes className="menu-icon text-dark" /> : <FaBars className="menu-icon" />}
+                {showMobileMenu ? <FaTimes className="menu-icon" /> : <FaBars className="menu-icon" />}
               </button>
             </div>
           </div>
@@ -268,6 +268,10 @@ const Header = () => {
 
           {/* Mobile Menu */}
           <div className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`} ref={mobileMenuRef}>
+             {/* Close (X) Button */}
+  <button className="close-menu-btn" onClick={toggleMobileMenu}>
+    <FaTimes />
+  </button>
             <nav className="mobile-menu">
               <ul className="nav flex-column">
                 <li className="nav-item">
