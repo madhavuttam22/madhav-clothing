@@ -222,7 +222,7 @@ const Header = () => {
 
               {/* Mobile Menu Button */}
               <button className="btn d-lg-none menu-btn" onClick={toggleMobileMenu}>
-                {showMobileMenu ? <FaTimes className="menu-icon" /> : <FaBars className="menu-icon" />}
+                {showMobileMenu ? <FaTimes className="menu-icon text-dark " /> : <FaBars className="menu-icon" />}
               </button>
             </div>
           </div>
