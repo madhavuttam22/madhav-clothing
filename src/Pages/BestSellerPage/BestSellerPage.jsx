@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Header from "../../component/Header/Header";
-import Footer from "../../component/Footer/Footer";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Notification from "../../component/Notification/Notification";
@@ -258,6 +256,8 @@ const BestSellerPage = () => {
   if (loading) return <div className="loading">Loading best sellers...</div>;
   if (error) return <div className="error">{error}</div>;
 
+ 
+
   return (
     <>
       <div className="bestseller-page-container">
@@ -309,12 +309,14 @@ const BestSellerPage = () => {
                   {/* Product info section */}
                   <div className="best-seller-info">
                     <h3 className="best-seller-title">
-                      <Link
-                        to={`/product/${item.id}/`}
+                      <button onClick={() => {
+    navigate(`/product/${item.id}/`);
+    window.location.reload();
+  }}
                         className="best-seller-title-link"
                       >
                         {item.name}
-                      </Link>
+                      </button>
                     </h3>
 
                     {/* Price display */}
