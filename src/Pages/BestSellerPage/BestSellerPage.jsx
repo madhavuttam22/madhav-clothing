@@ -290,7 +290,7 @@ const BestSellerPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <div onClick={() => {
+                  <a onClick={() => {
                         navigate(`/product/${item.id}/`);
                         window.location.reload();
                       }}>
@@ -305,7 +305,7 @@ const BestSellerPage = () => {
                       />
                       <span className="best-seller-badge">Best Seller</span>
                     </div>
-                  </div>
+                  </a>
 
                   {/* Product info section */}
                   <div className="best-seller-info">
