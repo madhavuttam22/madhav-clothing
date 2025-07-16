@@ -1,32 +1,19 @@
-/**
- * ProtectedRoute.js
- * 
- * A higher-order component that protects routes from unauthorized access.
- * Redirects to login page if user is not authenticated.
- */
-
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../component/context/AuthContext.jsx";
 
 /**
- * ProtectedRoute component
- * @param {Object} props - Component props
- * @param {ReactNode} props.children - Child components to render if authenticated
- * @returns {ReactNode} Either the protected children or redirect to login
+ * ProtectedRoute component that restricts access based on auth status
  */
 const ProtectedRoute = ({ children }) => {
-  // Get authentication state from context
   const { user, loading } = useAuth();
 
-  // Show loading state while authentication status is being checked
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    // Firebase is still checking auth state — don't redirect yet
+    return <div style={{ padding: "20px", textAlign: "center" }}>Checking login status...</div>;
+  }
 
-  /**
-   * Render logic:
-   * - If user is authenticated (user exists), render the children
-   * - If not authenticated, redirect to login page
-   */
-  return user ? children : <Navigate to="/login" />;
+  // If user is authenticated, allow access; otherwise, redirect to login
+  return user ? children : <Navigate to="/login/" replace />;
 };
 
 export default ProtectedRoute;

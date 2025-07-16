@@ -1,68 +1,40 @@
-// src/context/AuthContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-/**
- * Authentication Context
- * 
- * Provides user authentication state throughout the application
- * Uses Firebase authentication to track user login state
- */
-
-// Create authentication context with default value
+// Create authentication context
 const AuthContext = createContext();
 
 /**
- * AuthProvider Component
- * 
- * Wraps application to provide authentication state to all child components
- * 
- * @param {Object} props - Component props
- * @param {ReactNode} props.children - Child components to be wrapped
- * @returns {JSX.Element} Context Provider component
+ * AuthProvider component that provides Firebase auth user and loading status
  */
 export const AuthProvider = ({ children }) => {
-  // State to store current authenticated user
-  // null = not loaded, undefined = no user, object = authenticated user
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Track Firebase auth status check
 
-  /**
-   * Effect hook to subscribe to Firebase authentication state changes
-   * Runs once on component mount and cleans up on unmount
-   */
   useEffect(() => {
-    // Subscribe to Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // Update state with current user (or null if signed out)
       setUser(currentUser);
+      setLoading(false); // Auth check completed
     });
 
-    // Cleanup function to unsubscribe when component unmounts
-    return () => unsubscribe();
-  }, []); // Empty dependency array ensures this runs only once on mount
+    return () => unsubscribe(); // Clean up on unmount
+  }, []);
 
-  // Provide authentication context to child components
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 /**
- * Custom hook to access authentication context
- * 
- * @returns {Object} Context value containing user authentication state
- * @property {Object|null} user - Current authenticated user or null
+ * Custom hook to use AuthContext
  */
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
-  // Throw error if used outside of AuthProvider
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  
   return context;
 };
