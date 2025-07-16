@@ -643,12 +643,18 @@
 
 /* Mobile-specific styles (max-width: 768px) */
 @media (max-width: 768px) {
+  .product-wrapper{
+    flex-direction: column;
+  }
   .product-gallery {
-
-    flex-direction: column; /* Stack main image above thumbnails */
+    width: 100%;
+    flex-direction: column-reverse; /* Stack main image above thumbnails */
     margin-bottom: 20px;
   }
-  
+  .product-info{
+    width: 100%;
+  }
+
 
   .gallery-thumbnails {
     display: flex; /* Horizontal layout for thumbnails */
