@@ -309,14 +309,14 @@ const BestSellerPage = () => {
                   {/* Product info section */}
                   <div className="best-seller-info">
                     <h3 className="best-seller-title">
-                      <button onClick={() => {
-    navigate(`/product/${item.id}/`);
-    window.location.reload();
-  }}
+                      <a onClick={() => {
+                        navigate(`/product/${item.id}/`);
+                        window.location.reload();
+                      }}
                         className="best-seller-title-link"
                       >
                         {item.name}
-                      </button>
+                      </a>
                     </h3>
 
                     {/* Price display */}
