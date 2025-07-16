@@ -266,43 +266,56 @@ const Header = () => {
             </div>
           )}
 
-          {/* Mobile Menu */}
-          <div className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`} ref={mobileMenuRef}>
-            <nav className="mobile-menu">
-              <ul className="nav flex-column">
-                <li className="nav-item">
-                  <a
-                    href="/"
-                    className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
-                    onClick={(e) => handleReloadNavigate(e, "/")}
-                  >
-                    <span>Home</span>
-                  </a>
-                </li>
-                <li className="nav-item dropdown">
-                  <ShopDropdown handleReloadNavigate={handleReloadNavigate} mobileClose={() => setShowMobileMenu(false)} />
-
-                </li>
-                {[
-                  ["/bestseller", "Best Sellers"],
-                  ["/newcollection", "New Collection"],
-                  ["/allproducts", "All Products"],
-                  ["/brand", "Brand"],
-                  ["/contactus", "Contact"]
-                ].map(([path, label]) => (
-                  <li className="nav-item" key={path}>
-                    <a
-                      href={path}
-                      className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
-                      onClick={(e) => handleReloadNavigate(e, path)}
-                    >
-                      <span>{label}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
+         {/* Mobile Menu */}
+<div className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`} ref={mobileMenuRef}>
+  {/* Add close button at the top of mobile menu */}
+  <div className="mobile-menu-header d-flex justify-content-between align-items-center">
+    <Link to="/" className="navbar-brand">
+      <img src={logo} alt="Logo" height="40" className="logo-img" />
+    </Link>
+    <button 
+      className="btn close-menu-btn" 
+      onClick={() => setShowMobileMenu(false)}
+      aria-label="Close menu"
+    >
+      <FaTimes className="menu-icon" />
+    </button>
+  </div>
+  
+  <nav className="mobile-menu">
+    <ul className="nav flex-column">
+      <li className="nav-item">
+        <a
+          href="/"
+          className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
+          onClick={(e) => handleReloadNavigate(e, "/")}
+        >
+          <span>Home</span>
+        </a>
+      </li>
+      <li className="nav-item dropdown">
+        <ShopDropdown handleReloadNavigate={handleReloadNavigate} mobileClose={() => setShowMobileMenu(false)} />
+      </li>
+      {[
+        ["/bestseller", "Best Sellers"],
+        ["/newcollection", "New Collection"],
+        ["/allproducts", "All Products"],
+        ["/brand", "Brand"],
+        ["/contactus", "Contact"]
+      ].map(([path, label]) => (
+        <li className="nav-item" key={path}>
+          <a
+            href={path}
+            className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
+            onClick={(e) => handleReloadNavigate(e, path)}
+          >
+            <span>{label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
 
           {/* Desktop Menu */}
           <nav className="d-none d-lg-flex justify-content-center mt-3">
