@@ -641,43 +641,55 @@
   border-width: 0;
 }
 
-/* ================ RESPONSIVE STYLES ================ */
+/* ================ PRODUCT GALLERY SECTION ================ */
 @media (max-width: 768px) {
-  /* Mobile and tablet styles */
-  .product-gallery, .product-info {
-    width: 100%; /* Full width on small screens */
-    padding: 0;
-  }
-  
   .product-gallery {
-    flex-direction: column-reverse; /* Stack thumbnails below main image */
+    flex-direction: column; /* Stack main image above thumbnails */
   }
   
   .gallery-thumbnails {
+    display: flex; /* Make thumbnails horizontal */
+    flex-direction: row;
+    overflow-x: auto; /* Enable horizontal scrolling if needed */
+    gap: 8px; /* Space between thumbnails */
+    padding: 8px 0; /* Some vertical padding */
     width: 100%;
-    flex-direction: row; /* Horizontal thumbnails on mobile */
-    overflow-x: auto; /* Horizontal scrolling if needed */
     margin-right: 0;
     margin-top: 10px;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
   
   .thumbnail {
-    min-width: 70px; /* Minimum thumbnail size */
-    margin-right: 10px;
+    min-width: 60px; /* Smaller thumbnail width */
+    height: 60px; /* Fixed height */
     margin-bottom: 0;
+    flex-shrink: 0; /* Prevent thumbnails from shrinking */
   }
   
-  .sharing-buttons {
-    justify-content: space-between; /* Better spacing for share buttons */
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images fill the thumbnail */
   }
   
-  .share-button {
-    flex: 1;
-    justify-content: center;
+  .main-image {
+    height: 350px; /* Reduced height for mobile */
   }
   
-  .action-buttons {
-    flex-direction: column; /* Stack buttons vertically */
+  /* Hide scrollbar but keep functionality */
+  .gallery-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+  .product-info{
+    width: 100%;
+  }
+  /* Optional: Add scroll indicator for better UX */
+  .scroll-indicator {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    padding: 5px 0;
+    display: none; /* Show only if needed with JS */
   }
 }
 
