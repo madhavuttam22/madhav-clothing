@@ -641,55 +641,62 @@
   border-width: 0;
 }
 
-/* ================ PRODUCT GALLERY SECTION ================ */
+/* Mobile-specific styles (max-width: 768px) */
 @media (max-width: 768px) {
   .product-gallery {
+
     flex-direction: column; /* Stack main image above thumbnails */
+    margin-bottom: 20px;
   }
   
+
   .gallery-thumbnails {
-    display: flex; /* Make thumbnails horizontal */
+    display: flex; /* Horizontal layout for thumbnails */
     flex-direction: row;
-    overflow-x: auto; /* Enable horizontal scrolling if needed */
-    gap: 8px; /* Space between thumbnails */
-    padding: 8px 0; /* Some vertical padding */
     width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-y: hidden;
+    padding-bottom: 10px; /* Space for scrollbar */
+    margin-top: 15px;
     margin-right: 0;
-    margin-top: 10px;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
-  
+
   .thumbnail {
-    min-width: 60px; /* Smaller thumbnail width */
-    height: 60px; /* Fixed height */
+    min-width: 70px; /* Fixed width for thumbnails */
+    height: 70px; /* Fixed height for thumbnails */
+    margin-right: 10px;
     margin-bottom: 0;
     flex-shrink: 0; /* Prevent thumbnails from shrinking */
   }
-  
+
   .thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensure images fill the thumbnail */
+    object-fit: cover; /* Ensure thumbnails fill their container */
   }
-  
+
   .main-image {
-    height: 350px; /* Reduced height for mobile */
-  }
-  
-  /* Hide scrollbar but keep functionality */
-  .gallery-thumbnails::-webkit-scrollbar {
-    display: none;
-  }
-  .product-info{
     width: 100%;
+    height: auto;
+    max-height: 400px; /* Adjust based on your needs */
+    aspect-ratio: 1/1; /* Maintain square ratio */
   }
-  /* Optional: Add scroll indicator for better UX */
+
+  .main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Scroll indicator for thumbnails */
   .scroll-indicator {
+    display: block;
+    width: 100%;
     text-align: center;
     color: #999;
     font-size: 12px;
-    padding: 5px 0;
-    display: none; /* Show only if needed with JS */
+    margin-top: 5px;
   }
 }
 
