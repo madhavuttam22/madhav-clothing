@@ -10,8 +10,6 @@ import {
   FiChevronUp,
   FiRefreshCw,
 } from "react-icons/fi";
-import Header from "../../Header/Header";
-import Footer from "../../Footer/Footer";
 import "./MyOrders.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
