@@ -161,8 +161,10 @@ const Header = () => {
               <Link
                 to={user ? "/profile" : "/login"}
                 className="text-dark icon-hover"
-                onClick={handleProfileClick}
-              >
+                onClick={(e) => {
+                  handleProfileClick(e);
+                  window.location.reload();}}
+                >
                 <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
               </Link>
 
@@ -175,7 +177,7 @@ const Header = () => {
                         type="text"
                         placeholder="Search products..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {setSearchQuery(e.target.value);window.location.reload();}}
                         className="search-input"
                         autoFocus
                       />
@@ -215,7 +217,7 @@ const Header = () => {
               </button>
 
               {/* Cart */}
-              <Link to="/cart" className="position-relative text-dark icon-hover">
+              <Link to="/cart" className="position-relative text-dark icon-hover" onClick={(e)=>{window.location.reload();}}>
                 <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
                 <span className="cart-badge"></span>
               </Link>
@@ -236,7 +238,7 @@ const Header = () => {
                     type="text"
                     placeholder="Search products..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {setSearchQuery(e.target.value);window.location.reload();}}
                     className="search-input"
                     autoFocus
                   />
