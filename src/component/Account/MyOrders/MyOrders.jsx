@@ -8,6 +8,7 @@ import {
   FiPackage,
   FiChevronDown,
   FiChevronUp,
+  FiRefreshCw,
 } from "react-icons/fi";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
@@ -17,57 +18,78 @@ import { auth } from "../../../firebase";
 import { formatCurrency, getProductImage } from "../../../utils/numbers";
 
 const MyOrders = () => {
-  useEffect(()=>{
-    document.title = 'MyOrdersPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = 'MyOrdersPage | RS Clothing';
+  }, []);
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expandedOrderId, setExpandedOrderId] = useState(null); // Track which order is expanded
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          const idToken = await firebaseUser.getIdToken();
-          const response = await fetch(
-            "https://web-production-2449.up.railway.app/api/orders/",
-            {
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            }
-          );
-
-          if (!response.ok) throw new Error("Failed to fetch orders");
-
-          const data = await response.json();
-          const ordersArray = Array.isArray(data.orders) ? data.orders : [];
-          const validatedOrders = ordersArray.map((order) => ({
-            ...order,
-            total: order.total ? Number(order.total) : 0,
-            items: order.items
-              ? order.items.map((item) => ({
-                  ...item,
-                  price: item.price ? Number(item.price) : 0,
-                }))
-              : [],
-          }));
-
-          setOrders(validatedOrders);
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
+  const fetchOrders = async (firebaseUser) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const response = await fetch(
+        "https://web-production-2449.up.railway.app/api/orders/",
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
         }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const ordersArray = Array.isArray(data.orders) ? data.orders : [];
+      
+      const validatedOrders = ordersArray.map((order) => ({
+        ...order,
+        total: order.total ? Number(order.total) : 0,
+        items: order.items
+          ? order.items.map((item) => ({
+              ...item,
+              price: item.price ? Number(item.price) : 0,
+            }))
+          : [],
+      }));
+
+      setOrders(validatedOrders);
+    } catch (err) {
+      console.error("Order fetch error:", err);
+      setError(err.message);
+      
+      // Auto-retry logic (max 3 retries)
+      if (retryCount < 3) {
+        setTimeout(() => {
+          setRetryCount(retryCount + 1);
+          fetchOrders(firebaseUser);
+        }, 2000 * (retryCount + 1)); // Exponential backoff
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        fetchOrders(firebaseUser);
       } else {
         navigate("/login/");
       }
     });
 
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, retryCount]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -89,12 +111,20 @@ const MyOrders = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Toggle expanded view for an order
   const toggleOrderExpansion = (orderId) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
   };
 
-  if (loading) {
+  const handleRetry = () => {
+    setRetryCount(0);
+    onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        fetchOrders(firebaseUser);
+      }
+    });
+  };
+
+  if (loading && retryCount === 0) {
     return (
       <div className="loading-screen">
         <div className="spinner"></div>
@@ -103,10 +133,16 @@ const MyOrders = () => {
     );
   }
 
-  if (error) {
+  if (error && retryCount >= 3) {
     return (
       <div className="error-message">
-        <p>Error loading orders: {error}</p>
+        <div className="error-content">
+          <h3>Error loading orders</h3>
+          <p>{error}</p>
+          <button onClick={handleRetry} className="retry-button">
+            <FiRefreshCw /> Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -159,7 +195,6 @@ const MyOrders = () => {
                   </div>
                 </div>
 
-                {/* Order Items - Always show first 3 items */}
                 <div className="order-items-preview">
                   {order.items.slice(0, 3).map((item) => (
                     <div key={item.id} className="order-item-preview">
@@ -194,7 +229,6 @@ const MyOrders = () => {
                     </div>
                   ))}
 
-                  {/* Expanded view - shows when order is clicked */}
                   {expandedOrderId === order.id && (
                     <div className="order-items-expanded">
                       {order.items.slice(3).map((item) => (
@@ -234,7 +268,6 @@ const MyOrders = () => {
                     </div>
                   )}
 
-                  {/* Show expand/collapse button if more than 3 items */}
                   {order.items.length > 3 && (
                     <button
                       className="expand-items-button"
