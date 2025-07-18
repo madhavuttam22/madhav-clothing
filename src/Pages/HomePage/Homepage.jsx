@@ -14,7 +14,7 @@
  * Each section is implemented as a separate component for modularity and reusability.
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 
 // Import all section components
 import Hero from '../../component/Hero/Hero'
@@ -26,6 +26,9 @@ import BestSeller from '../../component/BestSeller/BestSeller'
 import BackToTop from '../../component/BackToTop/BackToTop'
 
 const Homepage = () => {
+  useEffect(()=>{
+    document.title = 'HomePage | RS Clothing'
+  },[])
   return (
     /**
      * Fragment used to group multiple components without adding extra nodes to the DOM

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Register from '../../component/Account/Register/Register'
 
 /**
@@ -14,6 +14,9 @@ import Register from '../../component/Account/Register/Register'
  * Maintains consistent styling and structure with other pages.
  */
 const Registerpage = () => {
+  useEffect(()=>{
+      document.title = 'Register | RS Clothing'
+    },[])
   return (
     <>
       

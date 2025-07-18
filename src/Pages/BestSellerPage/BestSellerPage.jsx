@@ -19,6 +19,9 @@ import "./BestSellerPage.css";
  * - Responsive design for all screen sizes
  */
 const BestSellerPage = () => {
+  useEffect(()=>{
+    document.title = 'BestSellerPage | RS Clothing'
+  },[])
   // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();

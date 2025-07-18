@@ -16,6 +16,9 @@ import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
  * @returns {JSX.Element} The profile page with user information and editing capabilities.
  */
 const Profile = () => {
+  useEffect(()=>{
+    document.title = 'ProfilePage | RS Clothing'
+  },[])
   // State management
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Controls logout confirmation modal
   const [user, setUser] = useState({

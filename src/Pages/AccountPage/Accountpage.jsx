@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Login from '../../component/Account/Login/Login'
 
 /**
@@ -14,6 +14,9 @@ import Login from '../../component/Account/Login/Login'
  * Provides consistent layout structure across the application.
  */
 const Accountpage = () => {
+  useEffect(()=>{
+    document.title = 'Login | RS Clothing'
+  },[])
   return (
     <>
      

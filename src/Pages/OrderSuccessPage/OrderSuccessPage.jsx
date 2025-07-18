@@ -3,12 +3,15 @@
  * Displays a confirmation message after a successful order placement
  * Includes a success icon, confirmation message, and home button
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaCheckCircle, FaHome } from 'react-icons/fa';
 import './OrderSuccessPage.css';
 
 const OrderSuccessPage = () => {
+  useEffect(()=>{
+    document.title = 'OrderSuccessPage | RS Clothing'
+  },[])
   return (
     // Main container with centered content
     <div className="minimal-success-container">

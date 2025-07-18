@@ -17,6 +17,9 @@ import "./CategoryProductsPage.css";
  * Handles product display, size selection, adding to cart, and responsive layout.
  */
 const CategoryProductsPage = () => {
+  useEffect(()=>{
+    document.title = 'CategoryProductsPage | RS Clothing'
+  },[])
   // Get category ID from URL parameters
   const { category_id } = useParams();
 

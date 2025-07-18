@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ContactPage.css";
 import Header from "../../component/Header/Header";
@@ -10,6 +10,9 @@ import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationMod
  * Allows users to submit inquiries and view company contact details
  */
 const ContactPage = () => {
+  useEffect(()=>{
+    document.title = 'ContactPage | RS Clothing'
+  },[])
   // State for form data with initial empty values
   const [formData, setFormData] = useState({
     name: "",

@@ -21,6 +21,9 @@ import "./NewCollectionPage.css";
  * - Responsive design
  */
 const NewCollectionPage = () => {
+  useEffect(()=>{
+    document.title = 'NewCollectionPage | RS Clothing'
+  },[])
   // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();

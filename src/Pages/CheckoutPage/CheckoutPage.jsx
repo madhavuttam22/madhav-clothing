@@ -9,6 +9,9 @@ import "./CheckoutPage.css";
  * Manages form state, payment processing, and order summary display.
  */
 const CheckoutPage = () => {
+  useEffect(()=>{
+    document.title = 'CheckoutPage | RS Clothing'
+  },[])
   // Router hooks for navigation and location state
   const location = useLocation();
   const navigate = useNavigate();

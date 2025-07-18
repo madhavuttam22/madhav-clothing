@@ -118,8 +118,6 @@ const App = () => {
           <Route path="/bestseller/" element={<BestSellerPage />} />
           <Route path="/search/" element={<SearchResults />} />
           <Route path="/category/:category_id/products/" element={<CategoryProductsPage />} />
-          <Route path="/forgot-password/" element={<ForgotPassword />} />
-          <Route path="/reset-password/:uidb64/:token/" element={<ForgotPassword />} />
 
           {/* Protected Routes */}
           <Route path="/cart/" element={<ProtectedRoute><Cart /></ProtectedRoute>} />

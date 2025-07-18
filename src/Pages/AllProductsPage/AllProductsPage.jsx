@@ -9,6 +9,9 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import "./AllProductsPage.css";
 
 const AllProductsPage = () => {
+  useEffect(()=>{
+      document.title = 'AllProductsPage | RS Clothing'
+    },[])
   const navigate = useNavigate();
   const location = useLocation();
   const [allProducts, setAllProducts] = useState([]);

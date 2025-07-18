@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './BrandPage.css';
 
 /**
@@ -12,6 +12,9 @@ import './BrandPage.css';
  * - Smooth hover animations and transitions
  */
 const BrandPage = () => {
+  useEffect(()=>{
+    document.title = 'BrandPage | RS Clothing'
+  },[])
   return (
     <>
       

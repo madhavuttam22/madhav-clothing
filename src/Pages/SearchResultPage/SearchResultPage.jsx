@@ -9,6 +9,9 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
 
 const SearchResults = () => {
+  useEffect(()=>{
+    document.title = 'SearchResutlsPage | RS Clothing'
+  },[])
   const [searchKey, setSearchKey] = useState(0);
 
   const location = useLocation();

@@ -17,6 +17,9 @@ import { auth } from "../../../firebase";
 import { formatCurrency, getProductImage } from "../../../utils/numbers";
 
 const MyOrders = () => {
+  useEffect(()=>{
+    document.title = 'MyOrdersPage | RS Clothing'
+  },[])
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
