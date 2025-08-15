@@ -9,7 +9,6 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
 import { useAuth } from "../context/AuthContext.jsx";
 import logo from "/logo.png";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigatecart = useNavigatecart();
