@@ -26,6 +26,10 @@ const Header = () => {
 
   const handleReloadNavigate = (e, path) => {
     e.preventDefault();
+    if (path === "/cart") {
+  navigate("/cart?" + Date.now());
+  return;
+}
     if (location.pathname === path) {
       window.location.reload();
     } else {
@@ -249,7 +253,7 @@ const Header = () => {
               </button>
 
               {/* Cart */}
-              <Link
+              {/* <Link
                 to="/cart"
                 className="position-relative text-dark icon-hover"
                 onClick={(e) => {
@@ -263,7 +267,23 @@ const Header = () => {
                   }`}
                 ></i>
                 <span className="cart-badge"></span>
-              </Link>
+              </Link> */}
+              <Link
+  to="/cart"
+  className="position-relative text-dark icon-hover"
+  onClick={(e) => {
+    e.preventDefault();
+    navigate("/cart?" + new Date().getTime()); // unique param add
+  }}
+>
+  <i
+    className={`bi bi-cart cart-icon ${
+      isActive("/cart") ? "active-icon" : ""
+    }`}
+  ></i>
+  <span className="cart-badge"></span>
+</Link>
+
 
               {/* Mobile Menu Button */}
               <button
