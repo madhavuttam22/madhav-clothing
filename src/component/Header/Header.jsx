@@ -23,16 +23,25 @@ const Header = () => {
 
   // Exact active match only
   const isActive = (path) => location.pathname === path;
-
   const handleReloadNavigate = (e, path) => {
-    e.preventDefault();
-    if (location.pathname === path) {
-      window.location.reload();
-    } else {
-      navigate(path);
-      setTimeout(() => window.location.reload(), 10); // optional reload
-    }
-  };
+  e.preventDefault();
+  if (location.pathname !== path) {
+    navigate(path);
+  } else {
+    // Agar same page hai to manually refresh content (fetch function call)
+    refreshCurrentPageData();
+  }
+};
+
+  // const handleReloadNavigate = (e, path) => {
+  //   e.preventDefault();
+  //   if (location.pathname === path) {
+  //     window.location.reload();
+  //   } else {
+  //     navigate(path);
+  //     setTimeout(() => window.location.reload(), 10); // optional reload
+  //   }
+  // };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -252,9 +261,7 @@ const Header = () => {
               <Link
                 to="/cart"
                 className="position-relative text-dark icon-hover"
-                onClick={(e) => {
-                  window.location.reload();
-                }}
+                onClick={(e) => handleReloadNavigate(e, "/cart")}
               >
                 <i
                   className={`bi bi-cart cart-icon ${
