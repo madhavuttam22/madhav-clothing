@@ -80,7 +80,7 @@ const ContactPage = () => {
     try {
       // Send form data to the backend API
       const response = await axios.post(
-        "https://ecommerce-backend-da9u.onrender.com/api/contact/",
+        "https://web-production-27d40.up.railway.app/api/contact/",
         formData,
         { withCredentials: true }
       );

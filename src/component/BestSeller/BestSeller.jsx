@@ -43,7 +43,7 @@ const BestSeller = () => {
     const fetchBestSellers = async () => {
       try {
         const res = await axios.get(
-          "https://ecommerce-backend-da9u.onrender.com/api/products/?is_best=true"
+          "https://web-production-27d40.up.railway.app/api/products/?is_best=true"
         );
 
         // Process product data to include images and default sizes
@@ -134,7 +134,7 @@ const BestSeller = () => {
 
       // API call to add product to cart
       const response = await fetch(
-        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {

@@ -93,7 +93,7 @@ const CheckoutPage = () => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.get(
-        "https://ecommerce-backend-da9u.onrender.com/api/cart/",
+        "https://web-production-27d40.up.railway.app/api/cart/",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -176,7 +176,7 @@ const CheckoutPage = () => {
           try {
             // Verify payment with backend
             await axios.post(
-              "https://ecommerce-backend-da9u.onrender.com/api/payments/verify/",
+              "https://web-production-27d40.up.railway.app/api/payments/verify/",
               {
                 order_id: order_id,
                 payment_id: response.razorpay_payment_id,
@@ -278,7 +278,7 @@ const CheckoutPage = () => {
 
       // Create order via API
       const response = await axios.post(
-        "https://ecommerce-backend-da9u.onrender.com/api/orders/create/",
+        "https://web-production-27d40.up.railway.app/api/orders/create/",
         orderData,
         {
           headers: {

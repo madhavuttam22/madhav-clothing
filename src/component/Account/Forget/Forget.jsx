@@ -36,7 +36,7 @@ const ForgotPassword = () => {
 
       // Notify Django backend
       const response = await fetch(
-        "https://ecommerce-backend-da9u.onrender.com/api/password-reset/",
+        "https://web-production-27d40.up.railway.app/api/password-reset/",
         {
           method: "POST",
           headers: {
@@ -95,7 +95,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        `https://ecommerce-backend-da9u.onrender.com/api/password-reset-confirm/${uidb64}/${token}/`,
+        `https://web-production-27d40.up.railway.app/api/password-reset-confirm/${uidb64}/${token}/`,
         {
           method: "POST",
           headers: {

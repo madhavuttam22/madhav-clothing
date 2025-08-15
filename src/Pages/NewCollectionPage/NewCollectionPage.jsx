@@ -61,7 +61,7 @@ const NewCollectionPage = () => {
       try {
         // API call to get new arrival products
         const res = await axios.get(
-          "https://ecommerce-backend-da9u.onrender.com/api/products/?is_new=true"
+          "https://web-production-27d40.up.railway.app/api/products/?is_new=true"
         );
 
         // Process product data to include default images and sizes
@@ -184,7 +184,7 @@ const NewCollectionPage = () => {
 
       // API call to add to cart
       const response = await fetch(
-        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {

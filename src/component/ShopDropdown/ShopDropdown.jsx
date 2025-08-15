@@ -34,7 +34,7 @@ const ShopDropdown = ({ handleReloadNavigate, mobileClose }) => {
       try {
         // API call to get categories
         const response = await axios.get(
-          "https://ecommerce-backend-da9u.onrender.com/api/categories/"
+          "https://web-production-27d40.up.railway.app/api/categories/"
         );
         // Update state with fetched categories
         setCategories(response.data);

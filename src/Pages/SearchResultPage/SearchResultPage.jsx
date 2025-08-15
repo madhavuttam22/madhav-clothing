@@ -55,7 +55,7 @@ const SearchResults = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `https://ecommerce-backend-da9u.onrender.com/api/products/enhanced-search/`,
+        `https://web-production-27d40.up.railway.app/api/products/enhanced-search/`,
         { params: { q: searchTerm } }
       );
       const updated = res.data.results.map((product) => {
@@ -103,7 +103,7 @@ const SearchResults = () => {
   const fetchSuggestions = async (q) => {
     try {
       const res = await axios.get(
-        `https://ecommerce-backend-da9u.onrender.com/api/search/suggestions/`,
+        `https://web-production-27d40.up.railway.app/api/search/suggestions/`,
         { params: { q } }
       );
       setSuggestions(res.data.suggestions || []);
@@ -155,7 +155,7 @@ const SearchResults = () => {
         return navigate("/login", { state: { from: location.pathname } });
       const colorId = product.colors?.[0]?.color?.id || null;
       const response = await fetch(
-        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
+        `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {

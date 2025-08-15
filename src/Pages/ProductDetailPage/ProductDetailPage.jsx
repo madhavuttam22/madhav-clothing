@@ -126,7 +126,7 @@ const ProductDetailPage = () => {
 
       // API call to add product to cart
       const response = await fetch(
-        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${product.id}/`,
+        `https://web-production-27d40.up.railway.app/api/cart/add/${product.id}/`,
         {
           method: "POST",
           headers: {
@@ -227,7 +227,7 @@ const ProductDetailPage = () => {
       setLoading(true); // Optional: reset loading state when switching product
       try {
         const response = await fetch(
-          `https://ecommerce-backend-da9u.onrender.com/api/products/${id}/`
+          `https://web-production-27d40.up.railway.app/api/products/${id}/`
         );
         if (!response.ok) throw new Error("Product not found");
 

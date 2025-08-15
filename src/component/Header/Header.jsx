@@ -70,7 +70,7 @@ const Header = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `https://ecommerce-backend-da9u.onrender.com/api/search/suggestions/`,
+        `https://web-production-27d40.up.railway.app/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
