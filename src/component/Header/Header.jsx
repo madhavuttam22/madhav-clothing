@@ -9,8 +9,15 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import ShopDropdown from "../ShopDropdown/ShopDropdown";
 import { useAuth } from "../context/AuthContext.jsx";
 import logo from "/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigatecart = useNavigatecart();
+
+  const handleCartClick = () => {
+    navigatecart(`/cart?refresh=${Date.now()}`, { replace: false }); 
+  };
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -26,10 +33,7 @@ const Header = () => {
 
   const handleReloadNavigate = (e, path) => {
     e.preventDefault();
-    if (path === "/cart") {
-  navigate("/cart?" + Date.now());
-  return;
-}
+    
     if (location.pathname === path) {
       window.location.reload();
     } else {
@@ -268,13 +272,9 @@ const Header = () => {
                 ></i>
                 <span className="cart-badge"></span>
               </Link> */}
-              <Link
-  to="/cart"
+              <button
   className="position-relative text-dark icon-hover"
-  onClick={(e) => {
-    e.preventDefault();
-    navigate("/cart?" + new Date().getTime()); // unique param add
-  }}
+  onClick={handleCartClick}
 >
   <i
     className={`bi bi-cart cart-icon ${
@@ -282,7 +282,7 @@ const Header = () => {
     }`}
   ></i>
   <span className="cart-badge"></span>
-</Link>
+</button>
 
 
               {/* Mobile Menu Button */}
