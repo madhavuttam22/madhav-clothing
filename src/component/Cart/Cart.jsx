@@ -115,8 +115,8 @@ const Cart = () => {
   // Fetch cart data on component mount
   useEffect(() => {
     fetchCartData();
-  }, [location.key]);
-  console.log(location.key)
+  }, [location.search]);
+  console.log(location.search)
 
   /**
    * Handles cart actions (update quantity or remove item)

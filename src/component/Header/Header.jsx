@@ -271,7 +271,7 @@ const Header = () => {
                 ></i>
                 <span className="cart-badge"></span>
               </Link> */}
-              <button
+              <a
   className="position-relative text-dark icon-hover"
   onClick={handleCartClick}
 >
@@ -281,7 +281,7 @@ const Header = () => {
     }`}
   ></i>
   <span className="cart-badge"></span>
-</button>
+</a>
 
 
               {/* Mobile Menu Button */}
