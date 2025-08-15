@@ -249,8 +249,8 @@ const Header = () => {
               </button>
 
               {/* Cart */}
-              <a 
-                // to="/cart"
+              {/* <Link
+                to="/cart"
                 className="position-relative text-dark icon-hover"
                 onClick={(e) => {
                   e.preventDefault();
@@ -263,7 +263,8 @@ const Header = () => {
                   }`}
                 ></i>
                 <span className="cart-badge"></span>
-              </a>
+              </Link> */}
+              <Link to={'/cart/'}>C</Link>
 
               {/* Mobile Menu Button */}
               <button
