@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Cart.css";
 import Footer from "../Footer/Footer";
+import { useLocation } from "react-router-dom";
 import Header from "../Header/Header";
 import { Link, useNavigate } from "react-router-dom";
 import Notification from "../Notification/Notification";
@@ -113,7 +114,7 @@ const Cart = () => {
   // Fetch cart data on component mount
   useEffect(() => {
     fetchCartData();
-  }, []);
+  }, [location.state?.refresh]);
 
   /**
    * Handles cart actions (update quantity or remove item)

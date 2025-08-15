@@ -249,12 +249,12 @@ const Header = () => {
               </button>
 
               {/* Cart */}
-              {/* <Link
+              <Link
                 to="/cart"
                 className="position-relative text-dark icon-hover"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/cart");
+                  navigate("/cart", { state: { refresh: Date.now() } });
                 }}
               >
                 <i
@@ -263,8 +263,7 @@ const Header = () => {
                   }`}
                 ></i>
                 <span className="cart-badge"></span>
-              </Link> */}
-              <Link to={'/cart'} onClick={()=>window.location.reload()}>C</Link>
+              </Link>
 
               {/* Mobile Menu Button */}
               <button
