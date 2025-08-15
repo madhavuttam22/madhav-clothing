@@ -264,7 +264,7 @@ const Header = () => {
                 ></i>
                 <span className="cart-badge"></span>
               </Link> */}
-              <Link to={'/cart/'}>C</Link>
+              <Link to={'/cart'}>C</Link>
 
               {/* Mobile Menu Button */}
               <button
