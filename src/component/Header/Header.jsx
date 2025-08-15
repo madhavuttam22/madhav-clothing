@@ -250,7 +250,7 @@ const Header = () => {
 
               {/* Cart */}
               <Link
-                to="/cart/"
+                to="/cart"
                 className="position-relative text-dark icon-hover"
                 // onClick={(e) => {
                 //   window.location.reload();
@@ -258,7 +258,7 @@ const Header = () => {
               >
                 <i
                   className={`bi bi-cart cart-icon ${
-                    isActive("/cart/") ? "active-icon" : ""
+                    isActive("/cart") ? "active-icon" : ""
                   }`}
                 ></i>
                 <span className="cart-badge"></span>
