@@ -11,7 +11,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import logo from "/logo.png";
 
 const Header = () => {
-  const navigatecart = useNavigatecart();
+  const navigatecart = useNavigate();
 
   const handleCartClick = () => {
     navigatecart(`/cart?refresh=${Date.now()}`, { replace: false }); 
