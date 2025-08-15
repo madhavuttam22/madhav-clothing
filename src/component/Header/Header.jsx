@@ -252,9 +252,10 @@ const Header = () => {
               <Link
                 to="/cart"
                 className="position-relative text-dark icon-hover"
-                // onClick={(e) => {
-                //   window.location.reload();
-                // }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/cart");
+                }}
               >
                 <i
                   className={`bi bi-cart cart-icon ${
