@@ -115,6 +115,7 @@ const Cart = () => {
   useEffect(() => {
     fetchCartData();
   }, [location.key]);
+  console.log(location.key)
 
   /**
    * Handles cart actions (update quantity or remove item)
