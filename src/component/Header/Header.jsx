@@ -188,7 +188,7 @@ const Header = () => {
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
-                          window.location.reload();
+                          // window.location.reload();
                         }}
                         className="search-input"
                         autoFocus
@@ -252,9 +252,9 @@ const Header = () => {
               <Link
                 to="/cart/"
                 className="position-relative text-dark icon-hover"
-                onClick={(e) => {
-                  window.location.reload();
-                }}
+                // onClick={(e) => {
+                //   window.location.reload();
+                // }}
               >
                 <i
                   className={`bi bi-cart cart-icon ${
@@ -289,7 +289,7 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
-                      window.location.reload();
+                      // window.location.reload();
                     }}
                     className="search-input"
                     autoFocus
