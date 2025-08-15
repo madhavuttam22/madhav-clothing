@@ -9,9 +9,9 @@ import "./CheckoutPage.css";
  * Manages form state, payment processing, and order summary display.
  */
 const CheckoutPage = () => {
-  useEffect(()=>{
-    document.title = 'CheckoutPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "CheckoutPage | RS Clothing";
+  }, []);
   // Router hooks for navigation and location state
   const location = useLocation();
   const navigate = useNavigate();
@@ -93,7 +93,7 @@ const CheckoutPage = () => {
     try {
       const token = await auth.currentUser?.getIdToken();
       const response = await axios.get(
-        "https://web-production-2449.up.railway.app/api/cart/",
+        "https://ecommerce-backend-da9u.onrender.com/api/cart/",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -176,7 +176,7 @@ const CheckoutPage = () => {
           try {
             // Verify payment with backend
             await axios.post(
-              "https://web-production-2449.up.railway.app/api/payments/verify/",
+              "https://ecommerce-backend-da9u.onrender.com/api/payments/verify/",
               {
                 order_id: order_id,
                 payment_id: response.razorpay_payment_id,
@@ -278,7 +278,7 @@ const CheckoutPage = () => {
 
       // Create order via API
       const response = await axios.post(
-        "https://web-production-2449.up.railway.app/api/orders/create/",
+        "https://ecommerce-backend-da9u.onrender.com/api/orders/create/",
         orderData,
         {
           headers: {

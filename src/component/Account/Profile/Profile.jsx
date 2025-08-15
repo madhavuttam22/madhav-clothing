@@ -16,9 +16,9 @@ import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
  * @returns {JSX.Element} The profile page with user information and editing capabilities.
  */
 const Profile = () => {
-  useEffect(()=>{
-    document.title = 'ProfilePage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "ProfilePage | RS Clothing";
+  }, []);
   // State management
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Controls logout confirmation modal
   const [user, setUser] = useState({
@@ -72,7 +72,7 @@ const Profile = () => {
 
           // Fetch profile data from backend
           const res = await fetch(
-            "https://web-production-2449.up.railway.app/api/profile/me/",
+            "https://ecommerce-backend-da9u.onrender.com/api/profile/me/",
             {
               headers: {
                 Authorization: `Bearer ${idToken}`,
@@ -209,7 +209,7 @@ const Profile = () => {
 
       // Send update to backend
       const response = await fetch(
-        "https://web-production-2449.up.railway.app/api/profile/update/",
+        "https://ecommerce-backend-da9u.onrender.com/api/profile/update/",
         {
           method: "PUT",
           headers: {

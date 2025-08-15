@@ -8,7 +8,7 @@ import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 /**
  * ProductItems Component - Displays a grid of top products with add-to-cart functionality
- * 
+ *
  * @returns {JSX.Element} - Rendered product grid component
  */
 const ProductItems = () => {
@@ -64,14 +64,14 @@ const ProductItems = () => {
 
     try {
       setAddingToCartId(productId); // Set loading state for this product
-      
+
       // Check authentication and get token
       const token = await checkAuthAndRedirect(navigate, location.pathname);
       if (!token) return; // User not logged in, redirected
 
       // API call to add to cart
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -110,7 +110,7 @@ const ProductItems = () => {
     const fetchTopProducts = async () => {
       try {
         const res = await axios.get(
-          "https://web-production-2449.up.railway.app/api/products/?is_top=true"
+          "https://ecommerce-backend-da9u.onrender.com/api/products/?is_top=true"
         );
 
         // Process product data with defaults

@@ -21,9 +21,9 @@ import "./NewCollectionPage.css";
  * - Responsive design
  */
 const NewCollectionPage = () => {
-  useEffect(()=>{
-    document.title = 'NewCollectionPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "NewCollectionPage | RS Clothing";
+  }, []);
   // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,7 +61,7 @@ const NewCollectionPage = () => {
       try {
         // API call to get new arrival products
         const res = await axios.get(
-          "https://web-production-2449.up.railway.app/api/products/?is_new=true"
+          "https://ecommerce-backend-da9u.onrender.com/api/products/?is_new=true"
         );
 
         // Process product data to include default images and sizes
@@ -184,7 +184,7 @@ const NewCollectionPage = () => {
 
       // API call to add to cart
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -299,10 +299,13 @@ const NewCollectionPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <a className="cursor" onClick={() => {
-                        navigate(`/product/${item.id}/`);
-                        window.location.reload();
-                      }}>
+                  <a
+                    className="cursor"
+                    onClick={() => {
+                      navigate(`/product/${item.id}/`);
+                      window.location.reload();
+                    }}
+                  >
                     <div className="new-collection-image-container">
                       <img
                         src={item.image}

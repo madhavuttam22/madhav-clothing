@@ -33,10 +33,10 @@ const ForgotPassword = () => {
 
       // Send password reset email via Firebase
       await sendPasswordResetEmail(auth, email);
-      
+
       // Notify Django backend
       const response = await fetch(
-        "https://web-production-2449.up.railway.app/api/password-reset/",
+        "https://ecommerce-backend-da9u.onrender.com/api/password-reset/",
         {
           method: "POST",
           headers: {
@@ -51,12 +51,14 @@ const ForgotPassword = () => {
         throw new Error(errorData.error || "Failed to process request");
       }
 
-      showNotification("Password reset email sent. Please check your inbox (including spam folder).");
+      showNotification(
+        "Password reset email sent. Please check your inbox (including spam folder)."
+      );
       setStep(1.5);
     } catch (error) {
       console.error("Reset request error:", error);
       showNotification(
-        error.message.includes('Firebase') 
+        error.message.includes("Firebase")
           ? "Password reset email sent (check your inbox)"
           : error.message || "Failed to send reset email",
         "error"
@@ -68,7 +70,7 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    
+
     // Validate passwords
     if (newPassword !== confirmPassword) {
       showNotification("Passwords do not match", "error");
@@ -82,7 +84,10 @@ const ForgotPassword = () => {
 
     // Check for password strength (optional)
     if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}/.test(newPassword)) {
-      showNotification("Password should contain at least one uppercase letter, one lowercase letter, and one number", "error");
+      showNotification(
+        "Password should contain at least one uppercase letter, one lowercase letter, and one number",
+        "error"
+      );
       return;
     }
 
@@ -90,21 +95,21 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/password-reset-confirm/${uidb64}/${token}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/password-reset-confirm/${uidb64}/${token}/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             new_password: newPassword,
-            confirm_password: confirmPassword 
+            confirm_password: confirmPassword,
           }),
         }
       );
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Failed to reset password");
       }

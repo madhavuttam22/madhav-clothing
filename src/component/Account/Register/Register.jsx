@@ -101,7 +101,7 @@ const Register = () => {
       const idToken = await user.getIdToken();
 
       // Register user with backend API
-      await fetch("https://web-production-2449.up.railway.app/api/register/", {
+      await fetch("https://ecommerce-backend-da9u.onrender.com/api/register/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -143,12 +143,15 @@ const Register = () => {
         const idToken = await user.getIdToken();
 
         // Register user with backend API
-        await fetch("https://web-production-2449.up.railway.app/api/register/", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
+        await fetch(
+          "https://ecommerce-backend-da9u.onrender.com/api/register/",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
+        );
 
         // Show success modal
         setShowSuccessModal(true);
@@ -164,7 +167,9 @@ const Register = () => {
       {/* Registration Form Container */}
       <div className="register-form-container my-3">
         <h1 className="register-title">Create Account</h1>
-        <p className="register-subtitle">Please fill in the information below:</p>
+        <p className="register-subtitle">
+          Please fill in the information below:
+        </p>
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="register-form">

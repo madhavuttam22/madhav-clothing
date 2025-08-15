@@ -16,9 +16,9 @@ import { getAuth } from "firebase/auth";
  * - Handle empty cart state
  */
 const Cart = () => {
-  useEffect(()=>{
-    document.title = 'CartPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "CartPage | RS Clothing";
+  }, []);
   // State management
   const [cartData, setCartData] = useState({
     items: [], // Array of cart items
@@ -60,7 +60,7 @@ const Cart = () => {
 
       // API call to get cart data
       const response = await fetch(
-        "https://web-production-2449.up.railway.app/api/cart/",
+        "https://ecommerce-backend-da9u.onrender.com/api/cart/",
         {
           method: "GET",
           headers: {
@@ -145,10 +145,10 @@ const Cart = () => {
 
       // Determine API endpoint and request body based on action
       if (action === "remove") {
-        endpoint = `https://web-production-2449.up.railway.app/api/cart/remove/${productId}/`;
+        endpoint = `https://ecommerce-backend-da9u.onrender.com/api/cart/remove/${productId}/`;
         body = { size_id: sizeId, color_id: colorId };
       } else if (action === "update") {
-        endpoint = `https://web-production-2449.up.railway.app/api/cart/update/${productId}/`;
+        endpoint = `https://ecommerce-backend-da9u.onrender.com/api/cart/update/${productId}/`;
         body = {
           quantity,
           size_id: sizeId,

@@ -19,9 +19,9 @@ import { auth } from "../../firebase";
  * - Size chart modal
  */
 const ProductDetailPage = () => {
-  useEffect(()=>{
-    document.title = 'ProductDetailPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "ProductDetailPage | RS Clothing";
+  }, []);
   // Get product ID from URL parameters
   const { id } = useParams();
 
@@ -126,7 +126,7 @@ const ProductDetailPage = () => {
 
       // API call to add product to cart
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${product.id}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${product.id}/`,
         {
           method: "POST",
           headers: {
@@ -222,43 +222,42 @@ const ProductDetailPage = () => {
 
   // Fetch product data on component mount
   // ✅ Fixed
-useEffect(() => {
-  const fetchProduct = async () => {
-    setLoading(true); // Optional: reset loading state when switching product
-    try {
-      const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/products/${id}/`
-      );
-      if (!response.ok) throw new Error("Product not found");
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true); // Optional: reset loading state when switching product
+      try {
+        const response = await fetch(
+          `https://ecommerce-backend-da9u.onrender.com/api/products/${id}/`
+        );
+        if (!response.ok) throw new Error("Product not found");
 
-      const data = await response.json();
-      setProduct(data);
+        const data = await response.json();
+        setProduct(data);
 
-      // Default color and image
-      if (data.colors?.length > 0) {
-        const firstColor = data.colors[0];
-        setSelectedColor(firstColor.color);
-        updateColorImages(firstColor);
+        // Default color and image
+        if (data.colors?.length > 0) {
+          const firstColor = data.colors[0];
+          setSelectedColor(firstColor.color);
+          updateColorImages(firstColor);
+        }
+
+        // Default size
+        if (data.sizes?.length > 0) {
+          const firstAvailableSize =
+            data.sizes.find((size) => size.stock > 0)?.size ||
+            data.sizes[0].size;
+          setSelectedSize(firstAvailableSize);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      // Default size
-      if (data.sizes?.length > 0) {
-        const firstAvailableSize =
-          data.sizes.find((size) => size.stock > 0)?.size ||
-          data.sizes[0].size;
-        setSelectedSize(firstAvailableSize);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchProduct();
-  window.scrollTo(0, 0);
-}, [id]); // ✅ Depend on `id`
-
+    fetchProduct();
+    window.scrollTo(0, 0);
+  }, [id]); // ✅ Depend on `id`
 
   /**
    * Updates the images displayed based on selected color
@@ -352,7 +351,7 @@ useEffect(() => {
                     </div>
                   ))}
                 </div>
-                    <div className="scroll-indicator"></div>
+                <div className="scroll-indicator"></div>
                 {/* Main Product Image */}
                 <div className="main-image">
                   {mainImage ? (

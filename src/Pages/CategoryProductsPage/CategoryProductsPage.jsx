@@ -17,9 +17,9 @@ import "./CategoryProductsPage.css";
  * Handles product display, size selection, adding to cart, and responsive layout.
  */
 const CategoryProductsPage = () => {
-  useEffect(()=>{
-    document.title = 'CategoryProductsPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "CategoryProductsPage | RS Clothing";
+  }, []);
   // Get category ID from URL parameters
   const { category_id } = useParams();
 
@@ -61,10 +61,10 @@ const CategoryProductsPage = () => {
         // Fetch both products and categories in parallel
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(
-            `https://web-production-2449.up.railway.app/api/categories/${category_id}/products/`
+            `https://ecommerce-backend-da9u.onrender.com/api/categories/${category_id}/products/`
           ),
           axios.get(
-            "https://web-production-2449.up.railway.app/api/categories/"
+            "https://ecommerce-backend-da9u.onrender.com/api/categories/"
           ),
         ]);
 
@@ -205,7 +205,7 @@ const CategoryProductsPage = () => {
 
       // Make API call to add to cart
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -321,10 +321,13 @@ const CategoryProductsPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <a className="cursor" onClick={() => {
-                        navigate(`/product/${item.id}/`);
-                        window.location.reload();
-                      }}>
+                  <a
+                    className="cursor"
+                    onClick={() => {
+                      navigate(`/product/${item.id}/`);
+                      window.location.reload();
+                    }}
+                  >
                     <div className="category-image-container">
                       <img
                         src={product.image}

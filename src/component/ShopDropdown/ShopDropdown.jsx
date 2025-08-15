@@ -4,10 +4,10 @@ import axios from "axios";
 
 /**
  * ShopDropdown Component
- * 
+ *
  * A dropdown menu component that displays product categories fetched from an API.
  * Integrates with React Router for navigation and highlights active categories.
- * 
+ *
  * Features:
  * - Fetches categories from backend API on component mount
  * - Displays loading state while fetching data
@@ -34,7 +34,7 @@ const ShopDropdown = ({ handleReloadNavigate, mobileClose }) => {
       try {
         // API call to get categories
         const response = await axios.get(
-          "https://web-production-2449.up.railway.app/api/categories/"
+          "https://ecommerce-backend-da9u.onrender.com/api/categories/"
         );
         // Update state with fetched categories
         setCategories(response.data);
@@ -71,7 +71,7 @@ const ShopDropdown = ({ handleReloadNavigate, mobileClose }) => {
       >
         <span>Shop</span>
       </a>
-      
+
       {/* Dropdown menu containing categories */}
       <ul className="dropdown-menu">
         {loading ? (
@@ -83,15 +83,19 @@ const ShopDropdown = ({ handleReloadNavigate, mobileClose }) => {
           // Map through categories and create menu items
           categories.map((category) => (
             <li key={category.id}>
-               <a
-    className={`dropdown-item ${isActive(`/category/${category.id}`) ? "active-category" : ""}`}
-    href={`/category/${category.id}/products/`}
-    onClick={(e) => {
-      if (mobileClose) mobileClose(); // optional: close mobile menu
-      handleReloadNavigate(e, `/category/${category.id}/products/`);
-    }}
-    aria-current={isActive(`/category/${category.id}`) ? "page" : undefined}
-  >
+              <a
+                className={`dropdown-item ${
+                  isActive(`/category/${category.id}`) ? "active-category" : ""
+                }`}
+                href={`/category/${category.id}/products/`}
+                onClick={(e) => {
+                  if (mobileClose) mobileClose(); // optional: close mobile menu
+                  handleReloadNavigate(e, `/category/${category.id}/products/`);
+                }}
+                aria-current={
+                  isActive(`/category/${category.id}`) ? "page" : undefined
+                }
+              >
                 {category.category}
               </a>
             </li>

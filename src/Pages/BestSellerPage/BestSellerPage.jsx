@@ -19,9 +19,9 @@ import "./BestSellerPage.css";
  * - Responsive design for all screen sizes
  */
 const BestSellerPage = () => {
-  useEffect(()=>{
-    document.title = 'BestSellerPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "BestSellerPage | RS Clothing";
+  }, []);
   // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,7 +56,7 @@ const BestSellerPage = () => {
       try {
         // API call to get best seller products
         const res = await axios.get(
-          "https://web-production-2449.up.railway.app/api/products/?is_best=true"
+          "https://ecommerce-backend-da9u.onrender.com/api/products/?is_best=true"
         );
 
         // Process product data to include default images and sizes
@@ -180,7 +180,7 @@ const BestSellerPage = () => {
 
       // API call to add product to cart
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -293,10 +293,13 @@ const BestSellerPage = () => {
                   }
                 >
                   {/* Product image with link to product page */}
-                  <a className="cursor" onClick={() => {
-                        navigate(`/product/${item.id}/`);
-                        window.location.reload();
-                      }}>
+                  <a
+                    className="cursor"
+                    onClick={() => {
+                      navigate(`/product/${item.id}/`);
+                      window.location.reload();
+                    }}
+                  >
                     <div className="best-seller-image-container">
                       <img
                         src={item.image}
@@ -314,7 +317,7 @@ const BestSellerPage = () => {
                   <div className="best-seller-info">
                     <h3 className="best-seller-title">
                       <Link
-                        to={`/product/${item.id}/`} 
+                        to={`/product/${item.id}/`}
                         className="best-seller-title-link"
                       >
                         {item.name}

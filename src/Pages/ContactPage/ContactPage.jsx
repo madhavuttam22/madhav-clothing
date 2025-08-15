@@ -10,9 +10,9 @@ import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationMod
  * Allows users to submit inquiries and view company contact details
  */
 const ContactPage = () => {
-  useEffect(()=>{
-    document.title = 'ContactPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "ContactPage | RS Clothing";
+  }, []);
   // State for form data with initial empty values
   const [formData, setFormData] = useState({
     name: "",
@@ -80,7 +80,7 @@ const ContactPage = () => {
     try {
       // Send form data to the backend API
       const response = await axios.post(
-        "https://web-production-2449.up.railway.app/api/contact/",
+        "https://ecommerce-backend-da9u.onrender.com/api/contact/",
         formData,
         { withCredentials: true }
       );

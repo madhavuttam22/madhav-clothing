@@ -17,9 +17,9 @@ import { auth } from "../../../firebase";
 import { formatCurrency, getProductImage } from "../../../utils/numbers";
 
 const MyOrders = () => {
-  useEffect(()=>{
-    document.title = 'MyOrdersPage | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "MyOrdersPage | RS Clothing";
+  }, []);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ const MyOrders = () => {
         try {
           const idToken = await firebaseUser.getIdToken();
           const response = await fetch(
-            "https://web-production-2449.up.railway.app/api/orders/",
+            "https://ecommerce-backend-da9u.onrender.com/api/orders/",
             {
               headers: {
                 Authorization: `Bearer ${idToken}`,

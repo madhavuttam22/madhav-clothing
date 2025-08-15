@@ -9,9 +9,9 @@ import BackToTop from "../../component/BackToTop/BackToTop";
 import "./AllProductsPage.css";
 
 const AllProductsPage = () => {
-  useEffect(()=>{
-      document.title = 'AllProductsPage | RS Clothing'
-    },[])
+  useEffect(() => {
+    document.title = "AllProductsPage | RS Clothing";
+  }, []);
   const navigate = useNavigate();
   const location = useLocation();
   const [allProducts, setAllProducts] = useState([]);
@@ -34,7 +34,7 @@ const AllProductsPage = () => {
     const fetchAllProducts = async () => {
       try {
         const res = await axios.get(
-          "https://web-production-2449.up.railway.app/api/products/"
+          "https://ecommerce-backend-da9u.onrender.com/api/products/"
         );
 
         const productsWithData = res.data.map((product) => {
@@ -133,7 +133,7 @@ const AllProductsPage = () => {
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `https://web-production-2449.up.railway.app/api/cart/add/${productId}/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {
@@ -229,10 +229,13 @@ const AllProductsPage = () => {
                       : null
                   }
                 >
-                  <a className="cursor" onClick={() => {
-                        navigate(`/product/${item.id}/`);
-                        window.location.reload();
-                      }}>
+                  <a
+                    className="cursor"
+                    onClick={() => {
+                      navigate(`/product/${item.id}/`);
+                      window.location.reload();
+                    }}
+                  >
                     <div className="product-image-container">
                       <img
                         src={item.image}

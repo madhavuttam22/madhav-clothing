@@ -40,7 +40,10 @@ const Header = () => {
         setShowSearchBar(false);
         setSuggestions([]);
       }
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
         setShowMobileMenu(false);
       }
     };
@@ -67,7 +70,7 @@ const Header = () => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `https://web-production-2449.up.railway.app/api/search/suggestions/`,
+        `https://ecommerce-backend-da9u.onrender.com/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -91,35 +94,33 @@ const Header = () => {
   };
 
   const handleSearchSubmit = (e) => {
-  e.preventDefault();
-  if (searchQuery.trim()) {
-    const url = `/search?q=${encodeURIComponent(searchQuery)}`;
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      const url = `/search?q=${encodeURIComponent(searchQuery)}`;
+      if (location.pathname + location.search === url) {
+        window.location.reload(); // Force reload if already on same URL
+      } else {
+        navigate(url);
+        setTimeout(() => window.location.reload(), 10); // Optional delay for reload after navigate
+      }
+      setSearchQuery("");
+      setShowSearchBar(false);
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    const url = `/search?q=${encodeURIComponent(suggestion)}`;
     if (location.pathname + location.search === url) {
-      window.location.reload(); // Force reload if already on same URL
+      window.location.reload();
     } else {
       navigate(url);
-      setTimeout(() => window.location.reload(), 10); // Optional delay for reload after navigate
+      setTimeout(() => window.location.reload(), 10);
     }
     setSearchQuery("");
     setShowSearchBar(false);
     setSuggestions([]);
-  }
-};
-
-
-  const handleSuggestionClick = (suggestion) => {
-  const url = `/search?q=${encodeURIComponent(suggestion)}`;
-  if (location.pathname + location.search === url) {
-    window.location.reload();
-  } else {
-    navigate(url);
-    setTimeout(() => window.location.reload(), 10);
-  }
-  setSearchQuery("");
-  setShowSearchBar(false);
-  setSuggestions([]);
-};
-
+  };
 
   const toggleMobileMenu = () => {
     setShowMobileMenu(!showMobileMenu);
@@ -163,13 +164,21 @@ const Header = () => {
                 className="text-dark icon-hover"
                 onClick={(e) => {
                   handleProfileClick(e);
-                  window.location.reload();}}
-                >
-                <i className={`bi bi-person profile-icon ${isActive("/profile") ? "active-icon" : ""}`}></i>
+                  window.location.reload();
+                }}
+              >
+                <i
+                  className={`bi bi-person profile-icon ${
+                    isActive("/profile") ? "active-icon" : ""
+                  }`}
+                ></i>
               </Link>
 
               {/* Desktop Search */}
-              <div className="search-container d-none d-lg-block" ref={searchRef}>
+              <div
+                className="search-container d-none d-lg-block"
+                ref={searchRef}
+              >
                 {showSearchBar ? (
                   <form onSubmit={handleSearchSubmit} className="search-form">
                     <div className="search-input-container">
@@ -177,12 +186,19 @@ const Header = () => {
                         type="text"
                         placeholder="Search products..."
                         value={searchQuery}
-                        onChange={(e) => {setSearchQuery(e.target.value);window.location.reload();}}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          window.location.reload();
+                        }}
                         className="search-input"
                         autoFocus
                       />
                       {searchQuery && (
-                        <button type="button" className="clear-search-btn" onClick={() => setSearchQuery("")}>
+                        <button
+                          type="button"
+                          className="clear-search-btn"
+                          onClick={() => setSearchQuery("")}
+                        >
                           <FiX />
                         </button>
                       )}
@@ -205,26 +221,59 @@ const Header = () => {
                     )}
                   </form>
                 ) : (
-                  <button className="text-dark icon-hover" style={{ border: 'none', background: 'none' }} onClick={handleSearchClick}>
-                    <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
+                  <button
+                    className="text-dark icon-hover"
+                    style={{ border: "none", background: "none" }}
+                    onClick={handleSearchClick}
+                  >
+                    <i
+                      className={`bi bi-search search-icon ${
+                        isActive("/search") ? "active-icon" : ""
+                      }`}
+                    ></i>
                   </button>
                 )}
               </div>
 
               {/* Mobile Search */}
-              <button className="text-dark icon-hover d-lg-none" style={{border:'none',background:'none'}} onClick={handleSearchClick}>
-                <i className={`bi bi-search search-icon ${isActive("/search") ? "active-icon" : ""}`}></i>
+              <button
+                className="text-dark icon-hover d-lg-none"
+                style={{ border: "none", background: "none" }}
+                onClick={handleSearchClick}
+              >
+                <i
+                  className={`bi bi-search search-icon ${
+                    isActive("/search") ? "active-icon" : ""
+                  }`}
+                ></i>
               </button>
 
               {/* Cart */}
-              <Link to="/cart" className="position-relative text-dark icon-hover" onClick={(e)=>{window.location.reload();}}>
-                <i className={`bi bi-cart cart-icon ${isActive("/cart") ? "active-icon" : ""}`}></i>
+              <Link
+                to="/cart"
+                className="position-relative text-dark icon-hover"
+                onClick={(e) => {
+                  window.location.reload();
+                }}
+              >
+                <i
+                  className={`bi bi-cart cart-icon ${
+                    isActive("/cart") ? "active-icon" : ""
+                  }`}
+                ></i>
                 <span className="cart-badge"></span>
               </Link>
 
               {/* Mobile Menu Button */}
-              <button className="btn d-lg-none menu-btn" onClick={toggleMobileMenu}>
-                {showMobileMenu ? <FaTimes className="menu-icon" /> : <FaBars className="menu-icon" />}
+              <button
+                className="btn d-lg-none menu-btn"
+                onClick={toggleMobileMenu}
+              >
+                {showMobileMenu ? (
+                  <FaTimes className="menu-icon" />
+                ) : (
+                  <FaBars className="menu-icon" />
+                )}
               </button>
             </div>
           </div>
@@ -238,12 +287,19 @@ const Header = () => {
                     type="text"
                     placeholder="Search products..."
                     value={searchQuery}
-                    onChange={(e) => {setSearchQuery(e.target.value);window.location.reload();}}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      window.location.reload();
+                    }}
                     className="search-input"
                     autoFocus
                   />
                   {searchQuery && (
-                    <button type="button" className="clear-search-btn" onClick={() => setSearchQuery("")}>
+                    <button
+                      type="button"
+                      className="clear-search-btn"
+                      onClick={() => setSearchQuery("")}
+                    >
                       <FiX />
                     </button>
                   )}
@@ -269,37 +325,46 @@ const Header = () => {
           )}
 
           {/* Mobile Menu */}
-          <div className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`} ref={mobileMenuRef}>
-             {/* Close (X) Button */}
-  <button className="close-menu-btn" onClick={toggleMobileMenu}>
-    <FaTimes />
-  </button>
+          <div
+            className={`mobile-menu-container ${showMobileMenu ? "show" : ""}`}
+            ref={mobileMenuRef}
+          >
+            {/* Close (X) Button */}
+            <button className="close-menu-btn" onClick={toggleMobileMenu}>
+              <FaTimes />
+            </button>
             <nav className="mobile-menu">
               <ul className="nav flex-column">
                 <li className="nav-item">
                   <a
                     href="/"
-                    className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
+                    className={`nav-link nav-hover ${
+                      isActive("/") ? "active" : ""
+                    }`}
                     onClick={(e) => handleReloadNavigate(e, "/")}
                   >
                     <span>Home</span>
                   </a>
                 </li>
                 <li className="nav-item dropdown">
-                  <ShopDropdown handleReloadNavigate={handleReloadNavigate} mobileClose={() => setShowMobileMenu(false)} />
-
+                  <ShopDropdown
+                    handleReloadNavigate={handleReloadNavigate}
+                    mobileClose={() => setShowMobileMenu(false)}
+                  />
                 </li>
                 {[
                   ["/bestseller", "Best Sellers"],
                   ["/newcollection", "New Collection"],
                   ["/allproducts", "All Products"],
                   ["/brand", "Brand"],
-                  ["/contactus", "Contact"]
+                  ["/contactus", "Contact"],
                 ].map(([path, label]) => (
                   <li className="nav-item" key={path}>
                     <a
                       href={path}
-                      className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
+                      className={`nav-link nav-hover ${
+                        isActive(path) ? "active" : ""
+                      }`}
                       onClick={(e) => handleReloadNavigate(e, path)}
                     >
                       <span>{label}</span>
@@ -316,7 +381,9 @@ const Header = () => {
               <li className="nav-item">
                 <a
                   href="/"
-                  className={`nav-link nav-hover ${isActive("/") ? "active" : ""}`}
+                  className={`nav-link nav-hover ${
+                    isActive("/") ? "active" : ""
+                  }`}
                   onClick={(e) => handleReloadNavigate(e, "/")}
                 >
                   <span>Home</span>
@@ -330,12 +397,14 @@ const Header = () => {
                 ["/newcollection", "New Collection"],
                 ["/allproducts", "All Products"],
                 ["/brand", "Brand"],
-                ["/contactus", "Contact"]
+                ["/contactus", "Contact"],
               ].map(([path, label]) => (
                 <li className="nav-item" key={path}>
                   <a
                     href={path}
-                    className={`nav-link nav-hover ${isActive(path) ? "active" : ""}`}
+                    className={`nav-link nav-hover ${
+                      isActive(path) ? "active" : ""
+                    }`}
                     onClick={(e) => handleReloadNavigate(e, path)}
                   >
                     <span>{label}</span>
