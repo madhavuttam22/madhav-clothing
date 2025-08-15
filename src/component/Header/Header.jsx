@@ -15,9 +15,9 @@ const Header = () => {
 
   const handleCartClick = () => {
     navigatecart(`/cart?ts=${Date.now()}`);
-setTimeout(() => {
-  window.location.reload();
-}, 0); 
+    setTimeout(() => {
+      window.location.reload();
+    }, 0);
   };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,7 +35,7 @@ setTimeout(() => {
 
   const handleReloadNavigate = (e, path) => {
     e.preventDefault();
-    
+
     if (location.pathname === path) {
       window.location.reload();
     } else {
@@ -274,18 +274,17 @@ setTimeout(() => {
                 ></i>
                 <span className="cart-badge"></span>
               </Link> */}
-              <a
-  className="position-relative text-dark icon-hover"
-  onClick={handleCartClick}
->
-  <i
-    className={`bi bi-cart cart-icon ${
-      isActive("/cart") ? "active-icon" : ""
-    }`}
-  ></i>
-  <span className="cart-badge"></span>
-</a>
-
+              <Link
+                className="position-relative text-dark icon-hover"
+                onClick={handleCartClick}
+              >
+                <i
+                  className={`bi bi-cart cart-icon ${
+                    isActive("/cart") ? "active-icon" : ""
+                  }`}
+                ></i>
+                <span className="cart-badge"></span>
+              </Link>
 
               {/* Mobile Menu Button */}
               <button
