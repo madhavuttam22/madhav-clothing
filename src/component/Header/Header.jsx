@@ -14,7 +14,10 @@ const Header = () => {
   const navigatecart = useNavigate();
 
   const handleCartClick = () => {
-    navigatecart(`/cart?refresh=${Date.now()}`, { replace: false }); 
+    navigatecart(`/cart?ts=${Date.now()}`);
+setTimeout(() => {
+  window.location.reload();
+}, 0); 
   };
 
   const [searchQuery, setSearchQuery] = useState("");
