@@ -113,6 +113,9 @@ const Cart = () => {
   // Fetch cart data on component mount
   useEffect(() => {
     fetchCartData();
+  }, [location.key]);
+  useEffect(() => {
+    window.refreshCartData = fetchCartData;
   }, []);
 
   /**
