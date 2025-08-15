@@ -253,15 +253,7 @@ const Header = () => {
                 to="/cart"
                 className="position-relative text-dark icon-hover"
                 onClick={(e) => {
-                  e.preventDefault();
-                  if (location.pathname !== "/cart") {
-                    navigate("/cart"); // Dusre page se cart pe jao
-                  } else {
-                    // Agar already cart page pe ho → data refresh function call
-                    if (typeof refreshCartData === "function") {
-                      refreshCartData();
-                    }
-                  }
+                  window.location.reload();
                 }}
               >
                 <i
