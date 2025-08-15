@@ -101,7 +101,7 @@ const Register = () => {
       const idToken = await user.getIdToken();
 
       // Register user with backend API
-      await fetch("https://ecommerce-backend-da9u.onrender.com/api/register/", {
+      await fetch("https://web-production-27d40.up.railway.app/api/register/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -144,7 +144,7 @@ const Register = () => {
 
         // Register user with backend API
         await fetch(
-          "https://ecommerce-backend-da9u.onrender.com/api/register/",
+          "https://web-production-27d40.up.railway.app/api/register/",
           {
             method: "POST",
             headers: {
