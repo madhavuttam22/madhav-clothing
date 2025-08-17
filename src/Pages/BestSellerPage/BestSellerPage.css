@@ -1,38 +1,22 @@
-
-/* 
-  BestSellerPage.css - Styles for the Best Seller page component
-
-  Features:
-  - Responsive grid layout for products
-  - Card styling with hover effects
-  - Badge styling for best seller items
-  - Price display styling with original price strikethrough
-  - Size selector and add to cart button styling
-  - Media queries for responsive design
-*/
-
-/* Main container for the best seller page */
-.bestseller-page-container {
+/* BestSellerPage.css */
+.all-products-page-container {
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Page title styling */
-.bestseller {
+.all-products-title {
   text-align: center;
   margin: 20px 0 30px;
   font-size: 2.2rem;
   color: #333;
 }
 
-/* Layout for content (filters + products) */
-.bestseller-content {
+.all-products-content {
   display: flex;
   gap: 30px;
 }
 
-/* Filters sidebar styling */
 .filters-sidebar {
   flex: 0 0 280px;
   position: sticky;
@@ -41,21 +25,18 @@
   align-self: flex-start;
 }
 
-/* Products grid container */
 .products-grid-container {
   flex: 1;
 }
 
-/* Grid layout for best seller products */
-.best-seller-grid {
-  display: flex;
-  flex-wrap: wrap;
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 25px;
   padding-bottom: 40px;
 }
 
-/* Individual product card styling */
-.best-seller-card {
+.product-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
@@ -63,22 +44,19 @@
   background: white;
 }
 
-/* Card hover effects */
-.best-seller-card:hover {
+.product-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Image container with aspect ratio preservation */
-.best-seller-image-container {
+.product-image-container {
   position: relative;
   width: 100%;
   padding-top: 100%;
   overflow: hidden;
 }
 
-/* Product image styling */
-.best-seller-image {
+.product-image {
   position: absolute;
   top: 0;
   left: 0;
@@ -88,17 +66,14 @@
   transition: transform 0.5s ease;
 }
 
-/* Image zoom effect on hover */
-.best-seller-card:hover .best-seller-image {
+.product-card:hover .product-image {
   transform: scale(1.05);
 }
 
-/* Best seller badge styling */
-.best-seller-badge {
+.product-badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -106,50 +81,49 @@
   font-weight: bold;
 }
 
-/* Product info section styling */
-.best-seller-info {
+.best-seller {
+  background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
+}
+
+.product-info {
   padding: 15px;
 }
 
-/* Product title styling */
-.best-seller-title {
+.product-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
 }
 
-/* Product title link styling */
-.best-seller-title-link {
+.product-title-link {
   color: #333;
   text-decoration: none;
 }
 
-/* Product title hover effect */
-.best-seller-title-link:hover {
+.product-title-link:hover {
   color: #DE5B9E;
 }
 
-/* Price wrapper styling */
-.best-seller-price-wrapper {
+.product-price-wrapper {
   margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Current price styling */
-.best-seller-current-price {
+.product-current-price {
   font-weight: bold;
   font-size: 1.1rem;
   color: #DE5B9E;
 }
 
-/* Original price styling (with strikethrough) */
-.best-seller-original-price {
+.product-original-price {
   text-decoration: line-through;
   color: #999;
   font-size: 0.9rem;
   margin-left: 8px;
 }
 
-/* Size selector dropdown styling */
 .size-selector {
   margin-bottom: 12px;
 }
@@ -162,8 +136,7 @@
   font-size: 0.9rem;
 }
 
-/* Add to cart button styling */
-.best-seller-add-to-cart {
+.add-to-cart-btn {
   width: 100%;
   padding: 10px;
   background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
@@ -175,20 +148,30 @@
   transition: background 0.3s ease;
 }
 
-/* Add to cart button hover effect */
-.best-seller-add-to-cart:hover {
+.add-to-cart-btn:hover {
   background: #7a0191;
 }
 
-/* Disabled add to cart button styling */
-.best-seller-add-to-cart:disabled {
+.add-to-cart-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
-/* Responsive styles for tablet devices */
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+}
+
+.error {
+  text-align: center;
+  padding: 50px;
+  color: #d9534f;
+  font-size: 1.2rem;
+}
+
 @media (max-width: 992px) {
-  .bestseller-content {
+  .all-products-content {
     flex-direction: column;
     gap: 20px;
   }
@@ -199,19 +182,18 @@
     width: 100%;
   }
   
-  .best-seller-grid {
+  .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
 
-/* Responsive styles for mobile devices */
 @media (max-width: 576px) {
-  .best-seller-grid {
+  .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
   }
   
-  .bestseller {
+  .all-products-title {
     font-size: 1.8rem;
     margin: 15px 0;
   }
