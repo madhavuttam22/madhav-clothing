@@ -235,13 +235,13 @@ const SearchResults = () => {
       </div>
     );
 
-  return (
+ return (
     <>
-      <div className="search-results-page">
+      <div className="all-products-page-container">
         <div className="search-header-container">
           <div className="container">
             <div className="search-header">
-              <h1>
+              <h1 className="all-products-title">
                 {products.length > 0
                   ? `Results for "${searchQuery}"`
                   : "Search"}
@@ -294,126 +294,112 @@ const SearchResults = () => {
           </div>
         </div>
 
-        <div className="search-results-content">
-          <div className="container">
-            {notification && (
-              <Notification
-                message={notification.message}
-                type={notification.type}
-                onClose={() => setNotification(null)}
-              />
-            )}
+        <div className="all-products-content">
+          <div className="filters-sidebar">
+            <Filters products={products} onApply={applyFilters} />
+          </div>
 
-            <div className="search-results-layout">
-              <div className="filters-sidebar">
-                <Filters products={products} onApply={applyFilters} />
-              </div>
-
-              <div className="products-grid-container">
-                {filteredProducts.length > 0 ? (
-                  <>
-                    <div className="results-count">
-                      Found {filteredProducts.length} item(s)
-                    </div>
-                    <div className="best-seller-grid">
-                      {filteredProducts.map((item) => (
-                        <div className="best-seller-card" key={item.id}>
-                          <a
-                            className="cursor"
-                            onClick={() => {
-                              navigate(`/product/${item.id}/`);
-                              window.location.reload();
+          <div className="products-grid-container">
+            {filteredProducts.length > 0 ? (
+              <>
+                <div className="results-count">
+                  Found {filteredProducts.length} item(s)
+                </div>
+                <div className="products-grid">
+                  {filteredProducts.map((item) => (
+                    <div className="product-card" key={item.id}>
+                      <a
+                        className="cursor"
+                        onClick={() => {
+                          navigate(`/product/${item.id}/`);
+                          window.location.reload();
+                        }}
+                      >
+                        <div className="product-image-container">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="product-image"
+                            onError={(e) => {
+                              e.target.src = "/placeholder-product.jpg";
                             }}
-                          >
-                            <div className="best-seller-image-container">
-                              <img
-                                src={item.image}
-                                alt={item.name}
-                                className="best-seller-image"
-                                onError={(e) => {
-                                  e.target.src = "/placeholder-product.jpg";
-                                }}
-                              />
-                            </div>
-                          </a>
-                          <div className="best-seller-info">
-                            <h3 className="best-seller-title">
-                              <Link
-                                to={`/product/${item.id}/`}
-                                className="best-seller-title-link"
-                              >
-                                {item.name}
-                              </Link>
-                            </h3>
-                            <div className="best-seller-price-wrapper d-flex justify-content-center">
-                              <span className="best-seller-current-price">
-                                ₹{item.currentprice}
-                              </span>
-                              {item.orignalprice &&
-                                item.orignalprice > item.currentprice && (
-                                  <span className="best-seller-original-price">
-                                    ₹{item.orignalprice}
-                                  </span>
-                                )}
-                            </div>
-                            {item.sizes?.length > 0 && (
-                              <div className="size-selector">
-                                <select
-                                  value={selectedSizes[item.id] || ""}
-                                  onChange={(e) =>
-                                    handleSizeChange(item.id, e.target.value)
-                                  }
-                                  className="size-dropdown"
-                                >
-                                  {item.sizes.map(({ size, stock }) => (
-                                    <option
-                                      key={size.id}
-                                      value={size.id}
-                                      disabled={stock <= 0}
-                                    >
-                                      {size.name}{" "}
-                                      {stock <= 0 ? "(Out of Stock)" : ""}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                            <button
-                              className="best-seller-add-to-cart"
-                              onClick={() => addToCart(item.id)}
-                              disabled={
-                                addingToCartId === item.id ||
-                                !selectedSizes[item.id]
-                              }
-                            >
-                              {addingToCartId === item.id
-                                ? "Adding..."
-                                : "Add to Cart"}
-                            </button>
-                          </div>
+                          />
                         </div>
-                      ))}
+                      </a>
+                      <div className="product-info w-100 text-center">
+                        <h3 className="product-title">
+                          <Link
+                            to={`/product/${item.id}/`}
+                            className="product-title-link"
+                          >
+                            {item.name}
+                          </Link>
+                        </h3>
+                        <div className="product-price-wrapper">
+                          <span className="product-current-price">
+                            ₹{item.currentprice}
+                          </span>
+                          {item.orignalprice &&
+                            item.orignalprice > item.currentprice && (
+                              <span className="product-original-price">
+                                ₹{item.orignalprice}
+                              </span>
+                            )}
+                        </div>
+
+                        {item.sizes?.length > 0 && (
+                          <div className="size-selector">
+                            <select
+                              value={selectedSizes[item.id] || ""}
+                              onChange={(e) =>
+                                handleSizeChange(item.id, e.target.value)
+                              }
+                              className="size-dropdown"
+                            >
+                              {item.sizes.map(({ size, stock }) => (
+                                <option
+                                  key={size.id}
+                                  value={size.id}
+                                  disabled={stock <= 0}
+                                >
+                                  {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        <button
+                          className="add-to-cart-btn"
+                          onClick={() => addToCart(item.id)}
+                          disabled={
+                            addingToCartId === item.id || !selectedSizes[item.id]
+                          }
+                        >
+                          {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                        </button>
+                      </div>
                     </div>
-                  </>
-                ) : (
-                  <div className="no-results">
-                    <img
-                      src="/no-results.svg"
-                      alt="No results"
-                      className="no-results-img"
-                    />
-                    <h3>No products found</h3>
-                    <p>We couldn't find anything for "{searchQuery}"</p>
-                    <button
-                      onClick={() => navigate("/")}
-                      className="continue-shopping-btn"
-                    >
-                      Continue Shopping
-                    </button>
-                  </div>
-                )}
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="no-results">
+                <img
+                  src="/no-results.svg"
+                  alt="No results"
+                  className="no-results-img"
+                />
+                <h3>No products found</h3>
+                <p>We couldn't find anything for "{searchQuery}"</p>
+                <button
+                  onClick={() => navigate("/")}
+                  className="continue-shopping-btn"
+                >
+                  Continue Shopping
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
