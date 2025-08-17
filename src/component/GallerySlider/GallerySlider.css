@@ -11,6 +11,8 @@ A horizontal scrolling image gallery with consistent item sizing
 
 /* Container for gallery content */
 .gallery-container {
+  width: 100%;
+  scrollbar-width: 0px !important;
   margin: 0 auto; /* Center the container */
   padding: 0 10px; /* Horizontal padding */
   overflow-x: auto;
@@ -19,7 +21,8 @@ A horizontal scrolling image gallery with consistent item sizing
 /* Gallery list - flex container for horizontal scrolling */
 .gallery-list {
   display: flex; /* Flex layout for horizontal items */
-  gap: 20px; /* Consistent spacing between items */
+  gap: 10px; /* Consistent spacing between items */
+  justify-content: center;
   padding-bottom: 10px; /* Bottom padding for scrollbar space */
   
   /* 
