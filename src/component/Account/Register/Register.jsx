@@ -101,7 +101,7 @@ const Register = () => {
       const idToken = await user.getIdToken();
 
       // Register user with backend API
-      await fetch("https://web-production-27d40.up.railway.app/api/profile/update/", {
+      await fetch("https://web-production-27d40.up.railway.app/api/register/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
