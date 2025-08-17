@@ -6,70 +6,58 @@ import Notification from "../Notification/Notification";
 import { auth } from "../../firebase";
 import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
-/**
- * ProductItems Component - Displays a grid of top products with add-to-cart functionality
- *
- * @returns {JSX.Element} - Rendered product grid component
- */
 const ProductItems = () => {
-  // Navigation and routing hooks
   const navigate = useNavigate();
   const location = useLocation();
+  const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [addingToCartId, setAddingToCartId] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState({});
 
-  // State management
-  const [topProducts, setTopProducts] = useState([]); // Stores top products data
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [addingToCartId, setAddingToCartId] = useState(null); // Tracks which product is being added to cart
-  const [notification, setNotification] = useState(null); // Notification state
-  const [selectedSizes, setSelectedSizes] = useState({}); // Stores selected sizes for each product
-  const [selectedColors, setSelectedColors] = useState({}); // Stores selected colors for each product
-  const from = location.state?.from || "/"; // Redirect path after auth
-
-  /**
-   * Shows a notification message
-   * @param {string} message - Notification content
-   * @param {string} type - Notification type ('success', 'error', etc.)
-   */
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000); // Auto-dismiss after 3 seconds
+    setTimeout(() => setNotification(null), 3000);
   };
 
-  /**
-   * Handles size selection change for a product
-   * @param {string} productId - ID of the product
-   * @param {string} sizeId - ID of the selected size
-   */
   const handleSizeChange = (productId, sizeId) => {
     setSelectedSizes((prev) => ({
       ...prev,
-      [productId]: sizeId,
+      [productId]: parseInt(sizeId),
     }));
   };
 
-  /**
-   * Adds a product to the cart
-   * @param {string} productId - ID of the product to add
-   */
   const addToCart = async (productId) => {
-    const sizeId = selectedSizes[productId];
-    const colorId = selectedColors[productId];
+    const selectedSizeId = parseInt(selectedSizes[productId]);
+    if (!selectedSizeId) {
+      showNotification("Please select a size", "error");
+      return;
+    }
 
-    // Validate size selection
-    if (!sizeId) {
-      showNotification("Please select a size before adding to cart", "error");
+    const product = topProducts.find((p) => p.id === productId);
+    if (!product) {
+      showNotification("Product not found", "error");
+      return;
+    }
+
+    const selectedSize = product.sizes?.find(
+      (size) => size.size.id === selectedSizeId
+    );
+
+    if (!selectedSize || selectedSize.stock <= 0) {
+      showNotification("Selected size is out of stock", "error");
       return;
     }
 
     try {
-      setAddingToCartId(productId); // Set loading state for this product
-
-      // Check authentication and get token
+      setAddingToCartId(productId);
       const token = await checkAuthAndRedirect(navigate, location.pathname);
-      if (!token) return; // User not logged in, redirected
+      if (!token) return;
 
-      // API call to add to cart
+      const colorId =
+        product.colors?.length > 0 ? product.colors[0].color.id : null;
+
       const response = await fetch(
         `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
         {
@@ -80,7 +68,7 @@ const ProductItems = () => {
           },
           body: JSON.stringify({
             quantity: 1,
-            size_id: sizeId,
+            size_id: selectedSizeId,
             color_id: colorId,
             update_quantity: true,
           }),
@@ -92,20 +80,23 @@ const ProductItems = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
-      // Show success and update UI
-      showNotification(data.message || "Item added to cart successfully!");
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
       if (typeof window.updateCartCount === "function") {
-        window.updateCartCount(); // Update cart count if function exists
+        window.updateCartCount();
       }
-    } catch (err) {
-      console.error("Add to cart error:", err);
-      showNotification("Something went wrong. Please try again.", "error");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      showNotification(
+        error.message || "Failed to add product. Please try again.",
+        "error"
+      );
     } finally {
-      setAddingToCartId(null); // Reset loading state
+      setAddingToCartId(null);
     }
   };
 
-  // Fetch top products on component mount
   useEffect(() => {
     const fetchTopProducts = async () => {
       try {
@@ -113,53 +104,41 @@ const ProductItems = () => {
           "https://web-production-27d40.up.railway.app/api/products/?is_top=true"
         );
 
-        // Process product data with defaults
-        const productsWithDetails = res.data.map((product) => {
-          // Find first available size or fallback to first size
+        const productsWithData = res.data.map((product) => {
+          let imageUrl = "/placeholder-product.jpg";
+          if (product.colors?.length > 0) {
+            const firstColor = product.colors[0];
+            const defaultImage = firstColor.images.find(
+              (img) => img.is_default
+            );
+            imageUrl =
+              defaultImage?.image_url ||
+              firstColor.images?.[0]?.image_url ||
+              imageUrl;
+          }
+
           const firstAvailableSize =
             product.sizes?.find((size) => size.stock > 0)?.size ||
             product.sizes?.[0]?.size;
 
-          // Set default image with fallbacks
-          let imageUrl = "/placeholder-product.jpg";
-          if (product.colors?.length > 0) {
-            const firstColor = product.colors[0];
-            if (firstColor.images?.length > 0) {
-              const defaultImage = firstColor.images.find(
-                (img) => img.is_default
-              );
-              imageUrl =
-                defaultImage?.image_url ||
-                firstColor.images[0].image_url ||
-                imageUrl;
-            }
-          }
-
           return {
             ...product,
-            defaultSize: firstAvailableSize,
             image: imageUrl,
+            defaultSize: firstAvailableSize,
           };
         });
 
-        setTopProducts(productsWithDetails);
+        setTopProducts(productsWithData);
 
-        // Initialize default selections
         const initialSizes = {};
-        const initialColors = {};
-        productsWithDetails.forEach((product) => {
+        productsWithData.forEach((product) => {
           if (product.defaultSize) {
             initialSizes[product.id] = product.defaultSize.id;
           }
-          if (product.colors?.length > 0) {
-            initialColors[product.id] = product.colors[0].color.id;
-          }
         });
-
         setSelectedSizes(initialSizes);
-        setSelectedColors(initialColors);
       } catch (err) {
-        console.error("Failed to load top products", err);
+        console.error("Failed to load products", err);
         setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
@@ -168,15 +147,13 @@ const ProductItems = () => {
     fetchTopProducts();
   }, []);
 
-  // Loading and error states
-  if (loading) return <div className="loading">Loading top products...</div>;
+  if (loading) return <div className="loading">Loading products...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
-    <>
-      <h1 className="top-products-title">Top Products</h1>
+    <div className="all-products-page-container">
+      <h1 className="all-products-title">Top Products</h1>
 
-      {/* Notification component */}
       {notification && (
         <Notification
           message={notification.message}
@@ -185,85 +162,91 @@ const ProductItems = () => {
         />
       )}
 
-      {/* Products grid */}
-      <div className="top-products-grid">
-        {topProducts.map((item) => (
-          <div className="top-product-card" key={item.id}>
-            {/* Product image with link */}
-            <Link to={`/product/${item.id}/`}>
-              <div className="top-product-image-container">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="top-product-image"
-                  onError={(e) => {
-                    e.target.src = "/placeholder-product.jpg";
-                    e.target.onerror = null;
-                  }}
-                />
-                {item.is_top_product && (
-                  <span className="top-product-badge">Top Product</span>
-                )}
-              </div>
-            </Link>
-
-            {/* Product info section */}
-            <div className="top-product-info">
-              <h3 className="top-product-title text-center">
-                <Link
-                  to={`/product/${item.id}/`}
-                  className="top-product-title-link"
-                >
-                  {item.name}
-                </Link>
-              </h3>
-
-              {/* Price display */}
-              <div className="top-product-price-wrapper d-flex justify-content-center">
-                <span className="top-product-current-price">
-                  ₹{item.currentprice}
-                </span>
-                {item.orignalprice && item.orignalprice > item.currentprice && (
-                  <span className="top-product-original-price">
-                    ₹{item.orignalprice}
-                  </span>
-                )}
-              </div>
-
-              {/* Size selector */}
-              {item.sizes?.length > 0 && (
-                <div className="size-selector">
-                  <select
-                    value={selectedSizes[item.id] || ""}
-                    onChange={(e) => handleSizeChange(item.id, e.target.value)}
-                    className="size-dropdown"
-                  >
-                    {item.sizes.map(({ size, stock }) => (
-                      <option
-                        key={size.id}
-                        value={size.id}
-                        disabled={stock <= 0}
-                      >
-                        {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Add to cart button */}
-              <button
-                className="top-product-add-to-cart"
-                onClick={() => addToCart(item.id)}
-                disabled={addingToCartId === item.id || !selectedSizes[item.id]}
+      <div className="products-grid-container">
+        <div className="products-grid">
+          {topProducts.map((item) => (
+            <div className="product-card" key={item.id}>
+              <a
+                className="cursor"
+                onClick={() => {
+                  navigate(`/product/${item.id}/`);
+                  window.location.reload();
+                }}
               >
-                {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
-              </button>
+                <div className="product-image-container">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="product-image"
+                    onError={(e) => {
+                      e.target.src = "/placeholder-product.jpg";
+                    }}
+                  />
+                  {item.is_top_product && (
+                    <span className="product-badge top-product">
+                      Top Product
+                    </span>
+                  )}
+                </div>
+              </a>
+              <div className="product-info w-100 text-center">
+                <h3 className="product-title">
+                  <Link
+                    to={`/product/${item.id}/`}
+                    className="product-title-link"
+                  >
+                    {item.name}
+                  </Link>
+                </h3>
+                <div className="product-price-wrapper">
+                  <span className="product-current-price">
+                    ₹{item.currentprice}
+                  </span>
+                  {item.orignalprice &&
+                    item.orignalprice > item.currentprice && (
+                      <span className="product-original-price">
+                        ₹{item.orignalprice}
+                      </span>
+                    )}
+                </div>
+
+                {item.sizes?.length > 0 && (
+                  <div className="size-selector">
+                    <select
+                      value={selectedSizes[item.id] || ""}
+                      onChange={(e) =>
+                        handleSizeChange(item.id, e.target.value)
+                      }
+                      className="size-dropdown"
+                    >
+                      {item.sizes.map(({ size, stock }) => (
+                        <option
+                          key={size.id}
+                          value={size.id}
+                          disabled={stock <= 0}
+                        >
+                          {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <button
+                  className="add-to-cart-btn"
+                  onClick={() => addToCart(item.id)}
+                  disabled={
+                    addingToCartId === item.id || !selectedSizes[item.id]
+                  }
+                >
+                  {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

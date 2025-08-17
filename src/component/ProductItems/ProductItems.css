@@ -1,73 +1,66 @@
-/* 
-Product Items Component Styles
-Styles for the top products grid and individual product cards
-*/
+/* ProductItems.css */
+.all-products-page-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-/* Page title styling */
-.top-products-title {
+.all-products-title {
   text-align: center;
   margin: 20px 0 30px;
   font-size: 2.2rem;
   color: #333;
 }
 
-/* Main products grid container */
-.top-products-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* Center cards horizontally */
-  gap: 25px; /* Spacing between cards */
-  padding: 0 20px 40px;
-  max-width: 1440px; /* Max container width */
-  margin: 0 auto; /* Center the grid */
+.products-grid-container {
+  flex: 1;
 }
 
-/* Individual product card styling */
-.top-product-card {
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  padding-bottom: 40px;
+}
+
+.product-card {
   border: 1px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
-  width: 250px; /* Fixed card width */
 }
 
-/* Hover effects for product card */
-.top-product-card:hover {
-  transform: translateY(-5px); /* Lift effect */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Shadow effect */
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Image container with aspect ratio */
-.top-product-image-container {
+.product-image-container {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* 1:1 aspect ratio */
+  padding-top: 100%;
   overflow: hidden;
 }
 
-/* Product image styling */
-.top-product-image {
+.product-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensure image covers container */
-  transition: transform 0.5s ease; /* Smooth zoom transition */
+  object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
-/* Image zoom effect on hover */
-.top-product-card:hover .top-product-image {
+.product-card:hover .product-image {
   transform: scale(1.05);
 }
 
-/* "Top Product" badge styling */
-.top-product-badge {
+.product-badge {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: #ff6b00;
   color: white;
   padding: 3px 8px;
   border-radius: 4px;
@@ -75,58 +68,51 @@ Styles for the top products grid and individual product cards
   font-weight: bold;
 }
 
-/* Product info section */
-.top-product-info {
+.top-product {
+  background: #02a1b0;
+  left: auto;
+  right: 10px;
+}
+
+.product-info {
   padding: 15px;
 }
 
-/* Product title styling */
-.top-product-title {
+.product-title {
   margin: 0 0 8px;
   font-size: 1rem;
   font-weight: 500;
-  line-height: 1.4;
-  height: 2.8em; /* Fixed height for title */
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit to 2 lines */
-  -webkit-box-orient: vertical;
 }
 
-/* Product title link */
-.top-product-title-link {
+.product-title-link {
   color: #333;
   text-decoration: none;
 }
 
-/* Title hover effect */
-.top-product-title-link:hover {
+.product-title-link:hover {
   color: #DE5B9E;
 }
 
-/* Price container */
-.top-product-price-wrapper {
+.product-price-wrapper {
   margin-bottom: 12px;
   display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-/* Current price styling */
-.top-product-current-price {
+.product-current-price {
   font-weight: bold;
   font-size: 1.1rem;
   color: #DE5B9E;
 }
 
-/* Original price (strikethrough) */
-.top-product-original-price {
+.product-original-price {
   text-decoration: line-through;
   color: #999;
   font-size: 0.9rem;
   margin-left: 8px;
 }
 
-/* Size selector dropdown */
 .size-selector {
   margin-bottom: 12px;
 }
@@ -137,11 +123,9 @@ Styles for the top products grid and individual product cards
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
-  cursor: pointer;
 }
 
-/* Add to cart button */
-.top-product-add-to-cart {
+.add-to-cart-btn {
   width: 100%;
   padding: 10px;
   background: linear-gradient(90deg, #005EA6 0%, #DE5B9E 100%);
@@ -153,47 +137,41 @@ Styles for the top products grid and individual product cards
   transition: background 0.3s ease;
 }
 
-/* Button hover state */
-.top-product-add-to-cart:hover {
+.add-to-cart-btn:hover {
   background: #7a0191;
 }
 
-/* Disabled button state */
-.top-product-add-to-cart:disabled {
+.add-to-cart-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
-/* Loading state */
 .loading {
   text-align: center;
-  padding: 2rem;
+  padding: 50px;
   font-size: 1.2rem;
 }
 
-/* Error state */
 .error {
   text-align: center;
-  padding: 2rem;
-  color: #d32f2f;
+  padding: 50px;
+  color: #d9534f;
   font-size: 1.2rem;
 }
 
-/* Responsive styles for tablet */
 @media (max-width: 992px) {
-  .top-products-grid {
+  .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 }
 
-/* Responsive styles for mobile */
 @media (max-width: 576px) {
-  .top-products-grid {
+  .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
   }
   
-  .top-products-title {
+  .all-products-title {
     font-size: 1.8rem;
     margin: 15px 0;
   }
