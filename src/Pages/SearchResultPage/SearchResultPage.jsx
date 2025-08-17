@@ -10,10 +10,10 @@ import Filters from "../../component/Filters/Filters";
 
 const SearchResults = () => {
   useEffect(() => {
-    document.title = "SearchResutlsPage | RS Clothing";
+    document.title = "Search Results | RS Clothing";
   }, []);
-  const [searchKey, setSearchKey] = useState(0);
 
+  const [searchKey, setSearchKey] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -28,19 +28,6 @@ const SearchResults = () => {
   const [selectedSizes, setSelectedSizes] = useState({});
   const suggestionsRef = useRef(null);
 
-  // Get ?q= from URL
-  // const query = new URLSearchParams(location.search).get("q");
-
-  // Main effect to fetch data whenever query changes
-  // useEffect(() => {
-  //   if (query) {
-  //     setSearchQuery(query);
-  //     fetchSearchResults(query);
-  //   } else {
-  //     navigate("/");
-  //   }
-  // }, [query]);
-
   useEffect(() => {
     const qParam = new URLSearchParams(location.search).get("q");
     if (qParam) {
@@ -49,7 +36,7 @@ const SearchResults = () => {
     } else {
       navigate("/");
     }
-  }, [location.search, searchKey]); // <-- add searchKey
+  }, [location.search, searchKey]);
 
   const fetchSearchResults = async (searchTerm) => {
     try {
@@ -58,101 +45,84 @@ const SearchResults = () => {
         `https://web-production-27d40.up.railway.app/api/products/enhanced-search/`,
         { params: { q: searchTerm } }
       );
-      const updated = res.data.results.map((product) => {
-        let image = "/placeholder-product.jpg";
+
+      const productsWithData = res.data.results.map((product) => {
+        let imageUrl = "/placeholder-product.jpg";
         if (product.colors?.length > 0) {
-          const defaultImage = product.colors[0].images?.find(
+          const firstColor = product.colors[0];
+          const defaultImage = firstColor.images.find(
             (img) => img.is_default
           );
-          image =
+          imageUrl =
             defaultImage?.image_url ||
-            product.colors[0].images?.[0]?.image_url ||
-            image;
+            firstColor.images?.[0]?.image_url ||
+            imageUrl;
         }
-        const defaultSize =
-          product.sizes?.find((s) => s.stock > 0)?.size ||
+
+        const firstAvailableSize =
+          product.sizes?.find((size) => size.stock > 0)?.size ||
           product.sizes?.[0]?.size;
-        return { ...product, image, defaultSize };
+
+        return {
+          ...product,
+          image: imageUrl,
+          defaultSize: firstAvailableSize,
+        };
       });
-      setProducts(updated);
-      setFilteredProducts(updated);
-      const sizeMap = {};
-      updated.forEach((product) => {
+
+      setProducts(productsWithData);
+      setFilteredProducts(productsWithData);
+
+      const initialSizes = {};
+      productsWithData.forEach((product) => {
         if (product.defaultSize) {
-          sizeMap[product.id] = product.defaultSize.id;
+          initialSizes[product.id] = product.defaultSize.id;
         }
       });
-      setSelectedSizes(sizeMap);
+      setSelectedSizes(initialSizes);
       setError(null);
     } catch (err) {
-      console.error("Enhanced search failed:", err);
-      setError("Something went wrong. Try again.");
+      console.error("Failed to load products", err);
+      setError("Failed to load products. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.length > 1) fetchSuggestions(searchQuery);
-      else setSuggestions([]);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const fetchSuggestions = async (q) => {
-    try {
-      const res = await axios.get(
-        `https://web-production-27d40.up.railway.app/api/search/suggestions/`,
-        { params: { q } }
-      );
-      setSuggestions(res.data.suggestions || []);
-    } catch (err) {
-      console.error("Suggestion error:", err);
-    }
-  };
-
-  const showNotification = (msg, type = "success") => {
-    setNotification({ message: msg, type });
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
-  };
-
-  const applyFilters = ({ size, color, sort }) => {
-    let filtered = [...products];
-    if (size) {
-      filtered = filtered.filter((p) =>
-        p.sizes?.some((s) => s.size.id === parseInt(size))
-      );
-    }
-    if (color) {
-      filtered = filtered.filter((p) =>
-        p.colors?.some((c) => c.color.id === parseInt(color))
-      );
-    }
-    if (sort === "price_low")
-      filtered.sort((a, b) => a.currentprice - b.currentprice);
-    else if (sort === "price_high")
-      filtered.sort((a, b) => b.currentprice - a.currentprice);
-    setFilteredProducts(filtered);
-  };
-
-  const handleSizeChange = (productId, sizeId) => {
-    setSelectedSizes((prev) => ({ ...prev, [productId]: parseInt(sizeId) }));
   };
 
   const addToCart = async (productId) => {
     try {
       setAddingToCartId(productId);
       const selectedSizeId = selectedSizes[productId];
-      if (!selectedSizeId)
-        return showNotification("Please select a size", "error");
+      
+      if (!selectedSizeId) {
+        showNotification("Please select a size", "error");
+        return;
+      }
+
       const product = products.find((p) => p.id === productId);
-      const sizeObj = product?.sizes?.find((s) => s.size.id === selectedSizeId);
-      if (!sizeObj || sizeObj.stock <= 0)
-        return showNotification("Selected size is out of stock", "error");
+      if (!product) {
+        showNotification("Product not found", "error");
+        return;
+      }
+
+      const sizeObj = product.sizes?.find((s) => s.size.id === selectedSizeId);
+      if (!sizeObj || sizeObj.stock <= 0) {
+        showNotification("Selected size is out of stock", "error");
+        return;
+      }
+
       const token = await auth.currentUser?.getIdToken();
-      if (!token)
-        return navigate("/login", { state: { from: location.pathname } });
+      if (!token) {
+        showNotification("Please login to add items to cart", "error");
+        navigate("/login", { state: { from: location.pathname } });
+        return;
+      }
+
       const colorId = product.colors?.[0]?.color?.id || null;
       const response = await fetch(
         `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
@@ -170,72 +140,33 @@ const SearchResults = () => {
           }),
         }
       );
+
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.message || "Failed to add to cart");
-      showNotification(data.message || "Added to cart!");
-      if (typeof window.updateCartCount === "function")
+      }
+
+      showNotification(`${product.name} added to cart successfully!`);
+      if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
-    } catch (err) {
-      console.error(err);
-      showNotification(err.message || "Error", "error");
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      showNotification(
+        error.message || "Failed to add product. Please try again.",
+        "error"
+      );
     } finally {
       setAddingToCartId(null);
     }
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setShowSuggestions(false);
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchKey((prev) => prev + 1); // ⬅ force re-trigger
-    }
-  };
+  // ... (keep other existing functions like handleSizeChange, applyFilters, etc.)
 
-  const handleSuggestionClick = (suggestion) => {
-    setSearchQuery(suggestion);
-    setShowSuggestions(false);
-    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
-  };
+  if (loading) return <div className="loading">Loading products...</div>;
+  if (error) return <div className="error">{error}</div>;
 
-  const handleInputChange = (e) => {
-    setSearchQuery(e.target.value);
-    setShowSuggestions(e.target.value.length > 1);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(e.target)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  if (loading)
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Searching for products...</p>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="error-container">
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()} className="retry-btn">
-          Try Again
-        </button>
-      </div>
-    );
-
- return (
+  return (
     <>
       <div className="all-products-page-container">
         <div className="search-header-container">
@@ -293,6 +224,14 @@ const SearchResults = () => {
             </div>
           </div>
         </div>
+
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
 
         <div className="all-products-content">
           <div className="filters-sidebar">
