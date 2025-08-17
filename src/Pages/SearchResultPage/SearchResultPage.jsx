@@ -7,13 +7,14 @@ import { FiSearch, FiX } from "react-icons/fi";
 import { auth } from "../../firebase";
 import BackToTop from "../../component/BackToTop/BackToTop";
 import Filters from "../../component/Filters/Filters";
+import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 const SearchResults = () => {
   useEffect(() => {
-    document.title = "Search Results | RS Clothing";
+    document.title = "SearchResutlsPage | RS Clothing";
   }, []);
-
   const [searchKey, setSearchKey] = useState(0);
+
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -45,47 +46,57 @@ const SearchResults = () => {
         `https://web-production-27d40.up.railway.app/api/products/enhanced-search/`,
         { params: { q: searchTerm } }
       );
-
-      const productsWithData = res.data.results.map((product) => {
-        let imageUrl = "/placeholder-product.jpg";
+      const updated = res.data.results.map((product) => {
+        let image = "/placeholder-product.jpg";
         if (product.colors?.length > 0) {
-          const firstColor = product.colors[0];
-          const defaultImage = firstColor.images.find(
+          const defaultImage = product.colors[0].images?.find(
             (img) => img.is_default
           );
-          imageUrl =
+          image =
             defaultImage?.image_url ||
-            firstColor.images?.[0]?.image_url ||
-            imageUrl;
+            product.colors[0].images?.[0]?.image_url ||
+            image;
         }
-
-        const firstAvailableSize =
-          product.sizes?.find((size) => size.stock > 0)?.size ||
+        const defaultSize =
+          product.sizes?.find((s) => s.stock > 0)?.size ||
           product.sizes?.[0]?.size;
-
-        return {
-          ...product,
-          image: imageUrl,
-          defaultSize: firstAvailableSize,
-        };
+        return { ...product, image, defaultSize };
       });
-
-      setProducts(productsWithData);
-      setFilteredProducts(productsWithData);
-
-      const initialSizes = {};
-      productsWithData.forEach((product) => {
+      setProducts(updated);
+      setFilteredProducts(updated);
+      const sizeMap = {};
+      updated.forEach((product) => {
         if (product.defaultSize) {
-          initialSizes[product.id] = product.defaultSize.id;
+          sizeMap[product.id] = product.defaultSize.id;
         }
       });
-      setSelectedSizes(initialSizes);
+      setSelectedSizes(sizeMap);
       setError(null);
     } catch (err) {
-      console.error("Failed to load products", err);
-      setError("Failed to load products. Please try again later.");
+      console.error("Enhanced search failed:", err);
+      setError("Something went wrong. Try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length > 1) fetchSuggestions(searchQuery);
+      else setSuggestions([]);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchSuggestions = async (q) => {
+    try {
+      const res = await axios.get(
+        `https://web-production-27d40.up.railway.app/api/search/suggestions/`,
+        { params: { q } }
+      );
+      setSuggestions(res.data.suggestions || []);
+    } catch (err) {
+      console.error("Suggestion error:", err);
     }
   };
 
@@ -94,34 +105,52 @@ const SearchResults = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  const applyFilters = ({ size, color, sort }) => {
+    let filtered = [...products];
+    if (size) {
+      filtered = filtered.filter((p) =>
+        p.sizes?.some((s) => s.size.id === parseInt(size))
+      );
+    }
+    if (color) {
+      filtered = filtered.filter((p) =>
+        p.colors?.some((c) => c.color.id === parseInt(color))
+      );
+    }
+    if (sort === "price_low")
+      filtered.sort((a, b) => a.currentprice - b.currentprice);
+    else if (sort === "price_high")
+      filtered.sort((a, b) => b.currentprice - a.currentprice);
+    setFilteredProducts(filtered);
+  };
+
+  const handleSizeChange = (productId, sizeId) => {
+    setSelectedSizes((prev) => ({ ...prev, [productId]: parseInt(sizeId) }));
+  };
+
   const addToCart = async (productId) => {
+    const selectedSizeId = selectedSizes[productId];
+    if (!selectedSizeId) {
+      showNotification("Please select a size", "error");
+      return;
+    }
+
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      showNotification("Product not found", "error");
+      return;
+    }
+
+    const sizeObj = product.sizes?.find((s) => s.size.id === selectedSizeId);
+    if (!sizeObj || sizeObj.stock <= 0) {
+      showNotification("Selected size is out of stock", "error");
+      return;
+    }
+
     try {
       setAddingToCartId(productId);
-      const selectedSizeId = selectedSizes[productId];
-      
-      if (!selectedSizeId) {
-        showNotification("Please select a size", "error");
-        return;
-      }
-
-      const product = products.find((p) => p.id === productId);
-      if (!product) {
-        showNotification("Product not found", "error");
-        return;
-      }
-
-      const sizeObj = product.sizes?.find((s) => s.size.id === selectedSizeId);
-      if (!sizeObj || sizeObj.stock <= 0) {
-        showNotification("Selected size is out of stock", "error");
-        return;
-      }
-
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) {
-        showNotification("Please login to add items to cart", "error");
-        navigate("/login", { state: { from: location.pathname } });
-        return;
-      }
+      const token = await checkAuthAndRedirect(navigate, location.pathname);
+      if (!token) return;
 
       const colorId = product.colors?.[0]?.color?.id || null;
       const response = await fetch(
@@ -146,29 +175,82 @@ const SearchResults = () => {
         throw new Error(data.message || "Failed to add to cart");
       }
 
-      showNotification(`${product.name} added to cart successfully!`);
+      showNotification(
+        data.message || `${product.name} added to cart successfully!`
+      );
       if (typeof window.updateCartCount === "function") {
         window.updateCartCount();
       }
-    } catch (error) {
-      console.error("Add to cart error:", error);
-      showNotification(
-        error.message || "Failed to add product. Please try again.",
-        "error"
-      );
+    } catch (err) {
+      console.error(err);
+      showNotification(err.message || "Failed to add product. Please try again.", "error");
     } finally {
       setAddingToCartId(null);
     }
   };
 
-  // ... (keep other existing functions like handleSizeChange, applyFilters, etc.)
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setShowSuggestions(false);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchKey((prev) => prev + 1);
+    }
+  };
 
-  if (loading) return <div className="loading">Loading products...</div>;
-  if (error) return <div className="error">{error}</div>;
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+  };
+
+  const handleInputChange = (e) => {
+    setSearchQuery(e.target.value);
+    setShowSuggestions(e.target.value.length > 1);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (loading)
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Searching for products...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="error-container">
+        <p>{error}</p>
+        <button onClick={() => window.location.reload()} className="retry-btn">
+          Try Again
+        </button>
+      </div>
+    );
 
   return (
     <>
       <div className="all-products-page-container">
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
+        
         <div className="search-header-container">
           <div className="container">
             <div className="search-header">
@@ -224,14 +306,6 @@ const SearchResults = () => {
             </div>
           </div>
         </div>
-
-        {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-            onClose={() => setNotification(null)}
-          />
-        )}
 
         <div className="all-products-content">
           <div className="filters-sidebar">
