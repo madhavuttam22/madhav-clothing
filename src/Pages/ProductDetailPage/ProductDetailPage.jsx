@@ -20,7 +20,7 @@ import { auth } from "../../firebase";
  */
 const ProductDetailPage = () => {
   useEffect(() => {
-    document.title = "ProductDetailPage | RS Clothing";
+    document.title = "ProductDetailPage | Madhav Clothing";
   }, []);
   // Get product ID from URL parameters
   const { id } = useParams();

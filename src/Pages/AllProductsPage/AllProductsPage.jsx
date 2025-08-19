@@ -10,7 +10,7 @@ import "./AllProductsPage.css";
 
 const AllProductsPage = () => {
   useEffect(() => {
-    document.title = "AllProductsPage | RS Clothing";
+    document.title = "AllProductsPage | Madhav Clothing";
   }, []);
   const navigate = useNavigate();
   const location = useLocation();

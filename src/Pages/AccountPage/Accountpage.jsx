@@ -1,31 +1,28 @@
-import React, { useEffect } from 'react'
-import Login from '../../component/Account/Login/Login'
+import React, { useEffect } from "react";
+import Login from "../../component/Account/Login/Login";
 
 /**
  * AccountPage Component
- * 
- * The main account/login page of the application. 
+ *
+ * The main account/login page of the application.
  * Serves as a layout wrapper that combines:
  * - Global header
  * - Login form component
  * - Global footer
- * 
+ *
  * This page is typically accessed via '/account' or '/login' routes.
  * Provides consistent layout structure across the application.
  */
 const Accountpage = () => {
-  useEffect(()=>{
-    document.title = 'Login | RS Clothing'
-  },[])
+  useEffect(() => {
+    document.title = "Login | Madhav Clothing";
+  }, []);
   return (
     <>
-     
-      
       {/* Main content: Login form component */}
-      <Login/>
-      
+      <Login />
     </>
-  )
-}
+  );
+};
 
-export default Accountpage
+export default Accountpage;

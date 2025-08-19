@@ -163,7 +163,7 @@ setTimeout(() => {
             <Link to="/" className="navbar-brand d-lg-none">
               <img src={logo} alt="Logo" height="50" className="logo-img" />
             </Link>
-            <Link to="/" className="navbar-brand mx-lg-auto d-none d-lg-block">
+            <Link to="/" className="navbar-brand d-none d-lg-block" style={{marginLeft:'46%'}}>
               <img src={logo} alt="Logo" height="70" className="logo-img" />
             </Link>
 

@@ -17,7 +17,7 @@ import { FiLogOut, FiEdit, FiX, FiUpload, FiTrash2 } from "react-icons/fi";
  */
 const Profile = () => {
   useEffect(() => {
-    document.title = "ProfilePage | RS Clothing";
+    document.title = "ProfilePage | Madhav Clothing";
   }, []);
   // State management
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Controls logout confirmation modal

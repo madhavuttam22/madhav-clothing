@@ -22,7 +22,7 @@ import "./NewCollectionPage.css";
  */
 const NewCollectionPage = () => {
   useEffect(() => {
-    document.title = "NewCollectionPage | RS Clothing";
+    document.title = "NewCollectionPage | Madhav Clothing";
   }, []);
   // Navigation and routing hooks
   const navigate = useNavigate();

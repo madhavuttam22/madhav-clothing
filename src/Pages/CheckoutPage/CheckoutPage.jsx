@@ -10,7 +10,7 @@ import "./CheckoutPage.css";
  */
 const CheckoutPage = () => {
   useEffect(() => {
-    document.title = "CheckoutPage | RS Clothing";
+    document.title = "CheckoutPage | Madhav Clothing";
   }, []);
   // Router hooks for navigation and location state
   const location = useLocation();

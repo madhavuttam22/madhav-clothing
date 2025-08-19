@@ -10,9 +10,9 @@ import "./BestSellerPage.css";
 
 const BestSellerPage = () => {
   useEffect(() => {
-    document.title = "Best Sellers | RS Clothing";
+    document.title = "Best Sellers | Madhav Clothing";
   }, []);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const [bestSellers, setBestSellers] = useState([]);

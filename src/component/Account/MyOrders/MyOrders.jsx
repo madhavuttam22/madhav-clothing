@@ -18,7 +18,7 @@ import { formatCurrency, getProductImage } from "../../../utils/numbers";
 
 const MyOrders = () => {
   useEffect(() => {
-    document.title = "MyOrdersPage | RS Clothing";
+    document.title = "MyOrdersPage | Madhav Clothing";
   }, []);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -11,7 +11,7 @@ import checkAuthAndRedirect from "../../utils/checkAuthAndRedirect";
 
 const SearchResults = () => {
   useEffect(() => {
-    document.title = "SearchResutlsPage | RS Clothing";
+    document.title = "SearchResutlsPage | Madhav Clothing";
   }, []);
   const [searchKey, setSearchKey] = useState(0);
 
@@ -183,7 +183,10 @@ const SearchResults = () => {
       }
     } catch (err) {
       console.error(err);
-      showNotification(err.message || "Failed to add product. Please try again.", "error");
+      showNotification(
+        err.message || "Failed to add product. Please try again.",
+        "error"
+      );
     } finally {
       setAddingToCartId(null);
     }
@@ -250,7 +253,7 @@ const SearchResults = () => {
             onClose={() => setNotification(null)}
           />
         )}
-        
+
         <div className="search-header-container">
           <div className="container">
             <div className="search-header">
@@ -375,7 +378,8 @@ const SearchResults = () => {
                                   value={size.id}
                                   disabled={stock <= 0}
                                 >
-                                  {size.name} {stock <= 0 ? "(Out of Stock)" : ""}
+                                  {size.name}{" "}
+                                  {stock <= 0 ? "(Out of Stock)" : ""}
                                 </option>
                               ))}
                             </select>
@@ -386,10 +390,13 @@ const SearchResults = () => {
                           className="add-to-cart-btn"
                           onClick={() => addToCart(item.id)}
                           disabled={
-                            addingToCartId === item.id || !selectedSizes[item.id]
+                            addingToCartId === item.id ||
+                            !selectedSizes[item.id]
                           }
                         >
-                          {addingToCartId === item.id ? "Adding..." : "Add to Cart"}
+                          {addingToCartId === item.id
+                            ? "Adding..."
+                            : "Add to Cart"}
                         </button>
                       </div>
                     </div>

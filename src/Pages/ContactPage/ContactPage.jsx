@@ -11,7 +11,7 @@ import ConfirmationModal from "../../component/ConfirmationModal/ConfirmationMod
  */
 const ContactPage = () => {
   useEffect(() => {
-    document.title = "ContactPage | RS Clothing";
+    document.title = "ContactPage | Madhav Clothing";
   }, []);
   // State for form data with initial empty values
   const [formData, setFormData] = useState({

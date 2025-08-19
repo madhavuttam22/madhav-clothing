@@ -18,7 +18,7 @@ import "./CategoryProductsPage.css";
  */
 const CategoryProductsPage = () => {
   useEffect(() => {
-    document.title = "CategoryProductsPage | RS Clothing";
+    document.title = "CategoryProductsPage | Madhav Clothing";
   }, []);
   // Get category ID from URL parameters
   const { category_id } = useParams();

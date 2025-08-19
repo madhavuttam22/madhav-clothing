@@ -17,9 +17,9 @@ import { getAuth } from "firebase/auth";
  * - Handle empty cart state
  */
 const Cart = () => {
-   const location = useLocation();
+  const location = useLocation();
   useEffect(() => {
-    document.title = "CartPage | RS Clothing";
+    document.title = "CartPage | Madhav Clothing";
   }, []);
   // State management
   const [cartData, setCartData] = useState({
