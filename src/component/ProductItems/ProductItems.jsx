@@ -100,7 +100,7 @@ const ProductItems = () => {
   useEffect(() => {
     const fetchTopProducts = async () => {
       try {
-        const res = await axios.get(
+        const res = await axios.get( 
           "https://web-production-27d40.up.railway.app/api/products/?is_top=true"
         );
 
