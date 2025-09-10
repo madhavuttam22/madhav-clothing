@@ -72,7 +72,7 @@ const Profile = () => {
 
           // Fetch profile data from backend
           const res = await fetch(
-            "https://web-production-27d40.up.railway.app/api/profile/me/",
+            "https://backend-u3he.onrender.com/api/profile/me/",
             {
               headers: {
                 Authorization: `Bearer ${idToken}`,
@@ -209,7 +209,7 @@ const Profile = () => {
 
       // Send update to backend
       const response = await fetch(
-        "https://web-production-27d40.up.railway.app/api/profile/update/",
+        "https://backend-u3he.onrender.com/api/profile/update/",
         {
           method: "PUT",
           headers: {

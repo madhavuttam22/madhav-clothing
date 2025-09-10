@@ -61,11 +61,9 @@ const CategoryProductsPage = () => {
         // Fetch both products and categories in parallel
         const [productsRes, categoriesRes] = await Promise.all([
           axios.get(
-            `https://web-production-27d40.up.railway.app/api/categories/${category_id}/products/`
+            `https://backend-u3he.onrender.com/api/categories/${category_id}/products/`
           ),
-          axios.get(
-            "https://web-production-27d40.up.railway.app/api/categories/"
-          ),
+          axios.get("https://backend-u3he.onrender.com/api/categories/"),
         ]);
 
         // Find the current category from the categories list
@@ -205,7 +203,7 @@ const CategoryProductsPage = () => {
 
       // Make API call to add to cart
       const response = await fetch(
-        `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
+        `https://backend-u3he.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {

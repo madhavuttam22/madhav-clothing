@@ -67,7 +67,7 @@ const Login = () => {
       const idToken = await user.getIdToken(); // Get Firebase ID token
 
       // Notify backend about successful login
-      await fetch("https://web-production-27d40.up.railway.app/api/register/", {
+      await fetch("https://backend-u3he.onrender.com/api/register/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,

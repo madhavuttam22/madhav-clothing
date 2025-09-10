@@ -101,7 +101,7 @@ const Register = () => {
       const idToken = await user.getIdToken();
 
       // Register user with backend API
-      await fetch("https://web-production-27d40.up.railway.app/api/register/", {
+      await fetch("https://backend-u3he.onrender.com/api/register/", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${idToken}`,
@@ -143,15 +143,12 @@ const Register = () => {
         const idToken = await user.getIdToken();
 
         // Register user with backend API
-        await fetch(
-          "https://web-production-27d40.up.railway.app/api/register/",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${idToken}`,
-            },
-          }
-        );
+        await fetch("https://backend-u3he.onrender.com/api/register/", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
 
         // Show success modal
         setShowSuccessModal(true);

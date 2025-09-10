@@ -35,7 +35,7 @@ const BestSellerPage = () => {
     const fetchBestSellers = async () => {
       try {
         const res = await axios.get(
-          "https://web-production-27d40.up.railway.app/api/products/?is_best=true"
+          "https://backend-u3he.onrender.com/api/products/?is_best=true"
         );
 
         const productsWithData = res.data.map((product) => {
@@ -134,7 +134,7 @@ const BestSellerPage = () => {
         product.colors?.length > 0 ? product.colors[0].color.id : null;
 
       const response = await fetch(
-        `https://web-production-27d40.up.railway.app/api/cart/add/${productId}/`,
+        `https://backend-u3he.onrender.com/api/cart/add/${productId}/`,
         {
           method: "POST",
           headers: {

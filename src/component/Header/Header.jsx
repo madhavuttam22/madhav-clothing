@@ -15,9 +15,9 @@ const Header = () => {
 
   const handleCartClick = () => {
     navigatecart(`/cart?ts=${Date.now()}`);
-setTimeout(() => {
-  window.location.reload();
-}, 0); 
+    setTimeout(() => {
+      window.location.reload();
+    }, 0);
   };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,7 +35,7 @@ setTimeout(() => {
 
   const handleReloadNavigate = (e, path) => {
     e.preventDefault();
-    
+
     if (location.pathname === path) {
       window.location.reload();
     } else {
@@ -80,7 +80,7 @@ setTimeout(() => {
   const fetchSuggestions = async (query) => {
     try {
       const response = await axios.get(
-        `https://web-production-27d40.up.railway.app/api/search/suggestions/`,
+        `https://backend-u3he.onrender.com/api/search/suggestions/`,
         { params: { q: query } }
       );
       setSuggestions(response.data.suggestions || []);
@@ -163,7 +163,11 @@ setTimeout(() => {
             <Link to="/" className="navbar-brand d-lg-none">
               <img src={logo} alt="Logo" height="50" className="logo-img" />
             </Link>
-            <Link to="/" className="navbar-brand d-none d-lg-block" style={{marginLeft:'46%'}}>
+            <Link
+              to="/"
+              className="navbar-brand d-none d-lg-block"
+              style={{ marginLeft: "46%" }}
+            >
               <img src={logo} alt="Logo" height="70" className="logo-img" />
             </Link>
 
@@ -275,17 +279,17 @@ setTimeout(() => {
                 <span className="cart-badge"></span>
               </Link> */}
               <a
-  className="position-relative text-dark icon-hover"
-  onClick={handleCartClick} style={{cursor:'pointer'}}
->
-  <i
-    className={`bi bi-cart cart-icon ${
-      isActive("/cart") ? "active-icon" : ""
-    }`}
-  ></i>
-  <span className="cart-badge"></span>
-</a>
-
+                className="position-relative text-dark icon-hover"
+                onClick={handleCartClick}
+                style={{ cursor: "pointer" }}
+              >
+                <i
+                  className={`bi bi-cart cart-icon ${
+                    isActive("/cart") ? "active-icon" : ""
+                  }`}
+                ></i>
+                <span className="cart-badge"></span>
+              </a>
 
               {/* Mobile Menu Button */}
               <button

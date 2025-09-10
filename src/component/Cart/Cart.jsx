@@ -62,7 +62,7 @@ const Cart = () => {
 
       // API call to get cart data
       const response = await fetch(
-        "https://web-production-27d40.up.railway.app/api/cart/",
+        "https://backend-u3he.onrender.com/api/cart/",
         {
           method: "GET",
           headers: {
@@ -147,10 +147,10 @@ const Cart = () => {
 
       // Determine API endpoint and request body based on action
       if (action === "remove") {
-        endpoint = `https://web-production-27d40.up.railway.app/api/cart/remove/${productId}/`;
+        endpoint = `https://backend-u3he.onrender.com/api/cart/remove/${productId}/`;
         body = { size_id: sizeId, color_id: colorId };
       } else if (action === "update") {
-        endpoint = `https://web-production-27d40.up.railway.app/api/cart/update/${productId}/`;
+        endpoint = `https://backend-u3he.onrender.com/api/cart/update/${productId}/`;
         body = {
           quantity,
           size_id: sizeId,
