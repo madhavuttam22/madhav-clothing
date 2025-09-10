@@ -21,13 +21,12 @@ import { getAuth } from "firebase/auth"; // Authentication service import
  * @property {string} measurementId - Google Analytics measurement ID (optional)
  */
 const firebaseConfig = {
-  apiKey: "AIzaSyApAwk0A5SC5Iesj0MEIuiBu8BKbhwQc5M",
-  authDomain: "ecommerce-auth-b6280.firebaseapp.com",
-  projectId: "ecommerce-auth-b6280",
-  storageBucket: "ecommerce-auth-b6280.firebasestorage.app",
-  messagingSenderId: "66138807030",
-  appId: "1:66138807030:web:7975adb0705668607eaad7",
-  measurementId: "G-8YZZE3BRSX"
+  apiKey: "AIzaSyBhjTfwSoT3fZA-l67yMHevi-lf8Wo7IhM",
+  authDomain: "madhav-clothing.firebaseapp.com",
+  projectId: "madhav-clothing",
+  storageBucket: "madhav-clothing.firebasestorage.app",
+  messagingSenderId: "844271926850",
+  appId: "1:844271926850:web:a9627c333f140ebbbbf7db"
 };
 
 // Initialize Firebase application
