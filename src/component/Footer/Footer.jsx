@@ -177,7 +177,7 @@ const Footer = () => {
         {/* Footer Copyright Section */}
         <div className="Footer__Aside">
           <div className="Footer__Copyright">
-            <a href="" className="Footer__StoreName Heading u-h7 Link Link--secondary">© ZU Clothing</a>
+            <a href="" className="Footer__StoreName Heading u-h7 Link Link--secondary">© Madhav Clothing</a>
           </div>
         </div>
       </div>

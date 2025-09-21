@@ -33,7 +33,7 @@ const CommunitySection = () => {
         <div className="feature-content">
           <header className="section-header">
             {/* Subheading with uppercase styling */}
-            <h3 className="subheading">HEAR FROM THE ZU CLOTHING COMMUNITY</h3>
+            <h3 className="subheading">HEAR FROM THE Madhav CLOTHING COMMUNITY</h3>
             
             {/* Description paragraph with call-to-action link */}
             <div className="description">
